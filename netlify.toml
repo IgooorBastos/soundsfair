@@ -1,0 +1,22 @@
+[build]
+  base = "soundsfair-app"
+  command = "npm run build"
+  publish = "soundsfair-app/.next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "20.19.6"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# Rewrite rules for Next.js
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
