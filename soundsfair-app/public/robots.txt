@@ -1,0 +1,22 @@
+# Soundsfair - Bitcoin Education Platform
+# https://soundsfair.com
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /.next/
+Disallow: /private/
+
+# Specific crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Sitemap
+Sitemap: https://soundsfair.com/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1
