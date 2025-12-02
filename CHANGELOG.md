@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **CSV Export for DCA Calculator**: Professional CSV export functionality with comprehensive data
+  - 3-section format: Metadata header, Summary results, Transaction history
+  - Exports all investment settings (amount, frequency, date range)
+  - Includes all metrics: Total Invested, BTC Units, Current Value, ROI, CAGR, Max Drawdown, Volatility
+  - Complete transaction history with each purchase details
+  - RFC 4180 compliant CSV escaping for special characters
+  - Auto-generated filename with date: `dca-bitcoin-YYYY-MM-DD.csv`
+  - Success toast notification with smooth fade-in animation
+  - Client-side only (privacy-friendly, no server upload)
+  - Zero external dependencies (vanilla JavaScript with Blob API)
+  - Compatible with Excel, Google Sheets, Numbers, and all CSV readers
+  - File: `soundsfair-app/app/lib/csv-export.ts` ([NEW], ~165 lines)
+  - Updated: `soundsfair-app/app/components/DCACalculator.tsx` (CSV button + toast)
+  - Updated: `soundsfair-app/tailwind.config.ts` (fade-in animation improvements)
+
 - **Glossary Footnotes System**: Automatic contextual glossary references at the bottom of every lesson page
   - Auto-detects glossary terms appearing in lesson content
   - Displays numbered footnotes with term definitions
@@ -51,6 +66,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Impact: Clean glossary display without duplication
 
 ### Changed
+- **DCA Calculator - Bitcoin-Only Focus**: Simplified calculator to focus exclusively on Bitcoin with real historical data
+  - Removed mock price data for S&P500, Gold, and MSCI World (~113 lines removed)
+  - Switched to Bitcoin-only calculations with real CoinCap API data
+  - Updated UI to show "Bitcoin Only" info box with data source transparency
+  - Added badge showing "Real data since 2013" with earliest available date display
+  - Swapped API priority: CoinCap (unlimited history) as primary, CoinGecko (365-day limit) as fallback
+  - File: `soundsfair-app/app/api/prices/route.ts` (simplified, Bitcoin-focused)
+  - File: `soundsfair-app/app/components/DCACalculator.tsx` (removed multi-asset selector)
+  - Rationale: Focus on Bitcoin as "the only truly scarce digital asset", ensure data accuracy, avoid misleading comparisons with simulated data
+
+- **Price API Improvements**: Enhanced reliability and data availability
+  - Primary API: CoinCap (unlimited historical data from 2013-04-28, free forever)
+  - Fallback API: CoinGecko (365-day limit on free tier)
+  - Added "Earliest Available Date" display in DCA Calculator UI
+  - Shows badge with verification icon and years of historical data available
+  - File: `soundsfair-app/app/api/prices/route.ts` (API priority swap)
+  - Impact: Users can now simulate DCA strategies going back over 11 years
+
 - **About Page Description**: Updated hero section copy for more professional positioning
   - Old: "An educational platform dedicated to teaching the world about Bitcoin, sound money principles, and economic freedom."
   - New: "An educational platform providing trusted information, support, and expert guidance in Bitcoin and sound money principles."

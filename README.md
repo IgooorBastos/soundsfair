@@ -116,9 +116,47 @@ Visit [http://localhost:3000](http://localhost:3000) to see the application.
 
 ## 📚 Documentation
 
-- **[Complete Roadmap](./docs/planning/ROADMAP.md)** - Full implementation plan (5 sprints)
-- **[Sprint 1 Summary](./docs/sprints/SPRINT-1-SUMMARY.md)** - Completed features
+### 📋 Quick Navigation
+
 - **[CLAUDE.md](./CLAUDE.md)** - Project guidelines for AI assistance
+- **[CHANGELOG.md](./CHANGELOG.md)** - Version history and updates
+- **[TODO.md](./TODO.md)** - Current task list
+- **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - Current implementation status
+- **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** - Quick dev reference
+
+### 📁 Documentation Structure
+
+```
+docs/
+├── planning/                    # Strategic & implementation planning
+│   ├── STRATEGIC_PLAN.md       # Original strategic vision
+│   ├── PROJECT_BLUEPRINT.md    # Feature specifications
+│   ├── EXECUTIVE_REVIEW.md     # Market analysis & competitors
+│   └── SKILLS_MASTER_PLAN.md   # Technical skills roadmap
+│
+├── design/                      # Branding & design guidelines
+│   ├── BRANDING_GUIDE_V2.md    # Current branding standards (v2)
+│   ├── LOGO_CONCEPTS_DETAILED.md
+│   └── LOGO_DECISION_GUIDE.md
+│
+├── implementation/              # Technical documentation
+│   ├── IMPLEMENTATION_REPORT.md # Implementation progress
+│   ├── COMPONENTS_DOCUMENTATION.md
+│   └── PROJECT_MANAGEMENT_TEMPLATE.md
+│
+├── notion-import/               # Notion integration utilities
+│   ├── NOTION_IMPORT_GUIDE.md
+│   ├── import-to-notion.bat
+│   └── import-to-notion.ps1
+│
+└── archive/                     # Historical documentation
+    ├── planning-phase/          # Phase 1 planning docs
+    └── implementation-snapshots/  # Implementation logs
+
+content-source/                 # Original source materials
+├── Bitcoin-Revolucao-Monetaria.pdf
+└── requisitos-originais-pt.txt
+```
 
 ---
 
