@@ -50,6 +50,17 @@ const config: Config = {
           "lightning": "#FDE047",     // Electric yellow (Lightning Network)
         },
 
+        // Visual Identity System (Charts & Educational Visuals)
+        "vi": {
+          "gold": "#FFD000",          // Primary accent for Bitcoin, hard money
+          "gold-muted": "#E6B800",    // Muted variant
+          "red": "#FF4444",           // Fiat problems, inflation, warnings
+          "blue": "#4477FF",          // Data, comparisons, traditional finance
+          "gray": "#808080",          // Context, supporting elements
+          "green": "#10B981",         // Success, positive outcomes
+          "chart-grid": "#2A2A2A",    // Chart grid lines
+        },
+
         // Legacy support (backwards compatibility)
         "brand-yellow": "#FFD700",
         "primary-dark": "#FFC700",

@@ -1,0 +1,9 @@
+Investment,Nominal_Return_Percent,Inflation_Rate_Percent,Real_Return_Percent
+Savings_Account,1.0,3.0,-2.0
+Treasury_Bonds,3.5,3.0,0.5
+Corporate_Bonds,5.0,3.0,2.0
+US_Stocks,10.0,3.0,7.0
+International_Stocks,8.5,3.0,5.5
+Real_Estate,7.0,3.0,4.0
+Gold,5.5,3.0,2.5
+Bitcoin,45.0,3.0,42.0

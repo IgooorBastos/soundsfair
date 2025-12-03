@@ -1,0 +1,547 @@
+/**
+ * SOUNDSFAIR VISUAL IDENTITY SYSTEM
+ * Bitcoin Education Platform - Design System CSS
+ *
+ * Purpose: Centralized CSS custom properties and reusable classes
+ * for consistent visual language across educational content.
+ *
+ * Based on:
+ * - 2024-2025 infographic design trends (minimalism, bold typography, accessibility)
+ * - Bitcoin education best practices (authority, clarity, trustworthiness)
+ * - WCAG AA accessibility standards
+ */
+
+:root {
+  /* ========================================
+   * COLOR SYSTEM - Visual Identity Palette
+   * ======================================== */
+
+  /* Primary Brand Colors */
+  --vi-gold: #FFD000;              /* Libertarian gold - PRIMARY accent */
+  --vi-gold-hover: #FFC700;        /* Hover state */
+  --vi-gold-muted: #E6B800;        /* Muted variant for subtle use */
+  --vi-gold-transparent: rgba(255, 208, 0, 0.15);  /* Overlay/backgrounds */
+
+  /* Background & Surface */
+  --vi-black: #000000;             /* Pure black background */
+  --vi-charcoal: #1A1A1A;          /* Cards, elevated surfaces */
+  --vi-dark-gray: #242424;         /* Secondary surfaces */
+
+  /* Text Colors (WCAG AAA compliant on black) */
+  --vi-text-primary: #FFFFFF;      /* Primary text (21:1 contrast) */
+  --vi-text-secondary: #F5F5F5;    /* Body text (19:1 contrast) */
+  --vi-text-muted: #9CA3AF;        /* Supporting text (8.5:1 contrast) */
+  --vi-text-disabled: #6B7280;     /* Disabled state (5.8:1 contrast) */
+
+  /* Semantic Colors for Visual Communication */
+  --vi-red: #FF4444;               /* Fiat problems, inflation, warnings */
+  --vi-blue: #4477FF;              /* Data, comparisons, secondary info */
+  --vi-gray: #808080;              /* Context, supporting elements */
+  --vi-green: #10B981;             /* Success, positive outcomes */
+
+  /* Chart-Specific Colors */
+  --vi-chart-gold: #FFD000;        /* Bitcoin, hard money, positive */
+  --vi-chart-red: #FF4444;         /* Fiat, inflation, negative */
+  --vi-chart-blue: #4477FF;        /* Traditional finance, data */
+  --vi-chart-gray: #808080;        /* Neutral, context */
+  --vi-chart-grid: #2A2A2A;        /* Grid lines, axes */
+
+  /* ========================================
+   * TYPOGRAPHY SYSTEM
+   * ======================================== */
+
+  /* Font Families */
+  --vi-font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+  --vi-font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+
+  /* Type Scale for Visual Components */
+  --vi-text-title: 32px;           /* Component titles */
+  --vi-text-heading: 24px;         /* Section headings */
+  --vi-text-subheading: 20px;      /* Subheadings */
+  --vi-text-body: 16px;            /* Body text in visuals */
+  --vi-text-label: 14px;           /* Labels, annotations */
+  --vi-text-caption: 12px;         /* Captions, metadata */
+
+  /* Font Weights */
+  --vi-weight-bold: 700;
+  --vi-weight-semibold: 600;
+  --vi-weight-medium: 500;
+  --vi-weight-regular: 400;
+
+  /* ========================================
+   * SPACING SYSTEM (8px base unit)
+   * ======================================== */
+
+  --vi-space-xs: 8px;
+  --vi-space-sm: 16px;
+  --vi-space-md: 24px;
+  --vi-space-lg: 32px;
+  --vi-space-xl: 48px;
+  --vi-space-2xl: 64px;
+
+  /* ========================================
+   * LAYOUT & COMPOSITION
+   * ======================================== */
+
+  /* Border Radius */
+  --vi-radius-sm: 4px;
+  --vi-radius-md: 8px;
+  --vi-radius-lg: 12px;
+  --vi-radius-xl: 16px;
+
+  /* Shadows */
+  --vi-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --vi-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --vi-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.4);
+  --vi-shadow-gold: 0 0 20px rgba(255, 208, 0, 0.25);
+
+  /* ========================================
+   * ANIMATION & TRANSITIONS
+   * ======================================== */
+
+  --vi-transition-fast: 150ms ease-in-out;
+  --vi-transition-base: 250ms ease-in-out;
+  --vi-transition-slow: 400ms ease-in-out;
+}
+
+/* ========================================
+ * REUSABLE COMPONENT CLASSES
+ * ======================================== */
+
+/* Visual Pattern: Concept Explainer */
+.vi-concept-explainer {
+  background: var(--vi-charcoal);
+  border: 1px solid var(--vi-dark-gray);
+  border-radius: var(--vi-radius-lg);
+  padding: var(--vi-space-xl);
+  margin: var(--vi-space-lg) 0;
+}
+
+.vi-concept-explainer__title {
+  color: var(--vi-gold);
+  font-size: var(--vi-text-title);
+  font-weight: var(--vi-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--vi-space-md);
+  text-align: center;
+}
+
+.vi-concept-explainer__visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--vi-space-lg) 0;
+  min-height: 300px;
+}
+
+.vi-concept-explainer__points {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--vi-space-lg);
+}
+
+.vi-concept-explainer__points li {
+  color: var(--vi-text-secondary);
+  font-size: var(--vi-text-body);
+  line-height: 1.7;
+  padding-left: var(--vi-space-md);
+  margin-bottom: var(--vi-space-sm);
+  position: relative;
+}
+
+.vi-concept-explainer__points li::before {
+  content: '•';
+  color: var(--vi-gold);
+  font-size: 1.5em;
+  position: absolute;
+  left: 0;
+  top: -2px;
+}
+
+/* Visual Pattern: Comparison Split */
+.vi-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--vi-space-md);
+  margin: var(--vi-space-lg) 0;
+}
+
+@media (max-width: 768px) {
+  .vi-comparison {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vi-comparison__side {
+  background: var(--vi-charcoal);
+  border-radius: var(--vi-radius-lg);
+  padding: var(--vi-space-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.vi-comparison__side--fiat {
+  border: 2px solid var(--vi-red);
+}
+
+.vi-comparison__side--fiat::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--vi-red);
+}
+
+.vi-comparison__side--bitcoin {
+  border: 2px solid var(--vi-gold);
+}
+
+.vi-comparison__side--bitcoin::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--vi-gold);
+}
+
+.vi-comparison__title {
+  font-size: var(--vi-text-heading);
+  font-weight: var(--vi-weight-bold);
+  margin-bottom: var(--vi-space-md);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vi-comparison__side--fiat .vi-comparison__title {
+  color: var(--vi-red);
+}
+
+.vi-comparison__side--bitcoin .vi-comparison__title {
+  color: var(--vi-gold);
+}
+
+.vi-comparison__visual {
+  display: flex;
+  justify-content: center;
+  margin: var(--vi-space-md) 0;
+  min-height: 200px;
+}
+
+.vi-comparison__list {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--vi-space-md);
+}
+
+.vi-comparison__list li {
+  color: var(--vi-text-secondary);
+  font-size: var(--vi-text-body);
+  padding: var(--vi-space-xs) 0;
+  border-bottom: 1px solid var(--vi-dark-gray);
+}
+
+.vi-comparison__list li:last-child {
+  border-bottom: none;
+}
+
+/* Visual Pattern: Process Flow */
+.vi-process {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: var(--vi-space-lg) 0;
+  padding: var(--vi-space-lg);
+  background: var(--vi-charcoal);
+  border-radius: var(--vi-radius-lg);
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .vi-process {
+    flex-direction: column;
+  }
+}
+
+.vi-process__step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  padding: var(--vi-space-md);
+  min-width: 150px;
+}
+
+.vi-process__step:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--vi-text-heading);
+  color: var(--vi-gold);
+  font-weight: var(--vi-weight-bold);
+}
+
+@media (max-width: 768px) {
+  .vi-process__step:not(:last-child)::after {
+    content: '↓';
+    right: auto;
+    top: auto;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.vi-process__icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--vi-space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--vi-dark-gray);
+  border-radius: 50%;
+  color: var(--vi-gold);
+  font-size: 32px;
+  font-weight: var(--vi-weight-bold);
+}
+
+.vi-process__label {
+  font-size: var(--vi-text-body);
+  color: var(--vi-text-primary);
+  font-weight: var(--vi-weight-semibold);
+  margin-bottom: var(--vi-space-xs);
+}
+
+.vi-process__description {
+  font-size: var(--vi-text-label);
+  color: var(--vi-text-muted);
+  line-height: 1.5;
+}
+
+/* ========================================
+ * IMAGE PLACEHOLDER COMPONENT
+ * ======================================== */
+
+.vi-image-placeholder {
+  background: var(--vi-charcoal);
+  border: 2px dashed var(--vi-gold-muted);
+  border-radius: var(--vi-radius-lg);
+  padding: var(--vi-space-lg);
+  margin: var(--vi-space-lg) 0;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.vi-image-placeholder__icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--vi-space-md);
+  color: var(--vi-gold-muted);
+  opacity: 0.5;
+}
+
+.vi-image-placeholder__title {
+  font-size: var(--vi-text-heading);
+  color: var(--vi-text-primary);
+  font-weight: var(--vi-weight-semibold);
+  margin-bottom: var(--vi-space-sm);
+}
+
+.vi-image-placeholder__prompt {
+  font-size: var(--vi-text-label);
+  color: var(--vi-text-muted);
+  font-family: var(--vi-font-mono);
+  background: var(--vi-dark-gray);
+  padding: var(--vi-space-sm);
+  border-radius: var(--vi-radius-sm);
+  margin: var(--vi-space-sm) 0;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.vi-image-placeholder__usage {
+  font-size: var(--vi-text-caption);
+  color: var(--vi-text-muted);
+  font-style: italic;
+  margin-top: var(--vi-space-sm);
+}
+
+/* ========================================
+ * CHART STYLING BASE
+ * ======================================== */
+
+.vi-chart-container {
+  background: var(--vi-charcoal);
+  border-radius: var(--vi-radius-lg);
+  padding: var(--vi-space-lg);
+  margin: var(--vi-space-lg) 0;
+  box-shadow: var(--vi-shadow-md);
+}
+
+.vi-chart-title {
+  font-size: var(--vi-text-heading);
+  color: var(--vi-text-primary);
+  font-weight: var(--vi-weight-semibold);
+  margin-bottom: var(--vi-space-xs);
+  text-align: center;
+}
+
+.vi-chart-description {
+  font-size: var(--vi-text-label);
+  color: var(--vi-text-muted);
+  text-align: center;
+  margin-bottom: var(--vi-space-md);
+  line-height: 1.6;
+}
+
+.vi-chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: auto;
+  min-height: 300px;
+}
+
+/* Chart-specific text styling (for Recharts) */
+.recharts-text {
+  font-family: var(--vi-font-sans);
+  fill: var(--vi-text-muted);
+  font-size: var(--vi-text-caption);
+}
+
+.recharts-cartesian-axis-tick-value {
+  fill: var(--vi-text-muted);
+  font-size: var(--vi-text-caption);
+}
+
+.recharts-legend-item-text {
+  color: var(--vi-text-secondary) !important;
+  font-size: var(--vi-text-label);
+}
+
+/* ========================================
+ * UTILITY CLASSES
+ * ======================================== */
+
+/* Text Colors (Quick Access) */
+.vi-text-gold { color: var(--vi-gold); }
+.vi-text-red { color: var(--vi-red); }
+.vi-text-blue { color: var(--vi-blue); }
+.vi-text-primary { color: var(--vi-text-primary); }
+.vi-text-muted { color: var(--vi-text-muted); }
+
+/* Background Colors */
+.vi-bg-black { background-color: var(--vi-black); }
+.vi-bg-charcoal { background-color: var(--vi-charcoal); }
+.vi-bg-gold { background-color: var(--vi-gold); }
+.vi-bg-gold-transparent { background-color: var(--vi-gold-transparent); }
+
+/* Borders */
+.vi-border-gold { border-color: var(--vi-gold); }
+.vi-border-red { border-color: var(--vi-red); }
+.vi-border-gray { border-color: var(--vi-dark-gray); }
+
+/* Spacing Utilities */
+.vi-spacing-section { margin: var(--vi-space-2xl) 0; }
+.vi-spacing-component { margin: var(--vi-space-lg) 0; }
+
+/* Accessibility Helpers */
+.vi-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.vi-focus-outline:focus {
+  outline: 2px solid var(--vi-gold);
+  outline-offset: 2px;
+}
+
+/* Responsive Utilities */
+@media (max-width: 640px) {
+  .vi-hide-mobile { display: none; }
+}
+
+@media (min-width: 641px) {
+  .vi-hide-desktop { display: none; }
+}
+
+/* ========================================
+ * VISUAL METAPHORS & ICONS
+ * ======================================== */
+
+/* Scarcity & Hard Money Symbol */
+.vi-icon-scarcity {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--vi-gold);
+  color: var(--vi-black);
+  border-radius: 50%;
+  font-weight: var(--vi-weight-bold);
+  box-shadow: var(--vi-shadow-gold);
+}
+
+/* Time & Accumulation Symbol */
+.vi-icon-time {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--vi-gold);
+  border-radius: 50%;
+}
+
+.vi-icon-time::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 40%;
+  background: var(--vi-gold);
+  transform: translate(-50%, -50%) rotate(45deg);
+  transform-origin: bottom center;
+}
+
+/* Network Node Symbol */
+.vi-icon-node {
+  width: 12px;
+  height: 12px;
+  background: var(--vi-gold);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--vi-gold-transparent);
+}
+
+/* ========================================
+ * PRINT STYLES
+ * ======================================== */
+
+@media print {
+  .vi-concept-explainer,
+  .vi-comparison,
+  .vi-process {
+    break-inside: avoid;
+  }
+
+  .vi-chart-container {
+    page-break-inside: avoid;
+  }
+}

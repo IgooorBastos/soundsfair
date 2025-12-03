@@ -1,0 +1,11 @@
+Asset,Stock_Existing_Supply,Annual_Flow_New_Supply,Stock_to_Flow_Ratio,Category
+Copper,560,20,28,Industrial_Metal
+Silver,560000,25000,22.4,Precious_Metal
+Oil,50000,85000,0.59,Commodity
+Palladium,200,6.5,30.8,Precious_Metal
+Platinum,200,6,33.3,Precious_Metal
+Gold,200000,3200,62.5,Precious_Metal
+Bitcoin_2020,18500000,328500,56.3,Digital_Asset
+Bitcoin_2024,19690000,164250,119.9,Digital_Asset
+Bitcoin_2028,20180000,82125,245.7,Digital_Asset
+Bitcoin_2140,21000000,0.05256,399467.1,Digital_Asset
