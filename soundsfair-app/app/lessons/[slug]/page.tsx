@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import QuizComponent from '@/app/components/Quiz';
-import LessonNavigation from '@/app/components/LessonNavigation';
+import LessonNavigationClient from '@/app/components/LessonNavigationClient';
 import ReadingProgressBar from '@/app/components/ReadingProgressBar';
 import GlossaryFootnotes from '@/app/components/GlossaryFootnotes';
 
@@ -104,7 +104,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
         )}
 
         {/* Lesson Navigation */}
-        <LessonNavigation currentLevel={lesson.metadata.level} />
+        <LessonNavigationClient currentLevel={lesson.metadata.level} />
       </main>
 
       <Footer />

@@ -2,10 +2,11 @@ import Link from 'next/link';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import { getAllLessons } from '@/app/lib/markdown';
+import LessonsListClient from './LessonsListClient';
 
 export const metadata = {
   title: 'All Lessons | Soundsfair',
-  description: 'Complete Bitcoin education course - from store of value to financial freedom',
+  description: 'Complete Bitcoin education course - from fiat system failures to financial freedom',
 };
 
 export default async function LessonsPage() {
@@ -22,97 +23,27 @@ export default async function LessonsPage() {
             Bitcoin Education Course
           </h1>
           <p className="text-xl text-text-secondary mb-6">
-            Master Bitcoin from store of value to financial freedom in 5 comprehensive lessons
+            Master Bitcoin from zero to advanced in {lessons.length} comprehensive lessons
           </p>
           <div className="flex items-center justify-center gap-4 text-text-tertiary">
             <span>📚 {lessons.length} Lessons</span>
             <span>•</span>
-            <span>⏱️ ~4 hours total</span>
+            <span>⏱️ ~6 hours total</span>
             <span>•</span>
-            <span>🎯 50+ quiz questions</span>
+            <span>🎯 90 quiz questions</span>
+          </div>
+
+          {/* Info Box */}
+          <div className="mt-6 p-4 bg-brand-gold/10 border border-brand-gold/30 rounded-lg max-w-2xl mx-auto">
+            <p className="text-text-secondary text-sm">
+              <span className="font-semibold text-brand-gold">💡 Progressive Learning:</span>{' '}
+              Complete each lesson's quiz with 70% or higher to unlock the next level. You can retake quizzes as many times as needed!
+            </p>
           </div>
         </div>
 
-        {/* Lessons Grid */}
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6">
-          {lessons.map((lesson, index) => {
-            const isCompleted = false; // TODO: Get from localStorage/user progress
-            const isLocked = index > 0 && !isCompleted; // TODO: Check if previous lesson completed
-
-            return (
-              <Link
-                key={lesson.metadata.slug}
-                href={isLocked ? '#' : `/lessons/${lesson.metadata.slug}`}
-                className={`group relative p-6 rounded-lg border-2 transition-all
-                  ${isLocked
-                    ? 'border-border-default bg-surface-charcoal opacity-60 cursor-not-allowed'
-                    : 'border-border-default bg-surface-charcoal hover:border-brand-gold hover:shadow-glow'
-                  }`}
-              >
-                {/* Level Badge */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="px-3 py-1 bg-brand-gold/10 text-brand-gold rounded-full text-sm font-semibold">
-                      Level {lesson.metadata.level}
-                    </div>
-                    {isCompleted && (
-                      <div className="text-semantic-success text-2xl">✓</div>
-                    )}
-                    {isLocked && (
-                      <div className="text-text-muted text-2xl">🔒</div>
-                    )}
-                  </div>
-                  <div className="text-text-tertiary text-sm">
-                    {lesson.metadata.duration}
-                  </div>
-                </div>
-
-                {/* Title & Description */}
-                <h3 className="text-2xl font-bold text-text-primary mb-2 group-hover:text-brand-gold transition-colors">
-                  {lesson.metadata.title}
-                </h3>
-
-                <div className="text-text-tertiary text-sm mb-4">
-                  {lesson.metadata.difficulty} • {lesson.metadata.prerequisites}
-                </div>
-
-                {/* Excerpt */}
-                <p className="text-text-secondary line-clamp-2 mb-4">
-                  {lesson.content.split('\n\n')[2]?.substring(0, 150)}...
-                </p>
-
-                {/* Progress Bar (if started) */}
-                {!isLocked && !isCompleted && (
-                  <div className="mt-4">
-                    <div className="w-full bg-surface-dark rounded-full h-2">
-                      <div
-                        className="bg-brand-gold/50 h-2 rounded-full"
-                        style={{ width: '0%' }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* CTA */}
-                <div className="mt-4">
-                  {isLocked ? (
-                    <span className="text-text-muted text-sm">
-                      Complete previous lesson to unlock
-                    </span>
-                  ) : isCompleted ? (
-                    <span className="text-semantic-success font-semibold">
-                      Review Lesson →
-                    </span>
-                  ) : (
-                    <span className="text-brand-gold font-semibold group-hover:underline">
-                      Start Lesson →
-                    </span>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+        {/* Lessons Grid - Client Component */}
+        <LessonsListClient lessons={lessons} />
 
         {/* Additional Resources */}
         <div className="max-w-5xl mx-auto mt-16 grid md:grid-cols-3 gap-6">

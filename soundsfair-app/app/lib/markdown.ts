@@ -119,8 +119,11 @@ export function parseQuizFromContent(content: string): Array<{
   correctAnswer: string;
   explanation: string;
 }> {
-  const quizSection = content.split('# Level')[1]?.split('Quiz')[1];
-  if (!quizSection) return [];
+  // Look for "# Level X Quiz" section
+  const quizMatch = content.match(/#\s+Level\s+\d+\s+Quiz\s*\n([\s\S]+)/i);
+  if (!quizMatch) return [];
+
+  const quizSection = quizMatch[1];
 
   const questions: Array<{
     question: string;
@@ -130,16 +133,18 @@ export function parseQuizFromContent(content: string): Array<{
   }> = [];
 
   // Regex to match quiz questions
-  const questionRegex = /###\s+Question\s+\d+\s+(.+?)\n\n((?:^[A-D]\).+$\n?)+)\*\*Correct Answer:\*\*\s+([A-D])\s+\*\*Explanation:\*\*\s+(.+?)(?=\n\n---|\n\n###|$)/gms;
+  // Format: ### Question N\nQuestion text?\n\nA) ...\nB) ...\nC) ...\nD) ...\n\n**Correct Answer:** X\n\n**Explanation:** ...\n\n---
+  const questionRegex = /###\s+Question\s+(\d+)\n(.+?)\n\n([A-D]\).+?\n[A-D]\).+?\n[A-D]\).+?\n[A-D]\).+?)\n\n\*\*Correct Answer:\*\*\s+([A-D])\n\n\*\*Explanation:\*\*\s+(.+?)(?=\n\n---)/gms;
 
   let match;
   while ((match = questionRegex.exec(quizSection)) !== null) {
-    const [, questionText, optionsText, correctAnswer, explanation] = match;
+    const [, questionNumber, questionText, optionsText, correctAnswer, explanation] = match;
 
     const options = optionsText
       .trim()
       .split('\n')
-      .map(line => line.replace(/^[A-D]\)\s*/, '').trim());
+      .map(line => line.replace(/^[A-D]\)\s*/, '').trim())
+      .filter(opt => opt.length > 0);
 
     questions.push({
       question: questionText.trim(),
