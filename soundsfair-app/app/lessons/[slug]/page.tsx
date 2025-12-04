@@ -6,6 +6,7 @@ import QuizComponent from '@/app/components/Quiz';
 import LessonNavigationClient from '@/app/components/LessonNavigationClient';
 import ReadingProgressBar from '@/app/components/ReadingProgressBar';
 import GlossaryFootnotes from '@/app/components/GlossaryFootnotes';
+import LessonCharts from '@/app/components/LessonCharts';
 
 export async function generateStaticParams() {
   const slugs = getAllLessonSlugs();
@@ -95,6 +96,11 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
 
         {/* Glossary Footnotes */}
         <GlossaryFootnotes content={lesson.content} glossary={glossary} />
+
+        {/* Interactive Charts Section - Levels 1, 3, 5 */}
+        {(lesson.metadata.level === 1 || lesson.metadata.level === 3 || lesson.metadata.level === 5) && (
+          <LessonCharts level={lesson.metadata.level} />
+        )}
 
         {/* Quiz Section */}
         {quizQuestions.length > 0 && (
