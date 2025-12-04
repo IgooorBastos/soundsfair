@@ -45,8 +45,16 @@ export const MoneySupplyChart: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const chartData = await loadDataset('inflation', 'm2-money-supply');
-      setData(chartData as ChartData[]);
+      const rawData = await loadDataset('inflation', 'm2-money-supply');
+
+      // Transform generic ChartDataPoint[] to specific ChartData[]
+      const chartData: ChartData[] = rawData.map(item => ({
+        Year: Number(item.Year),
+        M2_Money_Supply_Trillion_USD: Number(item.M2_Money_Supply_Trillion_USD),
+        Annual_Change_Percent: Number(item.Annual_Change_Percent),
+      }));
+
+      setData(chartData);
       setLoading(false);
     };
     fetchData();

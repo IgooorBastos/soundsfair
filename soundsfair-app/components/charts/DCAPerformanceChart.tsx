@@ -48,8 +48,18 @@ export const DCAPerformanceChart: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const chartData = await loadDataset('portfolio', 'dca-performance-by-start');
-      setData(chartData as ChartData[]);
+      const rawData = await loadDataset('portfolio', 'dca-performance-by-start');
+
+      // Transform generic ChartDataPoint[] to specific ChartData[]
+      const chartData: ChartData[] = rawData.map(item => ({
+        Month: Number(item.Month),
+        DCA_Start_2015: Number(item.DCA_Start_2015),
+        DCA_Start_2017: Number(item.DCA_Start_2017),
+        DCA_Start_2018: Number(item.DCA_Start_2018),
+        DCA_Start_2021: Number(item.DCA_Start_2021),
+      }));
+
+      setData(chartData);
       setLoading(false);
     };
     fetchData();
@@ -203,8 +213,8 @@ export const DCAPerformanceChart: React.FC = () => {
       <div className="mt-4 p-4 bg-vi-chart-grid rounded-lg text-sm">
         <p className="text-vi-text-muted">
           <strong className="text-vi-gold">Key Insight:</strong> DCA (Dollar-Cost Averaging) removes timing stress.
-          ALL start dates shown are <strong className="text-vi-green">profitable</strong> over 4+ years, despite Bitcoin's
-          70-80% drawdowns. Time in market > timing the market.
+          ALL start dates shown are <strong className="text-vi-green">profitable</strong> over 4+ years, despite Bitcoin&apos;s
+          70-80% drawdowns. Time in market &gt; timing the market.
         </p>
       </div>
 

@@ -46,8 +46,17 @@ export const BitcoinSupplyCurveChart: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const chartData = await loadDataset('blockchain', 'total-supply-curve');
-      setData(chartData as ChartData[]);
+      const rawData = await loadDataset('blockchain', 'total-supply-curve');
+
+      // Transform generic ChartDataPoint[] to specific ChartData[]
+      const chartData: ChartData[] = rawData.map(item => ({
+        Year: Number(item.Year),
+        Total_BTC_Mined: Number(item.Total_BTC_Mined),
+        Percent_Of_Total_Supply: Number(item.Percent_Of_Total_Supply),
+        Remaining_BTC: Number(item.Remaining_BTC),
+      }));
+
+      setData(chartData);
       setLoading(false);
     };
     fetchData();

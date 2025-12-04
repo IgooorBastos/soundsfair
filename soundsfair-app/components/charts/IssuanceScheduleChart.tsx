@@ -47,8 +47,18 @@ export const IssuanceScheduleChart: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const chartData = await loadDataset('blockchain', 'issuance-schedule');
-      setData(chartData as ChartData[]);
+      const rawData = await loadDataset('blockchain', 'issuance-schedule');
+
+      // Transform generic ChartDataPoint[] to specific ChartData[]
+      const chartData: ChartData[] = rawData.map(item => ({
+        Year: Number(item.Year),
+        Block_Height: Number(item.Block_Height),
+        Block_Reward_BTC: Number(item.Block_Reward_BTC),
+        Daily_Issuance_BTC: Number(item.Daily_Issuance_BTC),
+        Annual_Issuance_BTC: Number(item.Annual_Issuance_BTC),
+      }));
+
+      setData(chartData);
       setLoading(false);
     };
     fetchData();

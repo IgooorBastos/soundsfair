@@ -44,8 +44,16 @@ export const PurchasingPowerChart: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const chartData = await loadDataset('inflation', 'purchasing-power-decline');
-      setData(chartData as ChartData[]);
+      const rawData = await loadDataset('inflation', 'purchasing-power-decline');
+
+      // Transform generic ChartDataPoint[] to specific ChartData[]
+      const chartData: ChartData[] = rawData.map(item => ({
+        Year: Number(item.Year),
+        Purchasing_Power_USD: Number(item.Purchasing_Power_USD),
+        Cumulative_Inflation_Percent: Number(item.Cumulative_Inflation_Percent),
+      }));
+
+      setData(chartData);
       setLoading(false);
     };
     fetchData();

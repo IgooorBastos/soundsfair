@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { DCAInput, DCAResult, Asset, Frequency } from '../types/tools';
 import { formatCurrency, formatPercentage, formatNumber } from '../lib/dca-calculator';
 import { exportDCAToCSV } from '../lib/csv-export';
-
-const ASSET_COLOR = '#FFD000'; // Bitcoin gold
+import DCAChart from './DCAChart';
 
 export default function DCACalculator() {
   const [formData, setFormData] = useState<DCAInput>({
@@ -231,41 +229,12 @@ export default function DCACalculator() {
         <div className="lg:col-span-2 space-y-6">
           {results && chartData ? (
             <>
-              {/* Chart */}
-              <div className="bg-dark-grey border border-gray-800 rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-6">Performance Comparison</h3>
-                <ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                    <XAxis
-                      dataKey="date"
-                      stroke="#999"
-                      tick={{ fill: '#999' }}
-                    />
-                    <YAxis
-                      stroke="#999"
-                      tick={{ fill: '#999' }}
-                      label={{ value: 'Indexed (100 = start)', angle: -90, position: 'insideLeft', fill: '#999' }}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#1A1A1A',
-                        border: '1px solid #333',
-                        borderRadius: '8px'
-                      }}
-                    />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="BTC"
-                      name="Bitcoin"
-                      stroke={ASSET_COLOR}
-                      strokeWidth={3}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              {/* Enhanced Chart */}
+              <DCAChart
+                chartData={chartData}
+                results={results}
+                startDate={formData.startDate}
+              />
 
               {/* Summary Card */}
               {results[0] && (
