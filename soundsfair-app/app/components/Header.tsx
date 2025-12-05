@@ -5,17 +5,27 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import UserProgress from "./UserProgress";
 
-// Search data (can be moved to separate file later)
+// Lessons data
+const lessons = [
+  { level: 1, title: "The Fiat Money System", slug: "level-1-fiat-system", category: "Beginner" },
+  { level: 2, title: "Banking System and Debt", slug: "level-2-banking-debt", category: "Beginner" },
+  { level: 3, title: "Bitcoin Revolution", slug: "level-3-bitcoin-revolution", category: "Beginner" },
+  { level: 4, title: "Bitcoin and Geopolitics", slug: "level-4-bitcoin-geopolitics-intro", category: "Intermediate" },
+  { level: 5, title: "Store of Value", slug: "level-5-store-of-value", category: "Intermediate" },
+  { level: 6, title: "Economic Freedom", slug: "level-6-economic-freedom", category: "Intermediate" },
+  { level: 7, title: "Geopolitical Future", slug: "level-7-geopolitical-future", category: "Advanced" },
+  { level: 8, title: "Protection Strategies", slug: "level-8-protection-strategies", category: "Advanced" },
+  { level: 9, title: "Financial Freedom", slug: "level-9-financial-freedom", category: "Advanced" },
+];
+
+// Search data
 const searchableContent = [
-  { title: "The Fiat Money System", url: "/learn#level-1", category: "Learn" },
-  { title: "Banking System and Debt", url: "/learn#level-2", category: "Learn" },
-  { title: "Bitcoin Revolution", url: "/learn#level-3", category: "Learn" },
-  { title: "Bitcoin and Geopolitics", url: "/learn#level-4", category: "Learn" },
+  ...lessons.map(l => ({ title: l.title, url: `/lessons/${l.slug}`, category: "Learn" })),
+  { title: "DCA Calculator", url: "/tools/dca", category: "Tools" },
+  { title: "Glossary", url: "/glossary", category: "Resources" },
+  { title: "FAQ", url: "/faq", category: "Resources" },
+  { title: "Ask Question (Lightning Q&A)", url: "/qa", category: "Q&A" },
   { title: "About soundsfair", url: "/about", category: "Company" },
-  { title: "Our Mission", url: "/about#mission", category: "Company" },
-  { title: "DCA Calculator", url: "#", category: "Tools" },
-  { title: "Video Library", url: "#", category: "Resources" },
-  { title: "Learning Path", url: "/learn", category: "Learn" },
 ];
 
 export default function Header() {
@@ -25,13 +35,11 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<typeof searchableContent>([]);
+  const [learnDropdownOpen, setLearnDropdownOpen] = useState(false);
+  const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
-
-  const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/learn", label: "Learn" },
-    { href: "/about", label: "About" },
-  ];
+  const learnDropdownRef = useRef<HTMLDivElement>(null);
+  const toolsDropdownRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => {
     if (path === "/") return pathname === "/";
@@ -46,7 +54,7 @@ export default function Header() {
           item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.category.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setSearchResults(results.slice(0, 5)); // Limit to 5 results
+      setSearchResults(results.slice(0, 8));
     } else {
       setSearchResults([]);
     }
@@ -59,23 +67,27 @@ export default function Header() {
     }
   }, [searchOpen]);
 
-  // Close search when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
+
+      if (learnDropdownRef.current && !learnDropdownRef.current.contains(target)) {
+        setLearnDropdownOpen(false);
+      }
+
+      if (toolsDropdownRef.current && !toolsDropdownRef.current.contains(target)) {
+        setToolsDropdownOpen(false);
+      }
+
       if (!target.closest(".search-container")) {
         setSearchOpen(false);
       }
     };
 
-    if (searchOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [searchOpen]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSearchSelect = (url: string) => {
     setSearchOpen(false);
@@ -108,29 +120,237 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden items-center space-x-8 md:flex">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`relative text-base font-medium transition-all duration-200 ${
-                  isActive(link.href)
+          <nav className="hidden items-center space-x-6 lg:flex">
+            {/* Home */}
+            <Link
+              href="/"
+              className={`relative text-base font-medium transition-all duration-200 ${
+                pathname === "/"
+                  ? "text-brand-yellow"
+                  : "text-gray-300 hover:text-white"
+              }`}
+            >
+              Home
+              {pathname === "/" && (
+                <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand-yellow"></span>
+              )}
+            </Link>
+
+            {/* Learn Dropdown */}
+            <div ref={learnDropdownRef} className="relative">
+              <button
+                onClick={() => {
+                  setLearnDropdownOpen(!learnDropdownOpen);
+                  setToolsDropdownOpen(false);
+                }}
+                onMouseEnter={() => setLearnDropdownOpen(true)}
+                className={`flex items-center space-x-1 text-base font-medium transition-all duration-200 ${
+                  isActive("/learn") || isActive("/lessons")
                     ? "text-brand-yellow"
                     : "text-gray-300 hover:text-white"
                 }`}
               >
-                {link.label}
-                {isActive(link.href) && (
-                  <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand-yellow"></span>
-                )}
-              </Link>
-            ))}
+                <span>Learn</span>
+                <svg
+                  className={`h-4 w-4 transition-transform ${
+                    learnDropdownOpen ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {/* Learn Dropdown Menu */}
+              {learnDropdownOpen && (
+                <div
+                  onMouseLeave={() => setLearnDropdownOpen(false)}
+                  className="absolute left-0 top-full mt-2 w-96 rounded-lg border border-gray-800 bg-black shadow-2xl"
+                >
+                  <div className="p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-yellow">
+                        Learning Path
+                      </h3>
+                      <Link
+                        href="/lessons"
+                        onClick={() => setLearnDropdownOpen(false)}
+                        className="text-xs text-gray-400 hover:text-brand-yellow"
+                      >
+                        View All →
+                      </Link>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                      {["Beginner", "Intermediate", "Advanced"].map((category) => (
+                        <div key={category} className="space-y-1">
+                          <div className="text-xs font-semibold text-gray-500 px-2 py-1">
+                            {category}
+                          </div>
+                          {lessons
+                            .filter((l) => l.category === category)
+                            .map((lesson) => (
+                              <Link
+                                key={lesson.slug}
+                                href={`/lessons/${lesson.slug}`}
+                                onClick={() => setLearnDropdownOpen(false)}
+                                className="block rounded px-2 py-1.5 text-xs text-gray-300 transition-colors hover:bg-gray-900 hover:text-brand-yellow"
+                              >
+                                <span className="font-semibold text-brand-yellow">
+                                  Level {lesson.level}:
+                                </span>{" "}
+                                {lesson.title}
+                              </Link>
+                            ))}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="border-t border-gray-800 pt-3">
+                      <Link
+                        href="/learn"
+                        onClick={() => setLearnDropdownOpen(false)}
+                        className="block rounded-lg bg-brand-yellow/10 px-3 py-2 text-center text-sm font-semibold text-brand-yellow transition-colors hover:bg-brand-yellow/20"
+                      >
+                        Start Learning Journey
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Tools Dropdown */}
+            <div ref={toolsDropdownRef} className="relative">
+              <button
+                onClick={() => {
+                  setToolsDropdownOpen(!toolsDropdownOpen);
+                  setLearnDropdownOpen(false);
+                }}
+                onMouseEnter={() => setToolsDropdownOpen(true)}
+                className={`flex items-center space-x-1 text-base font-medium transition-all duration-200 ${
+                  isActive("/tools") || isActive("/faq") || isActive("/glossary")
+                    ? "text-brand-yellow"
+                    : "text-gray-300 hover:text-white"
+                }`}
+              >
+                <span>Tools</span>
+                <svg
+                  className={`h-4 w-4 transition-transform ${
+                    toolsDropdownOpen ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {/* Tools Dropdown Menu */}
+              {toolsDropdownOpen && (
+                <div
+                  onMouseLeave={() => setToolsDropdownOpen(false)}
+                  className="absolute left-0 top-full mt-2 w-64 rounded-lg border border-gray-800 bg-black shadow-2xl"
+                >
+                  <div className="p-3">
+                    <Link
+                      href="/tools/dca"
+                      onClick={() => setToolsDropdownOpen(false)}
+                      className="flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-900"
+                    >
+                      <div className="text-2xl">📊</div>
+                      <div>
+                        <div className="font-semibold text-white">DCA Calculator</div>
+                        <div className="text-xs text-gray-400">
+                          Compare Bitcoin vs traditional assets
+                        </div>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href="/glossary"
+                      onClick={() => setToolsDropdownOpen(false)}
+                      className="flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-900"
+                    >
+                      <div className="text-2xl">📖</div>
+                      <div>
+                        <div className="font-semibold text-white">Bitcoin Glossary</div>
+                        <div className="text-xs text-gray-400">
+                          50+ essential Bitcoin terms
+                        </div>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href="/faq"
+                      onClick={() => setToolsDropdownOpen(false)}
+                      className="flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-900"
+                    >
+                      <div className="text-2xl">❓</div>
+                      <div>
+                        <div className="font-semibold text-white">FAQ</div>
+                        <div className="text-xs text-gray-400">
+                          Frequently asked questions
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Q&A Link (Featured) */}
+            <Link
+              href="/qa"
+              className={`relative flex items-center space-x-1 text-base font-medium transition-all duration-200 ${
+                isActive("/qa")
+                  ? "text-brand-yellow"
+                  : "text-gray-300 hover:text-white"
+              }`}
+            >
+              <span>Q&A</span>
+              <span className="rounded-full bg-brand-yellow px-1.5 py-0.5 text-xs font-bold text-black">
+                ⚡
+              </span>
+              {isActive("/qa") && (
+                <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand-yellow"></span>
+              )}
+            </Link>
+
+            {/* About */}
+            <Link
+              href="/about"
+              className={`relative text-base font-medium transition-all duration-200 ${
+                isActive("/about")
+                  ? "text-brand-yellow"
+                  : "text-gray-300 hover:text-white"
+              }`}
+            >
+              About
+              {isActive("/about") && (
+                <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-brand-yellow"></span>
+              )}
+            </Link>
           </nav>
 
           {/* Search, Progress & CTA */}
-          <div className="hidden items-center space-x-4 md:flex">
+          <div className="hidden items-center space-x-4 lg:flex">
             {/* User Progress Tracker */}
             <UserProgress />
+
             {/* Search Bar */}
             <div className="search-container relative">
               {!searchOpen ? (
@@ -153,7 +373,7 @@ export default function Header() {
                     />
                   </svg>
                   <span className="text-sm">Search</span>
-                  <kbd className="hidden rounded bg-gray-900 px-2 py-0.5 text-xs text-gray-500 lg:inline-block">
+                  <kbd className="hidden rounded bg-gray-900 px-2 py-0.5 text-xs text-gray-500 xl:inline-block">
                     ⌘K
                   </kbd>
                 </button>
@@ -178,8 +398,8 @@ export default function Header() {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search lessons, topics..."
-                      className="w-64 rounded-lg border border-brand-yellow bg-gray-900 py-2 pl-10 pr-10 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-yellow"
+                      placeholder="Search lessons, tools..."
+                      className="w-72 rounded-lg border border-brand-yellow bg-gray-900 py-2 pl-10 pr-10 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-yellow"
                     />
                     <button
                       onClick={() => {
@@ -252,7 +472,7 @@ export default function Header() {
 
             {/* CTA Button */}
             <Link
-              href="/learn"
+              href="/lessons"
               className="rounded-lg border-2 border-brand-yellow px-5 py-2 text-sm font-semibold text-brand-yellow transition-all hover:bg-brand-yellow hover:text-black"
             >
               Start Learning
@@ -262,7 +482,7 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex flex-col items-center justify-center space-y-1.5 md:hidden"
+            className="flex flex-col items-center justify-center space-y-1.5 lg:hidden"
             aria-label="Toggle menu"
           >
             <span
@@ -285,7 +505,7 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="border-t border-gray-800 py-4 md:hidden">
+          <div className="border-t border-gray-800 py-4 lg:hidden">
             {/* Mobile Search */}
             <div className="mb-4">
               <div className="relative">
@@ -337,22 +557,95 @@ export default function Header() {
 
             {/* Mobile Nav Links */}
             <nav className="flex flex-col space-y-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`text-base font-medium transition-colors ${
-                    isActive(link.href)
-                      ? "text-brand-yellow"
-                      : "text-gray-300 hover:text-white"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
               <Link
-                href="/learn"
+                href="/"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`text-base font-medium transition-colors ${
+                  pathname === "/"
+                    ? "text-brand-yellow"
+                    : "text-gray-300 hover:text-white"
+                }`}
+              >
+                Home
+              </Link>
+
+              <Link
+                href="/lessons"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`text-base font-medium transition-colors ${
+                  isActive("/lessons") || isActive("/learn")
+                    ? "text-brand-yellow"
+                    : "text-gray-300 hover:text-white"
+                }`}
+              >
+                Learn (All Lessons)
+              </Link>
+
+              <Link
+                href="/tools/dca"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`text-base font-medium transition-colors ${
+                  isActive("/tools")
+                    ? "text-brand-yellow"
+                    : "text-gray-300 hover:text-white"
+                }`}
+              >
+                DCA Calculator
+              </Link>
+
+              <Link
+                href="/glossary"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`text-base font-medium transition-colors ${
+                  isActive("/glossary")
+                    ? "text-brand-yellow"
+                    : "text-gray-300 hover:text-white"
+                }`}
+              >
+                Glossary
+              </Link>
+
+              <Link
+                href="/faq"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`text-base font-medium transition-colors ${
+                  isActive("/faq")
+                    ? "text-brand-yellow"
+                    : "text-gray-300 hover:text-white"
+                }`}
+              >
+                FAQ
+              </Link>
+
+              <Link
+                href="/qa"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center space-x-2 text-base font-medium transition-colors ${
+                  isActive("/qa")
+                    ? "text-brand-yellow"
+                    : "text-gray-300 hover:text-white"
+                }`}
+              >
+                <span>Q&A (Lightning)</span>
+                <span className="rounded-full bg-brand-yellow px-1.5 py-0.5 text-xs font-bold text-black">
+                  ⚡
+                </span>
+              </Link>
+
+              <Link
+                href="/about"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`text-base font-medium transition-colors ${
+                  isActive("/about")
+                    ? "text-brand-yellow"
+                    : "text-gray-300 hover:text-white"
+                }`}
+              >
+                About
+              </Link>
+
+              <Link
+                href="/lessons"
                 onClick={() => setMobileMenuOpen(false)}
                 className="inline-block rounded-lg bg-brand-yellow px-5 py-3 text-center text-sm font-semibold text-black transition-all hover:bg-primary-dark"
               >
@@ -363,8 +656,8 @@ export default function Header() {
         )}
       </div>
 
-      {/* Progress Bar (optional - can track scroll or learning progress) */}
-      {pathname.startsWith("/learn") && (
+      {/* Progress Bar */}
+      {(pathname.startsWith("/learn") || pathname.startsWith("/lessons")) && (
         <div className="h-1 w-full bg-gray-900">
           <div className="h-full w-0 bg-brand-yellow transition-all duration-300"></div>
         </div>
