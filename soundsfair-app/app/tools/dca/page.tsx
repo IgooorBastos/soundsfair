@@ -1,5 +1,4 @@
-import Header from "@/app/components/Header";
-import Footer from "@/app/components/Footer";
+import ToolLayout from "@/components/layout/ToolLayout";
 import DCACalculator from "./DCACalculatorClient";
 
 export const metadata = {
@@ -9,10 +8,8 @@ export const metadata = {
 
 export default function DCACalculatorPage() {
   return (
-    <div className="min-h-screen bg-black">
-      <Header />
-
-      <main className="container mx-auto px-4 py-12">
+    <ToolLayout>
+      <div className="container mx-auto px-4 py-12">
         <DCACalculator />
 
         {/* Educational Section */}
@@ -109,9 +106,7 @@ export default function DCACalculatorPage() {
             </p>
           </div>
         </section>
-      </main>
-
-      <Footer />
-    </div>
+      </div>
+    </ToolLayout>
   );
 }
