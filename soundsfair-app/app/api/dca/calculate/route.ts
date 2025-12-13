@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { calculateDCA, generateChartData, generateShareableId } from '@/app/lib/dca-calculator';
+import { calculateDCA, generateChartData, generateShareableId } from '@/lib/dca-calculator';
 import type { DCAInput, Asset } from '@/app/types/tools';
 
 interface PricePoint {

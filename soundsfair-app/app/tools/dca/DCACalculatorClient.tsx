@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 
 // Dynamically import DCACalculator with no SSR
-const DCACalculator = dynamic(() => import('@/app/components/DCACalculator'), {
+const DCACalculator = dynamic(() => import('@/components/tools/DCACalculator'), {
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center min-h-[400px]">

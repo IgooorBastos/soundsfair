@@ -222,6 +222,133 @@ export interface Database {
           active?: boolean;
         };
       };
+      user_progress: {
+        Row: {
+          id: string;
+          total_xp: number;
+          current_level: number;
+          current_streak: number;
+          longest_streak: number;
+          last_active_date: string | null;
+          created_at: string;
+          updated_at: string;
+          last_synced_at: string | null;
+          sync_version: number;
+          device_id: string | null;
+        };
+        Insert: {
+          id: string;
+          total_xp?: number;
+          current_level?: number;
+          current_streak?: number;
+          longest_streak?: number;
+          last_active_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          last_synced_at?: string | null;
+          sync_version?: number;
+          device_id?: string | null;
+        };
+        Update: {
+          id?: string;
+          total_xp?: number;
+          current_level?: number;
+          current_streak?: number;
+          longest_streak?: number;
+          last_active_date?: string | null;
+          updated_at?: string;
+          last_synced_at?: string | null;
+          sync_version?: number;
+          device_id?: string | null;
+        };
+      };
+      lesson_progress: {
+        Row: {
+          id: string;
+          user_id: string;
+          lesson_slug: string;
+          lesson_level: number;
+          started: boolean;
+          completed: boolean;
+          scroll_percentage: number;
+          time_spent: number;
+          quiz_passed: boolean;
+          quiz_score: number | null;
+          quiz_attempts: number;
+          last_visited: string;
+          completed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          lesson_slug: string;
+          lesson_level: number;
+          started?: boolean;
+          completed?: boolean;
+          scroll_percentage?: number;
+          time_spent?: number;
+          quiz_passed?: boolean;
+          quiz_score?: number | null;
+          quiz_attempts?: number;
+          last_visited?: string;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          lesson_slug?: string;
+          lesson_level?: number;
+          started?: boolean;
+          completed?: boolean;
+          scroll_percentage?: number;
+          time_spent?: number;
+          quiz_passed?: boolean;
+          quiz_score?: number | null;
+          quiz_attempts?: number;
+          last_visited?: string;
+          completed_at?: string | null;
+          updated_at?: string;
+        };
+      };
+      quiz_results: {
+        Row: {
+          id: string;
+          user_id: string;
+          lesson_slug: string;
+          score: number;
+          total: number;
+          percentage: number;
+          passed: boolean;
+          xp_earned: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          lesson_slug: string;
+          score: number;
+          total: number;
+          percentage: number;
+          passed: boolean;
+          xp_earned: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          lesson_slug?: string;
+          score?: number;
+          total?: number;
+          percentage?: number;
+          passed?: boolean;
+          xp_earned?: number;
+          created_at?: string;
+        };
+      };
     };
     Views: {
       public_qa_archive: {

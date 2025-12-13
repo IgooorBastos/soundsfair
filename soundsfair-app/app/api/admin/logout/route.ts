@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { destroyAdminSession } from '@/app/lib/admin-auth';
+import { destroyAdminSession } from '@/lib/admin-auth';
 
 export async function POST(request: NextRequest) {
   try {

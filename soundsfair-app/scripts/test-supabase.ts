@@ -12,8 +12,8 @@ import { resolve } from 'path';
 
 dotenv.config({ path: resolve(__dirname, '../.env.local') });
 
-import { supabase } from '../app/lib/supabase';
-import { supabaseAdmin } from '../app/lib/supabase-admin';
+import { supabase } from '../lib/supabase';
+import { supabaseAdmin } from '../lib/supabase-admin';
 
 async function testConnection() {
   console.log('🔍 Testing Supabase connection...\n');

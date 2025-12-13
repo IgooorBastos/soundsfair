@@ -1,12 +1,12 @@
-import { getLessonBySlug, getAllLessonSlugs, parseQuizFromContent, getGlossary } from '@/app/lib/markdown';
+import { getLessonBySlug, getAllLessonSlugs, parseQuizFromContent, getGlossary } from '@/lib/markdown';
 import { notFound } from 'next/navigation';
-import Header from '@/app/components/Header';
-import Footer from '@/app/components/Footer';
-import QuizComponent from '@/app/components/Quiz';
-import LessonNavigationClient from '@/app/components/LessonNavigationClient';
-import ReadingProgressBar from '@/app/components/ReadingProgressBar';
-import GlossaryFootnotes from '@/app/components/GlossaryFootnotes';
-import LessonCharts from '@/app/components/LessonCharts';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import QuizComponent from '@/components/ui/Quiz';
+import LessonNavigationClient from '@/components/lesson/LessonNavigationClient';
+import ReadingProgressBar from '@/components/ui/ReadingProgressBar';
+import GlossaryFootnotes from '@/components/ui/GlossaryFootnotes';
+import LessonCharts from '@/components/lesson/LessonCharts';
 
 export async function generateStaticParams() {
   const slugs = getAllLessonSlugs();

@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import ContinueLearning from "./components/ContinueLearning";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import ContinueLearning from "@/components/ui/ContinueLearning";
 
 export default function Home() {
   return (

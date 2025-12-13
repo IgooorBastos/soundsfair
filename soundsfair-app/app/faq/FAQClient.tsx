@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import type { FAQ } from '@/app/lib/markdown';
+import type { FAQ } from '@/lib/markdown';
 
 interface FAQClientProps {
   faqs: FAQ[];

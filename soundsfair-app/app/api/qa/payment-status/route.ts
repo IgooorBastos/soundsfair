@@ -7,8 +7,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/app/lib/supabase-admin';
-import { getInvoiceStatus } from '@/app/lib/opennode';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { getInvoiceStatus } from '@/lib/opennode';
 import type { PaymentStatusResponse, APIError } from '@/app/types/qa';
 
 // ============================================================================
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     const supabase = supabaseAdmin;
 
     // Get question with payment details
-    const { data: question, error: questionError } = await supabase
+    const { data: question, error: questionError } = await (supabase as any)
       .from('questions')
       .select(
         `
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
         if (invoiceStatus.success && invoiceStatus.status) {
           // Update local payment status if it changed
           if (invoiceStatus.status !== payment.status) {
-            await supabase
+            await (supabase as any)
               .from('payments')
               .update({
                 status: invoiceStatus.status,
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
               newPaymentStatus = 'expired';
             }
 
-            await supabase
+            await (supabase as any)
               .from('questions')
               .update({
                 status: newQuestionStatus,

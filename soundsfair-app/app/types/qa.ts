@@ -92,7 +92,7 @@ export interface AdminUser {
   last_login?: string;
 }
 
-export interface QuestionCategory {
+export interface QuestionCategoryData {
   id: string;
   name: string;
   description?: string;

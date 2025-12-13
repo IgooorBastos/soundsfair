@@ -7,11 +7,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/app/lib/supabase-admin';
-import { verifyWebhookSignature, parseWebhookPayload } from '@/app/lib/opennode';
-import { sendPaymentConfirmation, sendAdminNotification } from '@/app/lib/email';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { verifyWebhookSignature, parseWebhookPayload } from '@/lib/opennode';
+import { sendPaymentConfirmation, sendAdminNotification } from '@/lib/email';
 import { PRICING_TIERS } from '@/app/types/qa';
-import type { OpenNodeInvoice } from '@/app/lib/opennode';
+import type { OpenNodeInvoice } from '@/lib/opennode';
 
 // ============================================================================
 // WEBHOOK HANDLER
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     const supabase = supabaseAdmin;
 
     // Find the payment by invoice_id
-    const { data: payment, error: paymentError } = await supabase
+    const { data: payment, error: paymentError } = await (supabase as any)
       .from('payments')
       .select('id, status')
       .eq('invoice_id', payload.id)
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update payment status
-    const { error: updatePaymentError } = await supabase
+    const { error: updatePaymentError } = await (supabase as any)
       .from('payments')
       .update({
         status: payload.status,
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find associated question
-    const { data: question, error: questionError } = await supabase
+    const { data: question, error: questionError } = await (supabase as any)
       .from('questions')
       .select('id, status')
       .eq('payment_id', payment.id)
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update question
-    const { error: updateQuestionError } = await supabase
+    const { error: updateQuestionError } = await (supabase as any)
       .from('questions')
       .update({
         status: newQuestionStatus,
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
     // Send email notifications if payment is successful
     if (payload.status === 'paid') {
       // Get full question details for emails
-      const { data: fullQuestion } = await supabase
+      const { data: fullQuestion } = await (supabase as any)
         .from('questions')
         .select('*')
         .eq('id', question.id)

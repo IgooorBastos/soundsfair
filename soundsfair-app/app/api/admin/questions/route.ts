@@ -5,8 +5,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/app/lib/admin-auth';
-import { supabaseAdmin } from '@/app/lib/supabase-admin';
+import { requireAdmin } from '@/lib/admin-auth';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import type { APIError } from '@/app/types/qa';
 
 export async function GET(request: NextRequest) {

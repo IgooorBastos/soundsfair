@@ -84,10 +84,13 @@ soundsfair-app/
 
 ## 📚 Documentation
 
+### Setup & Configuration
+- **[QUICK-START.md](docs/QUICK-START.md)** - Guia rápido em 5 passos (PT-BR)
+- **[SETUP-GUIDE.md](docs/SETUP-GUIDE.md)** - Guia completo e detalhado (PT-BR)
+- **[.env.local.example](.env.local.example)** - Template de environment variables
+
+### Status & Administration
 - **[Project Status](docs/PROJECT_STATUS.md)** - Complete status report and pending tasks
-- **[Quick Start Guide](docs/QUICK_START.md)** - Environment setup instructions
-- **[Supabase Setup](docs/SUPABASE_SETUP.md)** - Database configuration
-- **[OpenNode Setup](docs/OPENNODE_SETUP.md)** - Lightning payment setup
 - **[Admin System](docs/ADMIN_SYSTEM.md)** - Admin dashboard guide
 
 ## 🔧 Environment Variables

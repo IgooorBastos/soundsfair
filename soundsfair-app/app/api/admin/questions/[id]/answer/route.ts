@@ -5,11 +5,15 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/app/lib/admin-auth';
-import { supabaseAdmin } from '@/app/lib/supabase-admin';
-import { sendAnswerDelivered } from '@/app/lib/email';
+import { requireAdmin } from '@/lib/admin-auth';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { sendAnswerDelivered } from '@/lib/email';
 import { PRICING_TIERS } from '@/app/types/qa';
 import type { APIError } from '@/app/types/qa';
+import type { Database } from '@/app/types/database';
+
+type Question = Database['public']['Tables']['questions']['Row'];
+type QuestionUpdate = Database['public']['Tables']['questions']['Update'];
 
 export async function POST(
   request: NextRequest,
@@ -42,7 +46,7 @@ export async function POST(
       .from('questions')
       .select('*')
       .eq('id', id)
-      .single();
+      .single() as { data: Question | null; error: any };
 
     if (questionError || !question) {
       return NextResponse.json<APIError>(
@@ -66,20 +70,22 @@ export async function POST(
     }
 
     // Update question with answer
-    const { error: updateError } = await supabase
+    const updatePayload: any = {
+      response_text: responseText || null,
+      response_video_url: responseVideoUrl || null,
+      responded_at: new Date().toISOString(),
+      responded_by: admin.email,
+      status: 'answered',
+      publish_to_archive: publishToArchive || question.publish_to_archive,
+      published_at:
+        publishToArchive || question.publish_to_archive
+          ? new Date().toISOString()
+          : null,
+    };
+
+    const { error: updateError } = await (supabase as any)
       .from('questions')
-      .update({
-        response_text: responseText || null,
-        response_video_url: responseVideoUrl || null,
-        responded_at: new Date().toISOString(),
-        responded_by: admin.email,
-        status: 'answered',
-        publish_to_archive: publishToArchive || question.publish_to_archive,
-        published_at:
-          publishToArchive || question.publish_to_archive
-            ? new Date().toISOString()
-            : null,
-      })
+      .update(updatePayload)
       .eq('id', id);
 
     if (updateError) {
@@ -99,7 +105,7 @@ export async function POST(
 
     await sendAnswerDelivered({
       userEmail: question.user_email,
-      userName: question.user_name,
+      userName: question.user_name || undefined,
       questionText: question.question_text,
       responseText: responseText || '',
       videoUrl: responseVideoUrl,

@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAdminCredentials, createAdminSession, ensureAdminUser } from '@/app/lib/admin-auth';
+import { verifyAdminCredentials, createAdminSession, ensureAdminUser } from '@/lib/admin-auth';
 
 export async function POST(request: NextRequest) {
   try {

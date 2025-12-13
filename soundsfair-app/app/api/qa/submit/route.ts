@@ -7,9 +7,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { submitQuestionSchema } from '@/app/lib/validation';
-import { supabaseAdmin } from '@/app/lib/supabase-admin';
-import { createInvoice, satsToBtc } from '@/app/lib/opennode';
+import { submitQuestionSchema } from '@/lib/validation';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { createInvoice, satsToBtc } from '@/lib/opennode';
 import { PRICING_TIERS } from '@/app/types/qa';
 import type { SubmitQuestionResponse, APIError } from '@/app/types/qa';
 
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           error: 'Validation failed',
-          details: validation.error.errors.map((e) => e.message).join(', '),
+          details: validation.error.issues.map((e) => e.message).join(', '),
         },
         { status: 400 }
       );
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const supabase = supabaseAdmin;
 
     // Create payment record first
-    const { data: payment, error: paymentError } = await supabase
+    const { data: payment, error: paymentError } = await (supabase as any)
       .from('payments')
       .insert({
         invoice_id: '', // Will be updated after OpenNode invoice creation
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create question record
-    const { data: question, error: questionError } = await supabase
+    const { data: question, error: questionError } = await (supabase as any)
       .from('questions')
       .insert({
         user_email: data.userEmail,
@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update payment record with invoice details
-    const { error: updateError } = await supabase
+    const { error: updateError } = await (supabase as any)
       .from('payments')
       .update({
         invoice_id: invoiceResult.invoice.invoiceId,

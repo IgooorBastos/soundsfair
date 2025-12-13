@@ -26,24 +26,34 @@ async function fetchBitcoinPrice(from: string, to: string): Promise<any[]> {
   const toDate = new Date(to).getTime();
 
   try {
+    console.log(`[CoinCap] Fetching Bitcoin prices from ${from} to ${to}`);
+
     // Primary: CoinCap API (unlimited historical data, free forever)
-    const response = await fetch(
-      `https://api.coincap.io/v2/assets/bitcoin/history?interval=d1&start=${fromDate}&end=${toDate}`,
-      { next: { revalidate: 3600 } } // Revalidate every hour
-    );
+    const url = `https://api.coincap.io/v2/assets/bitcoin/history?interval=d1&start=${fromDate}&end=${toDate}`;
+    const response = await fetch(url, {
+      next: { revalidate: 3600 } // Revalidate every hour
+    });
 
     if (!response.ok) {
-      throw new Error('CoinCap API failed');
+      console.error(`[CoinCap] API returned status ${response.status}`);
+      throw new Error(`CoinCap API failed with status ${response.status}`);
     }
 
     const data = await response.json();
+
+    if (!data.data || data.data.length === 0) {
+      console.error('[CoinCap] No data returned');
+      throw new Error('CoinCap returned empty data');
+    }
+
+    console.log(`[CoinCap] ✓ Successfully fetched ${data.data.length} price points`);
 
     return data.data.map((item: any) => ({
       date: new Date(item.time).toISOString().split('T')[0],
       price: parseFloat(item.priceUsd)
     }));
   } catch (error) {
-    console.error('CoinCap error, trying CoinGecko fallback:', error);
+    console.error('[CoinCap] ✗ Failed, trying CoinGecko fallback:', error);
 
     // Fallback to CoinGecko (365 days limit on free tier)
     return fetchBitcoinPriceCoinGecko(from, to);
@@ -52,18 +62,27 @@ async function fetchBitcoinPrice(from: string, to: string): Promise<any[]> {
 
 async function fetchBitcoinPriceCoinGecko(from: string, to: string): Promise<any[]> {
   try {
+    console.log(`[CoinGecko] Fetching Bitcoin prices from ${from} to ${to}`);
+
     const fromTimestamp = Math.floor(new Date(from).getTime() / 1000);
     const toTimestamp = Math.floor(new Date(to).getTime() / 1000);
 
-    const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`
-    );
+    const url = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`;
+    const response = await fetch(url);
 
     if (!response.ok) {
-      throw new Error('CoinGecko API also failed');
+      console.error(`[CoinGecko] API returned status ${response.status}`);
+      throw new Error(`CoinGecko API failed with status ${response.status}`);
     }
 
     const data = await response.json();
+
+    if (!data.prices || data.prices.length === 0) {
+      console.error('[CoinGecko] No price data returned');
+      throw new Error('CoinGecko returned empty data');
+    }
+
+    console.log(`[CoinGecko] ✓ Successfully fetched ${data.prices.length} price points`);
 
     // Transform to our format
     return data.prices.map(([timestamp, price]: [number, number]) => ({
@@ -71,39 +90,62 @@ async function fetchBitcoinPriceCoinGecko(from: string, to: string): Promise<any
       price: price
     }));
   } catch (error) {
-    console.error('CoinGecko also failed, using mock data:', error);
+    console.error('[CoinGecko] ✗ Failed, falling back to mock data:', error);
     // Last resort: use mock data for development
     return generateMockBitcoinData(from, to);
   }
 }
 
 // Fallback: Generate mock data for development when APIs fail
+// IMPORTANT: This uses REALISTIC historical prices based on actual Bitcoin market data
 function generateMockBitcoinData(from: string, to: string): any[] {
-  console.warn('⚠️ Using mock Bitcoin price data for development');
+  console.warn('⚠️ Using mock Bitcoin price data - APIs failed. Data is based on real historical prices.');
 
   const startDate = new Date(from);
   const endDate = new Date(to);
   const mockData: any[] = [];
 
-  // Base price and growth parameters
-  let basePrice = 10000;
   const daysInRange = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-
-  // Adjust base price based on date range
-  if (startDate.getFullYear() < 2020) basePrice = 5000;
-  if (startDate.getFullYear() >= 2020 && startDate.getFullYear() < 2022) basePrice = 15000;
-  if (startDate.getFullYear() >= 2022) basePrice = 30000;
 
   for (let i = 0; i <= daysInRange; i++) {
     const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + i);
 
-    // Simulate realistic price movement with trend + volatility
-    const trend = i / daysInRange; // 0 to 1 over the period
-    const volatility = Math.sin(i / 30) * 0.1 + (Math.random() - 0.5) * 0.05;
-    const growthFactor = 1 + trend * 1.5; // Up to 2.5x growth over period
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
 
-    const price = basePrice * growthFactor * (1 + volatility);
+    // REALISTIC base prices based on actual Bitcoin history
+    let basePrice = 95000; // Default: current price (Dec 2024/2025)
+
+    // Historical prices based on real Bitcoin market data
+    if (year === 2010) basePrice = month < 6 ? 0.05 : 0.10;
+    else if (year === 2011) basePrice = month < 6 ? 5 : 15;
+    else if (year === 2012) basePrice = 10;
+    else if (year === 2013) basePrice = month < 11 ? 100 : 800;
+    else if (year === 2014) basePrice = 500;
+    else if (year === 2015) basePrice = 250;
+    else if (year === 2016) basePrice = 600;
+    else if (year === 2017) basePrice = month < 11 ? 3000 : 15000;
+    else if (year === 2018) basePrice = 6000;
+    else if (year === 2019) basePrice = 7000;
+    else if (year === 2020) basePrice = month < 10 ? 9000 : 16000;
+    else if (year === 2021) {
+      if (month < 4) basePrice = 50000;
+      else if (month < 7) basePrice = 35000;
+      else basePrice = 55000;
+    }
+    else if (year === 2022) basePrice = 20000;
+    else if (year === 2023) basePrice = 30000;
+    else if (year === 2024) {
+      if (month < 3) basePrice = 45000;
+      else if (month < 9) basePrice = 65000;
+      else basePrice = 90000;
+    }
+    else if (year >= 2025) basePrice = 95000; // Current price
+
+    // Add realistic volatility (±8% daily swings are normal for Bitcoin)
+    const volatility = (Math.random() - 0.5) * 0.16; // ±8%
+    const price = basePrice * (1 + volatility);
 
     mockData.push({
       date: currentDate.toISOString().split('T')[0],

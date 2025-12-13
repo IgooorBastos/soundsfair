@@ -1,6 +1,6 @@
-import { getGlossary } from '@/app/lib/markdown';
-import Header from '@/app/components/Header';
-import Footer from '@/app/components/Footer';
+import { getGlossary } from '@/lib/markdown';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 import GlossaryClient from './GlossaryClient';
 
 export const metadata = {

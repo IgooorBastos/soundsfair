@@ -1,6 +1,6 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import QAForm from "../components/QAForm";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import QAForm from "@/components/qa/QAForm";
 
 export const metadata = {
   title: "Ask a Bitcoin Expert - Lightning-Paid Q&A | soundsfair",

@@ -1,6 +1,6 @@
-import { getFAQs } from '@/app/lib/markdown';
-import Header from '@/app/components/Header';
-import Footer from '@/app/components/Footer';
+import { getFAQs } from '@/lib/markdown';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 import FAQClient from './FAQClient';
 
 export const metadata = {

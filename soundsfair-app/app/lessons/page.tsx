@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import Header from '@/app/components/Header';
-import Footer from '@/app/components/Footer';
-import { getAllLessons } from '@/app/lib/markdown';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import { getAllLessons } from '@/lib/markdown';
 import LessonsListClient from './LessonsListClient';
 
 export const metadata = {

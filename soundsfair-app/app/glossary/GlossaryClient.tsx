@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import type { GlossaryTerm } from '@/app/lib/markdown';
+import type { GlossaryTerm } from '@/lib/markdown';
 
 interface GlossaryClientProps {
   terms: GlossaryTerm[];
