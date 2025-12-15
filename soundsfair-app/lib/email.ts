@@ -5,6 +5,7 @@
  */
 
 import { Resend } from 'resend';
+import { supabaseAdmin } from './supabase-admin';
 
 // ============================================================================
 // CONFIGURATION
@@ -38,9 +39,25 @@ export interface EmailResult {
 // ============================================================================
 
 /**
+ * Generate unsubscribe footer HTML for user-facing emails
+ */
+function unsubscribeFooter(userEmail: string): string {
+  const unsubscribeUrl = `${SITE_URL}/unsubscribe?email=${encodeURIComponent(userEmail)}`;
+  return `
+    <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #2A2A2A;">
+      <p style="margin: 0; font-size: 11px; color: #666666; text-align: center; line-height: 1.6;">
+        You're receiving this email because you used soundsfair's services.<br>
+        <a href="${unsubscribeUrl}" style="color: #888888; text-decoration: underline;">Unsubscribe from all emails</a>
+      </p>
+    </div>
+  `;
+}
+
+/**
  * Payment confirmation email to user
  */
 function paymentConfirmationTemplate(data: {
+  userEmail: string;
   userName?: string;
   questionText: string;
   amountSats: number;
@@ -221,6 +238,7 @@ function paymentConfirmationTemplate(data: {
       <p>This is an automated email from soundsfair.</p>
       <p>Fair Money • Economic Freedom • Bitcoin Education</p>
       <p><a href="${SITE_URL}">soundsfair.com</a></p>
+      ${unsubscribeFooter(data.userEmail)}
     </div>
   </div>
 </body>
@@ -411,6 +429,7 @@ function newQuestionAdminTemplate(data: {
  * Answer delivered notification to user
  */
 function answerDeliveredTemplate(data: {
+  userEmail: string;
   userName?: string;
   questionText: string;
   responseText: string;
@@ -583,6 +602,7 @@ function answerDeliveredTemplate(data: {
       <p>Thank you for choosing soundsfair for your Bitcoin education!</p>
       <p>Fair Money • Economic Freedom • Bitcoin Education</p>
       <p><a href="${SITE_URL}">soundsfair.com</a></p>
+      ${unsubscribeFooter(data.userEmail)}
     </div>
   </div>
 </body>
@@ -611,28 +631,12 @@ export async function sendPaymentConfirmation(params: {
     return { success: false, error: 'Resend not configured' };
   }
 
-  try {
-    const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: params.userEmail,
-      subject: '⚡ Payment Confirmed - Your Question is in Queue',
-      html: paymentConfirmationTemplate(params),
-    });
-
-    if (error) {
-      console.error('Failed to send payment confirmation email:', error);
-      return { success: false, error: error.message };
-    }
-
-    console.log('✅ Payment confirmation email sent:', data?.id);
-    return { success: true, messageId: data?.id };
-  } catch (error) {
-    console.error('Unexpected error sending payment confirmation email:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
-  }
+  return await sendEmailWithRetry({
+    to: params.userEmail,
+    subject: '⚡ Payment Confirmed - Your Question is in Queue',
+    html: paymentConfirmationTemplate(params),
+    templateName: 'payment_confirmation',
+  });
 }
 
 /**
@@ -652,28 +656,12 @@ export async function sendAdminNotification(params: {
     return { success: false, error: 'Resend not configured' };
   }
 
-  try {
-    const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: ADMIN_EMAIL,
-      subject: `⚡ New Paid Question - ${params.category} - ${params.tier}`,
-      html: newQuestionAdminTemplate(params),
-    });
-
-    if (error) {
-      console.error('Failed to send admin notification email:', error);
-      return { success: false, error: error.message };
-    }
-
-    console.log('✅ Admin notification email sent:', data?.id);
-    return { success: true, messageId: data?.id };
-  } catch (error) {
-    console.error('Unexpected error sending admin notification email:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
-  }
+  return await sendEmailWithRetry({
+    to: ADMIN_EMAIL,
+    subject: `⚡ New Paid Question - ${params.category} - ${params.tier}`,
+    html: newQuestionAdminTemplate(params),
+    templateName: 'admin_notification',
+  });
 }
 
 /**
@@ -692,28 +680,12 @@ export async function sendAnswerDelivered(params: {
     return { success: false, error: 'Resend not configured' };
   }
 
-  try {
-    const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: params.userEmail,
-      subject: '✅ Your Bitcoin Question has been Answered!',
-      html: answerDeliveredTemplate(params),
-    });
-
-    if (error) {
-      console.error('Failed to send answer delivered email:', error);
-      return { success: false, error: error.message };
-    }
-
-    console.log('✅ Answer delivered email sent:', data?.id);
-    return { success: true, messageId: data?.id };
-  } catch (error) {
-    console.error('Unexpected error sending answer delivered email:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
-  }
+  return await sendEmailWithRetry({
+    to: params.userEmail,
+    subject: '✅ Your Bitcoin Question has been Answered!',
+    html: answerDeliveredTemplate(params),
+    templateName: 'answer_delivered',
+  });
 }
 
 /**
@@ -724,6 +696,468 @@ export function isEmailConfigured(): boolean {
 }
 
 // ============================================================================
+// EMAIL LOGGING & RETRY LOGIC
+// ============================================================================
+
+/**
+ * Check if email address has unsubscribed
+ */
+async function isEmailUnsubscribed(email: string): Promise<boolean> {
+  try {
+    const { data, error } = await (supabaseAdmin as any)
+      .from('email_preferences')
+      .select('unsubscribed')
+      .eq('email', email)
+      .single();
+
+    if (error || !data) {
+      return false; // If no record exists, assume not unsubscribed
+    }
+
+    return data.unsubscribed === true;
+  } catch (error) {
+    console.error('Error checking unsubscribe status:', error);
+    return false; // Fail open - allow email if check fails
+  }
+}
+
+/**
+ * Log email send attempt to database
+ */
+async function logEmailSend(params: {
+  recipientEmail: string;
+  templateName: string;
+  subject: string;
+  status: 'sent' | 'failed' | 'bounced' | 'complained' | 'delivered';
+  messageId?: string;
+  error?: string;
+}): Promise<void> {
+  try {
+    await (supabaseAdmin as any).from('email_logs').insert({
+      recipient_email: params.recipientEmail,
+      template_name: params.templateName,
+      subject: params.subject,
+      status: params.status,
+      message_id: params.messageId || null,
+      error: params.error || null,
+      sent_at: params.status === 'sent' ? new Date().toISOString() : null,
+    });
+  } catch (error) {
+    console.error('Failed to log email send:', error);
+    // Don't throw - logging should not break email sending
+  }
+}
+
+/**
+ * Send email with logging and unsubscribe check
+ *
+ * This wrapper adds:
+ * - Unsubscribe status checking
+ * - Database logging
+ * - Error tracking
+ */
+async function sendEmailWithLogging(params: {
+  to: string;
+  subject: string;
+  html: string;
+  templateName: string;
+}): Promise<EmailResult> {
+  // Check unsubscribe status
+  const unsubscribed = await isEmailUnsubscribed(params.to);
+  if (unsubscribed) {
+    console.log(`Email not sent to ${params.to} - user has unsubscribed`);
+    await logEmailSend({
+      recipientEmail: params.to,
+      templateName: params.templateName,
+      subject: params.subject,
+      status: 'failed',
+      error: 'User has unsubscribed',
+    });
+    return {
+      success: false,
+      error: 'User has unsubscribed from emails',
+    };
+  }
+
+  try {
+    const result = await resend!.emails.send({
+      from: FROM_EMAIL,
+      to: params.to,
+      subject: params.subject,
+      html: params.html,
+    });
+
+    // Log successful send
+    await logEmailSend({
+      recipientEmail: params.to,
+      templateName: params.templateName,
+      subject: params.subject,
+      status: 'sent',
+      messageId: result.data?.id,
+    });
+
+    return {
+      success: true,
+      messageId: result.data?.id,
+    };
+  } catch (error: any) {
+    console.error(`Failed to send ${params.templateName} email:`, error);
+
+    // Log failure
+    await logEmailSend({
+      recipientEmail: params.to,
+      templateName: params.templateName,
+      subject: params.subject,
+      status: 'failed',
+      error: error.message || 'Unknown error',
+    });
+
+    return {
+      success: false,
+      error: error.message || 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Send email with retry logic
+ *
+ * Retries up to 3 times with exponential backoff:
+ * - Attempt 1: immediate
+ * - Attempt 2: wait 2 seconds
+ * - Attempt 3: wait 4 seconds
+ */
+async function sendEmailWithRetry(params: {
+  to: string;
+  subject: string;
+  html: string;
+  templateName: string;
+  maxRetries?: number;
+}): Promise<EmailResult> {
+  const maxRetries = params.maxRetries || 3;
+  let lastError: string = '';
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    // Wait before retry (exponential backoff)
+    if (attempt > 1) {
+      const waitMs = Math.pow(2, attempt - 1) * 1000; // 2s, 4s, 8s...
+      await new Promise(resolve => setTimeout(resolve, waitMs));
+      console.log(`Retrying email send (attempt ${attempt}/${maxRetries})...`);
+    }
+
+    const result = await sendEmailWithLogging(params);
+
+    if (result.success) {
+      if (attempt > 1) {
+        console.log(`Email sent successfully on attempt ${attempt}`);
+      }
+      return result;
+    }
+
+    lastError = result.error || 'Unknown error';
+
+    // Don't retry if user unsubscribed
+    if (lastError.includes('unsubscribed')) {
+      return result;
+    }
+  }
+
+  console.error(`Failed to send email after ${maxRetries} attempts:`, lastError);
+  return {
+    success: false,
+    error: `Failed after ${maxRetries} attempts: ${lastError}`,
+  };
+}
+
+/**
+ * Pre-payment confirmation email to user
+ * Sent immediately after question submission, before payment
+ */
+function prePaymentConfirmationTemplate(data: {
+  userEmail: string;
+  userName?: string;
+  questionText: string;
+  amountSats: number;
+  tier: string;
+  invoiceUrl: string;
+  qrCodeDataUrl: string;
+  expiresAt: string;
+}): string {
+  const greeting = data.userName ? `Hi ${data.userName}` : 'Hello';
+  const questionPreview = data.questionText.length > 200
+    ? data.questionText.substring(0, 200) + '...'
+    : data.questionText;
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Your Payment - soundsfair</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #000000; color: #E5E5E5;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 40px 20px;">
+        <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #1A1A1A; border-radius: 8px; overflow: hidden;">
+          <!-- Header -->
+          <tr>
+            <td style="padding: 32px; text-align: center; background: linear-gradient(135deg, #FFD000 0%, #FFA500 100%);">
+              <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #000000;">
+                soundsfair
+              </h1>
+              <div style="margin-top: 8px; padding: 4px 12px; background-color: rgba(0,0,0,0.2); border-radius: 4px; display: inline-block;">
+                <span style="font-size: 12px; font-weight: 600; color: #000000; text-transform: uppercase; letter-spacing: 1px;">
+                  PAYMENT REQUIRED
+                </span>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 24px 0; font-size: 18px; line-height: 1.6; color: #E5E5E5;">
+                ${greeting},
+              </p>
+
+              <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.6; color: #B8B8B8;">
+                Thank you for submitting your question! To complete your Q&A request, please pay the Lightning invoice below.
+              </p>
+
+              <!-- Info Box -->
+              <div style="background-color: #2A2A2A; border-left: 4px solid #FFD000; padding: 20px; margin-bottom: 24px; border-radius: 4px;">
+                <table role="presentation" style="width: 100%;">
+                  <tr>
+                    <td style="padding: 4px 0; font-size: 14px; color: #888888;">Amount:</td>
+                    <td style="padding: 4px 0; font-size: 14px; color: #FFD000; font-weight: 600; text-align: right;">${data.amountSats.toLocaleString()} sats</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px 0; font-size: 14px; color: #888888;">Tier:</td>
+                    <td style="padding: 4px 0; font-size: 14px; color: #E5E5E5; text-align: right;">${data.tier}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 4px 0; font-size: 14px; color: #888888;">Expires:</td>
+                    <td style="padding: 4px 0; font-size: 14px; color: #FF6B6B; text-align: right;">${data.expiresAt}</td>
+                  </tr>
+                </table>
+              </div>
+
+              <!-- Question Preview -->
+              <div style="background-color: #0D0D0D; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
+                <p style="margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888888;">YOUR QUESTION</p>
+                <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #B8B8B8;">${questionPreview}</p>
+              </div>
+
+              <!-- QR Code -->
+              <div style="text-align: center; margin-bottom: 24px;">
+                <p style="margin: 0 0 16px 0; font-size: 14px; color: #888888;">Scan with your Lightning wallet:</p>
+                <img src="${data.qrCodeDataUrl}" alt="Lightning Invoice QR Code" style="max-width: 250px; border: 4px solid #FFD000; border-radius: 8px;" />
+              </div>
+
+              <!-- Payment Link -->
+              <div style="text-align: center; margin-bottom: 32px;">
+                <a href="${data.invoiceUrl}" style="display: inline-block; padding: 16px 32px; background-color: #FFD000; color: #000000; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px;">
+                  Pay with Lightning
+                </a>
+              </div>
+
+              <!-- Important Note -->
+              <div style="background-color: #2A1A00; border: 1px solid #FFD000; padding: 16px; border-radius: 4px; margin-bottom: 24px;">
+                <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #FFD000;">
+                  ⚠️ <strong>Important:</strong> This invoice expires in 1 hour. If it expires, you'll need to submit your question again.
+                </p>
+              </div>
+
+              <!-- What Happens Next -->
+              <div style="margin-top: 32px; padding-top: 32px; border-top: 1px solid #2A2A2A;">
+                <p style="margin: 0 0 16px 0; font-size: 16px; font-weight: 600; color: #FFD000;">What happens next?</p>
+                <ol style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.8; color: #B8B8B8;">
+                  <li>Pay the Lightning invoice above</li>
+                  <li>You'll receive immediate payment confirmation</li>
+                  <li>Your question enters our expert queue</li>
+                  <li>Receive your answer within the guaranteed timeframe</li>
+                </ol>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 24px 32px; background-color: #0D0D0D; border-top: 1px solid #2A2A2A; text-align: center;">
+              <p style="margin: 0 0 8px 0; font-size: 14px; color: #FFD000; font-weight: 600;">soundsfair</p>
+              <p style="margin: 0 0 16px 0; font-size: 12px; color: #888888;">Bitcoin Education & Expert Q&A</p>
+              <p style="margin: 0; font-size: 11px; color: #666666;">
+                © ${new Date().getFullYear()} soundsfair. All rights reserved.
+              </p>
+              ${unsubscribeFooter(data.userEmail)}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
+}
+
+/**
+ * Payment expiration email to user
+ * Sent when Lightning invoice expires without payment
+ */
+function paymentExpiredTemplate(data: {
+  userEmail: string;
+  userName?: string;
+  questionText: string;
+  tier: string;
+}): string {
+  const greeting = data.userName ? `Hi ${data.userName}` : 'Hello';
+  const questionPreview = data.questionText.length > 200
+    ? data.questionText.substring(0, 200) + '...'
+    : data.questionText;
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Expired - soundsfair</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #000000; color: #E5E5E5;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 40px 20px;">
+        <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #1A1A1A; border-radius: 8px; overflow: hidden;">
+          <!-- Header -->
+          <tr>
+            <td style="padding: 32px; text-align: center; background: linear-gradient(135deg, #666666 0%, #333333 100%);">
+              <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #E5E5E5;">
+                soundsfair
+              </h1>
+              <div style="margin-top: 8px; padding: 4px 12px; background-color: rgba(255,255,255,0.1); border-radius: 4px; display: inline-block;">
+                <span style="font-size: 12px; font-weight: 600; color: #FFD000; text-transform: uppercase; letter-spacing: 1px;">
+                  INVOICE EXPIRED
+                </span>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 24px 0; font-size: 18px; line-height: 1.6; color: #E5E5E5;">
+                ${greeting},
+              </p>
+
+              <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.6; color: #B8B8B8;">
+                Your Lightning invoice has expired without payment. Don't worry - your question is still important to us!
+              </p>
+
+              <!-- Question Preview -->
+              <div style="background-color: #0D0D0D; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
+                <p style="margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888888;">YOUR QUESTION (${data.tier})</p>
+                <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #B8B8B8;">${questionPreview}</p>
+              </div>
+
+              <!-- What to do -->
+              <div style="background-color: #2A2A2A; border-left: 4px solid #FFD000; padding: 20px; margin-bottom: 24px; border-radius: 4px;">
+                <p style="margin: 0 0 12px 0; font-size: 14px; font-weight: 600; color: #FFD000;">To get your answer:</p>
+                <ol style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.8; color: #B8B8B8;">
+                  <li>Visit our Q&A page and resubmit your question</li>
+                  <li>A new Lightning invoice will be generated</li>
+                  <li>Complete payment within 1 hour</li>
+                  <li>Receive your expert answer on time</li>
+                </ol>
+              </div>
+
+              <!-- CTA -->
+              <div style="text-align: center; margin: 32px 0;">
+                <a href="${SITE_URL}/qa" style="display: inline-block; padding: 16px 32px; background-color: #FFD000; color: #000000; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px;">
+                  Submit Question Again
+                </a>
+              </div>
+
+              <!-- Tip -->
+              <div style="background-color: #0D1F0D; border: 1px solid #4CAF50; padding: 16px; border-radius: 4px; margin-top: 24px;">
+                <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #A8D5A8;">
+                  💡 <strong>Tip:</strong> Lightning invoices expire after 1 hour for security. Have your Lightning wallet ready before submitting to ensure smooth payment!
+                </p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 24px 32px; background-color: #0D0D0D; border-top: 1px solid #2A2A2A; text-align: center;">
+              <p style="margin: 0 0 8px 0; font-size: 14px; color: #FFD000; font-weight: 600;">soundsfair</p>
+              <p style="margin: 0 0 16px 0; font-size: 12px; color: #888888;">Bitcoin Education & Expert Q&A</p>
+              <p style="margin: 0; font-size: 11px; color: #666666;">
+                © ${new Date().getFullYear()} soundsfair. All rights reserved.
+              </p>
+              ${unsubscribeFooter(data.userEmail)}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
+}
+
+/**
+ * Send pre-payment confirmation email
+ */
+export async function sendPrePaymentConfirmation(data: {
+  userEmail: string;
+  userName?: string;
+  questionText: string;
+  amountSats: number;
+  tier: string;
+  invoiceUrl: string;
+  qrCodeDataUrl: string;
+  expiresAt: string;
+}): Promise<EmailResult> {
+  if (!isEmailConfigured()) {
+    console.warn('Email not configured - skipping pre-payment confirmation');
+    return { success: false, error: 'Email service not configured' };
+  }
+
+  return await sendEmailWithRetry({
+    to: data.userEmail,
+    subject: '⚡ Complete Your Payment - soundsfair Q&A',
+    html: prePaymentConfirmationTemplate(data),
+    templateName: 'pre_payment_confirmation',
+  });
+}
+
+/**
+ * Send payment expiration email
+ */
+export async function sendPaymentExpired(data: {
+  userEmail: string;
+  userName?: string;
+  questionText: string;
+  tier: string;
+}): Promise<EmailResult> {
+  if (!isEmailConfigured()) {
+    console.warn('Email not configured - skipping payment expiration email');
+    return { success: false, error: 'Email service not configured' };
+  }
+
+  return await sendEmailWithRetry({
+    to: data.userEmail,
+    subject: 'Your Lightning Invoice Expired - soundsfair',
+    html: paymentExpiredTemplate(data),
+    templateName: 'payment_expired',
+  });
+}
+
+// ============================================================================
 // EXPORTS
 // ============================================================================
 
@@ -731,6 +1165,8 @@ export const emailService = {
   sendPaymentConfirmation,
   sendAdminNotification,
   sendAnswerDelivered,
+  sendPrePaymentConfirmation,
+  sendPaymentExpired,
   isConfigured: isEmailConfigured,
 };
 
