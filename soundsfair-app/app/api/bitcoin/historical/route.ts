@@ -121,42 +121,46 @@ export async function GET(request: Request) {
     } catch (fallbackError) {
       console.error('CoinGecko historical API failed:', fallbackError);
 
-      try {
-        // Last resort: Use mock data based on approximate historical prices
-        const priceData = getMockHistoricalPrice(dateParam);
+      // Production should never serve mocked financial data.
+      if (process.env.NODE_ENV !== 'production') {
+        try {
+          // Dev-only last resort: Use mock data based on approximate historical prices
+          const priceData = getMockHistoricalPrice(dateParam);
 
-        // Cache the mock data
-        setCachedData(cacheKey, priceData, CACHE_DURATIONS.HISTORICAL_PRICE);
+          // Cache the mock data
+          setCachedData(cacheKey, priceData, CACHE_DURATIONS.HISTORICAL_PRICE);
 
-        return NextResponse.json<ApiResponse<HistoricalPrice>>({
-          success: true,
-          data: priceData,
-          timestamp: Date.now(),
-          cached: false
-        });
-
-      } catch (mockError) {
-        // Try to get any cached data (even if expired)
-        const expiredCache = getCachedData<HistoricalPrice>(cacheKey, Infinity);
-        if (expiredCache) {
           return NextResponse.json<ApiResponse<HistoricalPrice>>({
             success: true,
-            data: expiredCache,
+            data: priceData,
             timestamp: Date.now(),
-            cached: true
-          }, { status: 200 });
+            cached: false
+          });
+        } catch {
+          // fall through to "all sources failed"
         }
-
-        // All sources failed
-        return NextResponse.json<ApiResponse<HistoricalPrice>>({
-          success: false,
-          error: {
-            message: 'Failed to fetch historical Bitcoin price from all sources',
-            code: 'HISTORICAL_PRICE_FETCH_ERROR'
-          },
-          timestamp: Date.now()
-        }, { status: 503 });
       }
+
+      // Try to get any cached data (even if expired)
+      const expiredCache = getCachedData<HistoricalPrice>(cacheKey, Infinity);
+      if (expiredCache) {
+        return NextResponse.json<ApiResponse<HistoricalPrice>>({
+          success: true,
+          data: expiredCache,
+          timestamp: Date.now(),
+          cached: true
+        }, { status: 200 });
+      }
+
+      // All sources failed
+      return NextResponse.json<ApiResponse<HistoricalPrice>>({
+        success: false,
+        error: {
+          message: 'Failed to fetch historical Bitcoin price from all sources',
+          code: 'HISTORICAL_PRICE_FETCH_ERROR'
+        },
+        timestamp: Date.now()
+      }, { status: 503 });
     }
   }
 }

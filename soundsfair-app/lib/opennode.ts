@@ -6,6 +6,7 @@
 
 import axios, { AxiosError } from 'axios';
 import QRCode from 'qrcode';
+import crypto from 'crypto';
 
 // ============================================================================
 // CONFIGURATION
@@ -220,13 +221,20 @@ export function verifyWebhookSignature(
   }
 
   // OpenNode uses HMAC-SHA256 for webhook signatures
-  const crypto = require('crypto');
   const expectedSignature = crypto
     .createHmac('sha256', OPENNODE_WEBHOOK_SECRET)
     .update(payload)
     .digest('hex');
 
-  return signature === expectedSignature;
+  // Constant-time compare to avoid timing leaks.
+  try {
+    const sigBuf = Buffer.from(signature, 'hex');
+    const expBuf = Buffer.from(expectedSignature, 'hex');
+    if (sigBuf.length !== expBuf.length) return false;
+    return crypto.timingSafeEqual(sigBuf, expBuf);
+  } catch {
+    return false;
+  }
 }
 
 /**

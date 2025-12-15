@@ -5,10 +5,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/admin-auth';
+import { requireAdmin, getAdminCSRFToken, logAdminAction } from '@/lib/admin-auth';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { sendAnswerDelivered } from '@/lib/email';
 import { PRICING_TIERS } from '@/app/types/qa';
+import { validateCSRFToken, getCSRFTokenFromRequest } from '@/lib/csrf';
+import { getClientIp } from '@/lib/rate-limit';
 import type { APIError } from '@/app/types/qa';
 import type { Database } from '@/app/types/database';
 
@@ -23,10 +25,25 @@ export async function POST(
     // Require admin authentication
     const admin = await requireAdmin();
 
-    const { id } = await params;
-
     // Parse request body
     const body = await request.json();
+
+    // CSRF Protection: Validate token
+    const providedToken = getCSRFTokenFromRequest(request, body);
+    const expectedToken = await getAdminCSRFToken();
+
+    if (!validateCSRFToken(providedToken, expectedToken)) {
+      return NextResponse.json<APIError>(
+        {
+          success: false,
+          error: 'Invalid or missing CSRF token',
+        },
+        { status: 403 }
+      );
+    }
+
+    const { id } = await params;
+
     const { responseText, responseVideoUrl, publishToArchive } = body;
 
     if (!responseText && !responseVideoUrl) {
@@ -110,6 +127,24 @@ export async function POST(
       responseText: responseText || '',
       videoUrl: responseVideoUrl,
       tier: tierData.name,
+    });
+
+    // Log answer submission to audit log
+    const ip = getClientIp(request);
+    await logAdminAction({
+      adminEmail: admin.email,
+      action: 'answer_question',
+      resourceType: 'question',
+      resourceId: id,
+      ipAddress: ip,
+      userAgent: request.headers.get('user-agent') || undefined,
+      metadata: {
+        hasText: !!responseText,
+        hasVideo: !!responseVideoUrl,
+        publishToArchive,
+        category: question.category,
+        tier: question.pricing_tier,
+      },
     });
 
     return NextResponse.json({

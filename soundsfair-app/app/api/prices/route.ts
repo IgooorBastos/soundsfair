@@ -90,8 +90,12 @@ async function fetchBitcoinPriceCoinGecko(from: string, to: string): Promise<any
       price: price
     }));
   } catch (error) {
-    console.error('[CoinGecko] ✗ Failed, falling back to mock data:', error);
-    // Last resort: use mock data for development
+    console.error('[CoinGecko] ✗ Failed:', error);
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('All external price sources failed');
+    }
+    // Dev-only fallback: allow mock data when APIs fail.
+    console.warn('[CoinGecko] Falling back to mock data (development only).');
     return generateMockBitcoinData(from, to);
   }
 }
@@ -218,8 +222,11 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('API Error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch Bitcoin price data', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
+      {
+        error: 'Failed to fetch Bitcoin price data',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 503 }
     );
   }
 }

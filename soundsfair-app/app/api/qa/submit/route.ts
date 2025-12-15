@@ -12,6 +12,14 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { createInvoice, satsToBtc } from '@/lib/opennode';
 import { PRICING_TIERS } from '@/app/types/qa';
 import type { SubmitQuestionResponse, APIError } from '@/app/types/qa';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
+
+function getEnvInt(name: string, fallback: number): number {
+  const value = process.env[name];
+  if (!value) return fallback;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
 
 // ============================================================================
 // MAIN HANDLER
@@ -19,8 +27,57 @@ import type { SubmitQuestionResponse, APIError } from '@/app/types/qa';
 
 export async function POST(request: NextRequest) {
   try {
+    // Anti-abuse: same-origin only (defense-in-depth; browser should already enforce).
+    const origin = request.headers.get('origin');
+    const referer = request.headers.get('referer');
+    const siteOrigin = request.nextUrl.origin;
+    if (origin && origin !== siteOrigin) {
+      return NextResponse.json<APIError>(
+        { success: false, error: 'Origin not allowed' },
+        { status: 403 }
+      );
+    }
+    if (referer && !referer.startsWith(siteOrigin)) {
+      return NextResponse.json<APIError>(
+        { success: false, error: 'Referer not allowed' },
+        { status: 403 }
+      );
+    }
+
+    // Rate limit per IP (fast fail before creating DB records/invoices).
+    const ip = getClientIp(request);
+    const ipLimit = getEnvInt('QA_SUBMIT_RL_IP_LIMIT', 10);
+    const ipWindowSeconds = getEnvInt('QA_SUBMIT_RL_IP_WINDOW_SEC', 10 * 60);
+    const ipRl = checkRateLimit({
+      key: `qa-submit:ip:${ip}`,
+      limit: ipLimit,
+      windowMs: ipWindowSeconds * 1000,
+    });
+    if (!ipRl.allowed) {
+      return NextResponse.json<APIError>(
+        { success: false, error: 'Too many requests. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(ipRl.retryAfterSeconds),
+            'X-RateLimit-Limit': String(ipLimit),
+            'X-RateLimit-Remaining': String(ipRl.remaining),
+            'X-RateLimit-Reset': String(Math.ceil(ipRl.resetAt / 1000)),
+          },
+        }
+      );
+    }
+
     // Parse request body
     const body = await request.json();
+
+    // Optional honeypot (front-end can send `website`; bots often fill it).
+    if (typeof (body as any)?.website === 'string' && (body as any).website.trim().length > 0) {
+      return NextResponse.json<APIError>(
+        { success: false, error: 'Validation failed' },
+        { status: 400 }
+      );
+    }
 
     // Validate input
     const validation = submitQuestionSchema.safeParse(body);
@@ -36,6 +93,30 @@ export async function POST(request: NextRequest) {
     }
 
     const data = validation.data;
+
+    // Rate limit per email (slower window to limit repeated abuse/costs).
+    const emailLimit = getEnvInt('QA_SUBMIT_RL_EMAIL_LIMIT', 5);
+    const emailWindowSeconds = getEnvInt('QA_SUBMIT_RL_EMAIL_WINDOW_SEC', 60 * 60);
+    const emailKey = data.userEmail.toLowerCase();
+    const emailRl = checkRateLimit({
+      key: `qa-submit:email:${emailKey}`,
+      limit: emailLimit,
+      windowMs: emailWindowSeconds * 1000,
+    });
+    if (!emailRl.allowed) {
+      return NextResponse.json<APIError>(
+        { success: false, error: 'Too many requests for this email. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(emailRl.retryAfterSeconds),
+            'X-RateLimit-Limit': String(emailLimit),
+            'X-RateLimit-Remaining': String(emailRl.remaining),
+            'X-RateLimit-Reset': String(Math.ceil(emailRl.resetAt / 1000)),
+          },
+        }
+      );
+    }
 
     // Get pricing tier details
     const tierData = PRICING_TIERS[data.pricingTier];
@@ -190,10 +271,21 @@ export async function POST(request: NextRequest) {
 // ============================================================================
 
 export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get('origin');
+  const sameOrigin = origin === request.nextUrl.origin;
+
+  if (origin && !sameOrigin) {
+    return NextResponse.json(
+      { error: 'CORS origin not allowed' },
+      { status: 403 }
+    );
+  }
+
   return new NextResponse(null, {
     status: 200,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      ...(sameOrigin ? { 'Access-Control-Allow-Origin': origin! } : {}),
+      'Vary': 'Origin',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     },

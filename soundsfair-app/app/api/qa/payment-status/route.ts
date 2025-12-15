@@ -168,10 +168,21 @@ export async function GET(request: NextRequest) {
 // ============================================================================
 
 export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get('origin');
+  const sameOrigin = origin === request.nextUrl.origin;
+
+  if (origin && !sameOrigin) {
+    return NextResponse.json(
+      { error: 'CORS origin not allowed' },
+      { status: 403 }
+    );
+  }
+
   return new NextResponse(null, {
     status: 200,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      ...(sameOrigin ? { 'Access-Control-Allow-Origin': origin! } : {}),
+      'Vary': 'Origin',
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     },

@@ -1,5 +1,5 @@
 import { getLessonBySlug, getAllLessonSlugs, parseQuizFromContent, getGlossary } from '@/lib/markdown';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import QuizComponent from '@/components/ui/Quiz';
@@ -8,6 +8,16 @@ import ReadingProgressBar from '@/components/ui/ReadingProgressBar';
 import GlossaryFootnotes from '@/components/ui/GlossaryFootnotes';
 import LessonCharts from '@/components/lesson/LessonCharts';
 
+function resolveCanonicalLessonSlug(slug: string): string {
+  // Back-compat: support old URLs like `/lessons/level-2` by mapping to `level-2-*`.
+  const levelOnlyMatch = slug.match(/^level-(\d+)$/);
+  if (!levelOnlyMatch) return slug;
+
+  const allSlugs = getAllLessonSlugs();
+  const candidate = allSlugs.find((s) => s.startsWith(`${slug}-`));
+  return candidate || slug;
+}
+
 export async function generateStaticParams() {
   const slugs = getAllLessonSlugs();
   return slugs.map((slug) => ({ slug }));
@@ -15,20 +25,32 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const lesson = await getLessonBySlug(slug);
+  const canonicalSlug = resolveCanonicalLessonSlug(slug);
+  try {
+    const lesson = await getLessonBySlug(canonicalSlug);
 
-  return {
-    title: `${lesson.metadata.title} | Soundsfair`,
-    description: `Learn about ${lesson.metadata.title} - ${lesson.metadata.duration} lesson`,
-  };
+    return {
+      title: `${lesson.metadata.title} | Soundsfair`,
+      description: `Learn about ${lesson.metadata.title} - ${lesson.metadata.duration} lesson`,
+    };
+  } catch {
+    return {
+      title: 'Lesson | Soundsfair',
+      description: 'Bitcoin lesson',
+    };
+  }
 }
 
 export default async function LessonPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const canonicalSlug = resolveCanonicalLessonSlug(slug);
+  if (canonicalSlug !== slug) {
+    redirect(`/lessons/${canonicalSlug}`);
+  }
 
   let lesson;
   try {
-    lesson = await getLessonBySlug(slug);
+    lesson = await getLessonBySlug(canonicalSlug);
   } catch (error) {
     notFound();
   }

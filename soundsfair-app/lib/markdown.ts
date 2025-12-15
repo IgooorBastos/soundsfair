@@ -53,6 +53,9 @@ export function getAllLessonSlugs(): string[] {
  */
 export async function getLessonBySlug(slug: string): Promise<Lesson> {
   const fullPath = path.join(contentDirectory, 'lessons', `${slug}.md`);
+  if (!fs.existsSync(fullPath)) {
+    throw new Error(`Lesson not found: ${slug}`);
+  }
   const fileContents = fs.readFileSync(fullPath, 'utf8');
 
   const { data, content } = matter(fileContents);
@@ -76,7 +79,8 @@ export async function getLessonBySlug(slug: string): Promise<Lesson> {
   // Process markdown to HTML
   const processedContent = await remark()
     .use(gfm)
-    .use(html, { sanitize: false })
+    // Always sanitize markdown-generated HTML to avoid XSS via content files.
+    .use(html, { sanitize: true })
     .process(content);
 
   let htmlContent = processedContent.toString();
@@ -188,7 +192,7 @@ export async function getGlossary(): Promise<GlossaryTerm[]> {
     // Convert markdown to HTML for definition
     const processedDefinition = await remark()
       .use(gfm)
-      .use(html)
+      .use(html, { sanitize: true })
       .process(cleanDefinition);
 
     terms.push({
@@ -238,7 +242,7 @@ export async function getFAQs(): Promise<FAQ[]> {
     // Convert markdown to HTML for detailed answer
     const processedDetailedAnswer = await remark()
       .use(gfm)
-      .use(html)
+      .use(html, { sanitize: true })
       .process(detailedAnswer.trim());
 
     faqs.push({
