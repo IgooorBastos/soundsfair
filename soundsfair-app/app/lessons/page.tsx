@@ -36,8 +36,8 @@ export default async function LessonsPage() {
           {/* Info Box */}
           <div className="mt-6 p-4 bg-brand-gold/10 border border-brand-gold/30 rounded-lg max-w-2xl mx-auto">
             <p className="text-text-secondary text-sm">
-              <span className="font-semibold text-brand-gold">💡 Progressive Learning:</span>{' '}
-              Complete each lesson's quiz with 70% or higher to unlock the next level. You can retake quizzes as many times as needed!
+              <span className="font-semibold text-brand-gold">💡 Learn at Your Own Pace:</span>{' '}
+              Complete our 9-level course on Bitcoin, economics, and financial freedom. All lessons are freely accessible - start anywhere, learn however you prefer!
             </p>
           </div>
         </div>

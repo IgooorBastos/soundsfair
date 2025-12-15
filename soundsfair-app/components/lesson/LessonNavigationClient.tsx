@@ -20,34 +20,7 @@ const allLessons = [
 ];
 
 export default function LessonNavigationClient({ currentLevel }: LessonNavigationProps) {
-  const [nextLessonUnlocked, setNextLessonUnlocked] = useState(true);
-  const [currentQuizPassed, setCurrentQuizPassed] = useState(false);
-
-  useEffect(() => {
-    // Check if current lesson quiz was passed
-    const currentSlug = allLessons.find(l => l.level === currentLevel)?.slug;
-    if (currentSlug) {
-      const quizData = localStorage.getItem(`lesson-${currentSlug}-quiz`);
-      if (quizData) {
-        const parsed = JSON.parse(quizData);
-        setCurrentQuizPassed(parsed.percentage >= 70);
-      }
-    }
-
-    // Check if next lesson is unlocked
-    if (currentLevel < allLessons.length) {
-      const previousSlug = allLessons.find(l => l.level === currentLevel)?.slug;
-      if (previousSlug && currentLevel > 1) {
-        const quizData = localStorage.getItem(`lesson-${previousSlug}-quiz`);
-        if (quizData) {
-          const parsed = JSON.parse(quizData);
-          setNextLessonUnlocked(parsed.percentage >= 70);
-        } else {
-          setNextLessonUnlocked(false);
-        }
-      }
-    }
-  }, [currentLevel]);
+  // All lessons are now freely accessible - no lock checking needed
 
   const currentIndex = allLessons.findIndex(l => l.level === currentLevel);
   const previousLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
@@ -86,32 +59,20 @@ export default function LessonNavigationClient({ currentLevel }: LessonNavigatio
 
         {/* Next Lesson */}
         {nextLesson ? (
-          nextLessonUnlocked || currentLevel === 1 ? (
-            <Link
-              href={`/lessons/${nextLesson.slug}`}
-              className="group flex items-center gap-3 px-6 py-4 rounded-lg
-                bg-brand-gold text-surface-black font-semibold
-                hover:bg-brand-gold-hover hover:shadow-glow transition-all w-full sm:w-auto"
-            >
-              <div className="text-right">
-                <div className="text-sm opacity-80">Next</div>
-                <div className="font-semibold">
-                  Level {nextLesson.level}: {nextLesson.title}
-                </div>
-              </div>
-              <span className="text-2xl group-hover:translate-x-1 transition-transform">→</span>
-            </Link>
-          ) : (
-            <div className="flex items-center gap-3 px-6 py-4 rounded-lg
-              bg-surface-charcoal border-2 border-border-default text-text-muted w-full sm:w-auto opacity-60">
-              <div className="text-right">
-                <div className="text-sm">🔒 Locked</div>
-                <div className="font-semibold text-xs">
-                  Pass Level {currentLevel} quiz to unlock
-                </div>
+          <Link
+            href={`/lessons/${nextLesson.slug}`}
+            className="group flex items-center gap-3 px-6 py-4 rounded-lg
+              bg-brand-gold text-surface-black font-semibold
+              hover:bg-brand-gold-hover hover:shadow-glow transition-all w-full sm:w-auto"
+          >
+            <div className="text-right">
+              <div className="text-sm opacity-80">Next</div>
+              <div className="font-semibold">
+                Level {nextLesson.level}: {nextLesson.title}
               </div>
             </div>
-          )
+            <span className="text-2xl group-hover:translate-x-1 transition-transform">→</span>
+          </Link>
         ) : (
           <Link
             href="/lessons"
@@ -141,14 +102,6 @@ export default function LessonNavigationClient({ currentLevel }: LessonNavigatio
         </div>
       </div>
 
-      {/* Quiz reminder if not passed */}
-      {!currentQuizPassed && nextLesson && (
-        <div className="mt-6 p-4 bg-semantic-warning/10 border border-semantic-warning/30 rounded-lg">
-          <p className="text-semantic-warning text-sm">
-            <span className="font-semibold">💡 Reminder:</span> Complete the quiz below with 70% or higher to unlock Level {nextLesson.level}
-          </p>
-        </div>
-      )}
     </div>
   );
 }

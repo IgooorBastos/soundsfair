@@ -408,17 +408,13 @@ export function getQuizResults(): QuizResult[] {
 }
 
 /**
- * Check if user can access a lesson (based on sequential progression)
+ * Check if user can access a lesson
+ *
+ * All lessons are now freely accessible - no sequential progression required
  */
 export function canAccessLesson(level: number): boolean {
-  // Level 5 is always accessible (first lesson)
-  if (level === 5) return true;
-
-  const progress = getUserProgress();
-  const previousLevel = level - 1;
-
-  // Check if previous level is completed
-  return progress.lessonsCompleted.includes(previousLevel);
+  // All lessons are freely accessible
+  return true;
 }
 
 /**

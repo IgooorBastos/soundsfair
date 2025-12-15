@@ -33,29 +33,16 @@ export default function LessonsListClient({ lessons }: LessonsListClientProps) {
     <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6">
       {lessons.map((lesson, index) => {
         const isCompleted = lessonProgress[lesson.metadata.slug]?.completed || false;
-        const previousLesson = index > 0 ? lessons[index - 1] : null;
-        const previousCompleted = previousLesson
-          ? lessonProgress[previousLesson.metadata.slug]?.completed || false
-          : true; // First lesson is always unlocked
-
-        const isLocked = index > 0 && !previousCompleted;
         const percentage = lessonProgress[lesson.metadata.slug]?.percentage || 0;
+
+        // All lessons are now freely accessible - no locks
+        const isLocked = false;
 
         return (
           <Link
             key={lesson.metadata.slug}
-            href={isLocked ? '#' : `/lessons/${lesson.metadata.slug}`}
-            onClick={(e) => {
-              if (isLocked) {
-                e.preventDefault();
-                alert(`Please complete Level ${previousLesson?.metadata.level} quiz first to unlock this lesson.`);
-              }
-            }}
-            className={`group relative p-6 rounded-lg border-2 transition-all
-              ${isLocked
-                ? 'border-border-default bg-surface-charcoal opacity-60 cursor-not-allowed'
-                : 'border-border-default bg-surface-charcoal hover:border-brand-gold hover:shadow-glow'
-              }`}
+            href={`/lessons/${lesson.metadata.slug}`}
+            className="group relative p-6 rounded-lg border-2 transition-all border-border-default bg-surface-charcoal hover:border-brand-gold hover:shadow-glow"
           >
             {/* Level Badge */}
             <div className="flex items-start justify-between mb-4">
@@ -66,11 +53,6 @@ export default function LessonsListClient({ lessons }: LessonsListClientProps) {
                 {isCompleted && (
                   <div className="text-semantic-success text-2xl" title={`Passed with ${percentage}%`}>
                     ✓
-                  </div>
-                )}
-                {isLocked && (
-                  <div className="text-text-muted text-2xl" title="Complete previous lesson first">
-                    🔒
                   </div>
                 )}
               </div>
@@ -110,12 +92,7 @@ export default function LessonsListClient({ lessons }: LessonsListClientProps) {
 
             {/* CTA */}
             <div className="mt-4">
-              {isLocked ? (
-                <span className="text-text-muted text-sm flex items-center gap-2">
-                  <span>🔒</span>
-                  Complete Level {previousLesson?.metadata.level} first
-                </span>
-              ) : isCompleted ? (
+              {isCompleted ? (
                 <span className="text-semantic-success font-semibold flex items-center gap-2">
                   <span>✓</span>
                   Completed ({percentage}%)
