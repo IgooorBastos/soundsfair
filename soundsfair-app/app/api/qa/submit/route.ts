@@ -13,6 +13,7 @@ import { createInvoice, satsToBtc } from '@/lib/opennode';
 import { PRICING_TIERS } from '@/app/types/qa';
 import type { SubmitQuestionResponse, APIError } from '@/app/types/qa';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
+import { sendPrePaymentConfirmation } from '@/lib/email';
 
 function getEnvInt(name: string, fallback: number): number {
   const value = process.env[name];
@@ -236,6 +237,24 @@ export async function POST(request: NextRequest) {
       console.error('Failed to update payment with invoice details:', updateError);
       // Not critical - the question and payment exist, just log the error
     }
+
+    // Send pre-payment confirmation email (non-blocking)
+    sendPrePaymentConfirmation({
+      userEmail: data.userEmail,
+      userName: data.userName,
+      questionText: data.questionText,
+      amountSats,
+      tier: tierData.name,
+      invoiceUrl: invoiceResult.invoice.invoiceUrl,
+      qrCodeDataUrl: invoiceResult.invoice.qrCodeDataUrl,
+      expiresAt: invoiceResult.invoice.expiresAt.toLocaleString('en-US', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }),
+    }).catch((error) => {
+      // Don't fail the request if email fails
+      console.error('Failed to send pre-payment confirmation email:', error);
+    });
 
     // Return success response with invoice details
     const response: SubmitQuestionResponse = {

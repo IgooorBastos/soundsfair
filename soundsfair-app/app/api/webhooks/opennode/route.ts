@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { verifyWebhookSignature, parseWebhookPayload } from '@/lib/opennode';
-import { sendPaymentConfirmation, sendAdminNotification } from '@/lib/email';
+import { sendPaymentConfirmation, sendAdminNotification, sendPaymentExpired } from '@/lib/email';
 import { PRICING_TIERS } from '@/app/types/qa';
 import type { OpenNodeInvoice } from '@/lib/opennode';
 
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
       `✅ Webhook processed: Invoice ${payload.id}, Status ${payload.status}, Question ${question.id}`
     );
 
-    // Send email notifications if payment is successful
+    // Send email notifications based on payment status
     if (payload.status === 'paid') {
       // Get full question details for emails
       const { data: fullQuestion } = await (supabase as any)
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
         const tierData = PRICING_TIERS[fullQuestion.pricing_tier as keyof typeof PRICING_TIERS];
 
         // Send confirmation email to user
-        await sendPaymentConfirmation({
+        sendPaymentConfirmation({
           userEmail: fullQuestion.user_email,
           userName: fullQuestion.user_name,
           questionText: fullQuestion.question_text,
@@ -173,10 +173,12 @@ export async function POST(request: NextRequest) {
           tier: tierData.name,
           responseTime: `${tierData.hours} hours`,
           questionId: fullQuestion.id,
+        }).catch((error) => {
+          console.error('Failed to send payment confirmation email:', error);
         });
 
         // Send notification to admin
-        await sendAdminNotification({
+        sendAdminNotification({
           userName: fullQuestion.user_name,
           userEmail: fullQuestion.user_email,
           questionText: fullQuestion.question_text,
@@ -184,7 +186,35 @@ export async function POST(request: NextRequest) {
           tier: tierData.name,
           amountSats: fullQuestion.amount_sats,
           questionId: fullQuestion.id,
+        }).catch((error) => {
+          console.error('Failed to send admin notification email:', error);
         });
+      }
+    }
+
+    // Send payment expiration email if invoice expired
+    if (payload.status === 'expired') {
+      // Get full question details
+      const { data: fullQuestion } = await (supabase as any)
+        .from('questions')
+        .select('*')
+        .eq('id', question.id)
+        .single();
+
+      if (fullQuestion) {
+        const tierData = PRICING_TIERS[fullQuestion.pricing_tier as keyof typeof PRICING_TIERS];
+
+        // Send expiration email to user (non-blocking)
+        sendPaymentExpired({
+          userEmail: fullQuestion.user_email,
+          userName: fullQuestion.user_name,
+          questionText: fullQuestion.question_text,
+          tier: tierData.name,
+        }).catch((error) => {
+          console.error('Failed to send payment expiration email:', error);
+        });
+
+        console.log(`📧 Sent payment expiration email to ${fullQuestion.user_email}`);
       }
     }
 
