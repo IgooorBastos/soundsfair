@@ -4,7 +4,28 @@ import QAForm from "@/components/qa/QAForm";
 
 export const metadata = {
   title: "Ask a Bitcoin Expert - Lightning-Paid Q&A | soundsfair",
-  description: "Get your Bitcoin questions answered by experts. Pay with Lightning Network and receive personalized responses within 24-168 hours.",
+  description: "Get your Bitcoin questions answered by experts. Pay with Lightning Network and receive personalized responses within 24-168 hours. Three tiers: Quick, Standard, and Deep Dive.",
+  keywords: ['Bitcoin expert', 'Bitcoin Q&A', 'Lightning Network payment', 'Bitcoin questions', 'cryptocurrency expert'],
+  openGraph: {
+    title: 'Ask a Bitcoin Expert - Lightning-Paid Q&A',
+    description: 'Get your Bitcoin questions answered by experts. Pay with Lightning Network and receive personalized responses.',
+    url: '/qa',
+    siteName: 'soundsfair',
+    images: [{
+      url: '/og-qa.png',
+      width: 1200,
+      height: 630,
+      alt: 'soundsfair - Bitcoin Expert Q&A'
+    }],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Ask a Bitcoin Expert - Lightning-Paid Q&A',
+    description: 'Get your Bitcoin questions answered by experts. Pay with Lightning Network.',
+    images: ['/og-qa.png'],
+  },
 };
 
 export default function QAPage() {

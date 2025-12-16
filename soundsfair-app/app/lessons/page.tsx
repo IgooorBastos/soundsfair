@@ -5,8 +5,29 @@ import { getAllLessons } from '@/lib/markdown';
 import LessonsListClient from './LessonsListClient';
 
 export const metadata = {
-  title: 'All Lessons | Soundsfair',
-  description: 'Complete Bitcoin education course - from fiat system failures to financial freedom',
+  title: 'Bitcoin Education Course | 9 Comprehensive Lessons | soundsfair',
+  description: 'Complete Bitcoin education course - from fiat system failures to financial freedom. Learn about Bitcoin, Austrian economics, and economic sovereignty through 9 progressive lessons.',
+  keywords: ['Bitcoin course', 'Bitcoin education', 'cryptocurrency lessons', 'economic freedom', 'Bitcoin learning', 'sound money education'],
+  openGraph: {
+    title: 'Bitcoin Education Course - 9 Comprehensive Lessons',
+    description: 'Master Bitcoin from zero to advanced in 9 comprehensive lessons. Learn about fair money, economic freedom, and sound monetary principles.',
+    url: '/lessons',
+    siteName: 'soundsfair',
+    images: [{
+      url: '/og-lessons.png',
+      width: 1200,
+      height: 630,
+      alt: 'soundsfair Bitcoin Education Course'
+    }],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Bitcoin Education Course - 9 Comprehensive Lessons',
+    description: 'Master Bitcoin from zero to advanced in 9 comprehensive lessons',
+    images: ['/og-lessons.png'],
+  },
 };
 
 export default async function LessonsPage() {

@@ -28,15 +28,37 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const canonicalSlug = resolveCanonicalLessonSlug(slug);
   try {
     const lesson = await getLessonBySlug(canonicalSlug);
+    const description = `Level ${lesson.metadata.level}: ${lesson.metadata.title} - ${lesson.metadata.duration} Bitcoin education lesson. ${lesson.metadata.difficulty} difficulty.`;
 
     return {
-      title: `${lesson.metadata.title} | Soundsfair`,
-      description: `Learn about ${lesson.metadata.title} - ${lesson.metadata.duration} lesson`,
+      title: `${lesson.metadata.title} - Level ${lesson.metadata.level} | soundsfair Bitcoin Course`,
+      description,
+      keywords: ['Bitcoin', lesson.metadata.title, 'Bitcoin education', 'cryptocurrency course', 'economic freedom', 'sound money'],
+      openGraph: {
+        title: `${lesson.metadata.title} - Level ${lesson.metadata.level}`,
+        description,
+        url: `/lessons/${canonicalSlug}`,
+        siteName: 'soundsfair',
+        images: [{
+          url: '/og-lessons.png',
+          width: 1200,
+          height: 630,
+          alt: `soundsfair - ${lesson.metadata.title}`
+        }],
+        locale: 'en_US',
+        type: 'article',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${lesson.metadata.title} - Level ${lesson.metadata.level}`,
+        description,
+        images: ['/og-lessons.png'],
+      },
     };
   } catch {
     return {
-      title: 'Lesson | Soundsfair',
-      description: 'Bitcoin lesson',
+      title: 'Lesson | soundsfair',
+      description: 'Bitcoin education lesson',
     };
   }
 }
@@ -62,8 +84,32 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
   const durationMatch = lesson.metadata.duration.match(/(\d+)/);
   const estimatedMinutes = durationMatch ? parseInt(durationMatch[1]) : 30;
 
+  // Schema.org Course structured data
+  const courseSchema = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": lesson.metadata.title,
+    "description": `Level ${lesson.metadata.level}: ${lesson.metadata.title} - ${lesson.metadata.duration} Bitcoin education lesson`,
+    "provider": {
+      "@type": "Organization",
+      "name": "soundsfair",
+      "url": process.env.NEXT_PUBLIC_SITE_URL || "https://soundsfair.com"
+    },
+    "educationalLevel": `Level ${lesson.metadata.level}`,
+    "coursePrerequisites": lesson.metadata.prerequisites !== 'None' ? lesson.metadata.prerequisites : undefined,
+    "timeRequired": lesson.metadata.duration,
+    "inLanguage": "en",
+    "isAccessibleForFree": true,
+  };
+
   return (
     <div className="min-h-screen bg-surface-black">
+      {/* Schema.org JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }}
+      />
+
       <Header />
 
       {/* Reading Progress Bar */}
