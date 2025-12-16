@@ -256,6 +256,21 @@ export async function POST(request: NextRequest) {
       console.error('Failed to send pre-payment confirmation email:', error);
     });
 
+    // Structured logging for monitoring
+    console.log(JSON.stringify({
+      event: 'question_submitted',
+      question_id: question.id,
+      payment_id: payment.id,
+      invoice_id: invoiceResult.invoice.invoiceId,
+      user_email: data.userEmail,
+      category: data.category,
+      pricing_tier: data.pricingTier,
+      amount_sats: amountSats,
+      expires_at: invoiceResult.invoice.expiresAt.toISOString(),
+      timestamp: new Date().toISOString(),
+      success: true,
+    }));
+
     // Return success response with invoice details
     const response: SubmitQuestionResponse = {
       success: true,

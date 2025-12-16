@@ -147,10 +147,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Log successful webhook processing
-    console.log(
-      `✅ Webhook processed: Invoice ${payload.id}, Status ${payload.status}, Question ${question.id}`
-    );
+    // Structured logging for monitoring and debugging
+    console.log(JSON.stringify({
+      event: 'webhook_processed',
+      webhook_type: 'opennode',
+      invoice_id: payload.id,
+      payment_status: payload.status,
+      question_id: question.id,
+      old_question_status: question.status,
+      new_question_status: newQuestionStatus,
+      payment_id: payment.id,
+      timestamp: new Date().toISOString(),
+      success: true,
+    }));
 
     // Send email notifications based on payment status
     if (payload.status === 'paid') {

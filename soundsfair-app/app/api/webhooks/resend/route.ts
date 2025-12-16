@@ -102,11 +102,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    console.log(`📬 Resend webhook received: ${type}`, {
+    // Structured logging for monitoring
+    console.log(JSON.stringify({
+      event: 'webhook_received',
+      webhook_type: 'resend',
+      email_event_type: type,
       email_id: data.email_id,
-      to: data.to,
+      recipient: data.to?.[0] || 'unknown',
       subject: data.subject,
-    });
+      timestamp: new Date().toISOString(),
+    }));
 
     // Map Resend event types to our status values
     let status: 'sent' | 'delivered' | 'bounced' | 'complained' | null = null;
