@@ -152,9 +152,12 @@ export default function LearnPage() {
                   </div>
                   <div className="flex flex-col gap-2">
                     {lesson.status === "available" ? (
-                      <button className="px-6 py-2 bg-brand-yellow text-black font-semibold rounded-lg hover:bg-primary-dark transition-colors whitespace-nowrap">
+                      <Link
+                        href={`/lessons/level-${lesson.level}-${lesson.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`}
+                        className="px-6 py-2 bg-brand-yellow text-black font-semibold rounded-lg hover:bg-primary-dark transition-colors whitespace-nowrap text-center"
+                      >
                         Start Lesson
-                      </button>
+                      </Link>
                     ) : (
                       <span className="px-6 py-2 bg-gray-900 text-gray-500 font-semibold rounded-lg text-center whitespace-nowrap">
                         Coming Soon
@@ -208,9 +211,12 @@ export default function LearnPage() {
               Start with Level 1 and progress at your own pace. Each lesson builds
               on the previous one to give you a complete understanding of Bitcoin.
             </p>
-            <button className="px-8 py-4 bg-brand-yellow text-black font-semibold rounded-lg hover:bg-primary-dark transition-colors">
+            <Link
+              href="/lessons/level-1-fiat-system"
+              className="px-8 py-4 bg-brand-yellow text-black font-semibold rounded-lg hover:bg-primary-dark transition-colors inline-block"
+            >
               Start Level 1
-            </button>
+            </Link>
           </div>
         </section>
       </main>
