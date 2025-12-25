@@ -92,7 +92,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // Extract event data
-    const { type, created_at, data } = payload;
+    const { type, data } = payload;
 
     if (!type || !data) {
       console.error('Invalid webhook payload:', payload);
@@ -152,8 +152,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ received: true });
     }
 
+    // Initialize Supabase client
+    const supabase = supabaseAdmin as any;
+
     // Find existing log entry by message_id
-    const { data: existingLog, error: fetchError } = await (supabaseAdmin as any)
+    const { data: existingLog, error: fetchError } = await supabase
       .from('email_logs')
       .select('*')
       .eq('message_id', messageId)
@@ -169,7 +172,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       console.warn(`No email log found for message_id: ${messageId}`);
       // This might happen if webhook arrives before we log the send
       // Or if message_id doesn't match - create a new log entry
-      const { error: insertError } = await (supabaseAdmin as any)
+      const { error: insertError } = await supabase
         .from('email_logs')
         .insert({
           recipient_email: data.to?.[0] || 'unknown',
@@ -188,7 +191,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       console.log(`✅ Created new email log entry for ${messageId} with status: ${status}`);
     } else {
       // Update existing log entry
-      const { error: updateError } = await (supabaseAdmin as any)
+      const { error: updateError } = await supabase
         .from('email_logs')
         .update({
           status,
@@ -215,7 +218,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       if (recipientEmail) {
         // Optionally auto-unsubscribe on hard bounce or complaint
         // This is a best practice for email deliverability
-        const { error: prefError } = await (supabaseAdmin as any)
+        const { error: prefError } = await supabase
           .from('email_preferences')
           .upsert({
             email: recipientEmail,

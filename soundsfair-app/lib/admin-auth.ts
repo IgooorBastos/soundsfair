@@ -9,6 +9,7 @@ import { cookies } from 'next/headers';
 import { supabaseAdmin } from './supabase-admin';
 import crypto from 'crypto';
 import { generateCSRFToken } from './csrf';
+import type { Database } from '@/app/types/database';
 
 // ============================================================================
 // CONFIGURATION
@@ -18,6 +19,8 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'change_this_password';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'bitcoinnalata@proton.me';
 const ADMIN_SESSION_SECRET = process.env.ADMIN_SESSION_SECRET;
 const ADMIN_SESSION_COOKIE = 'soundsfair_admin_session';
+
+type AdminUserRow = Database['public']['Tables']['admin_users']['Row'];
 
 function assertSecureAdminConfig() {
   if (process.env.NODE_ENV !== 'production') return;
@@ -127,7 +130,8 @@ export async function verifyAdminCredentials(
   }
 
   // Check against admin_users table
-  const { data: adminUser } = await (supabaseAdmin as any)
+  const supabase = supabaseAdmin as any;
+  const { data: adminUser } = await supabase
     .from('admin_users')
     .select('email, role')
     .eq('email', email)
@@ -171,7 +175,8 @@ export async function createAdminSession(
   });
 
   // Update last_login in database
-  await (supabaseAdmin as any)
+  const supabase = supabaseAdmin as any;
+  await supabase
     .from('admin_users')
     .update({ last_login: new Date().toISOString() })
     .eq('email', email);
@@ -289,10 +294,11 @@ export async function logAdminAction(params: {
   resourceId?: string;
   ipAddress?: string;
   userAgent?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }): Promise<void> {
   try {
-    const { data, error } = await (supabaseAdmin as any)
+    const supabase = supabaseAdmin as any;
+    const { error } = await supabase
       .from('admin_audit_log')
       .insert({
         admin_email: params.adminEmail,
@@ -325,14 +331,16 @@ export async function ensureAdminUser(): Promise<void> {
   // Avoid implicit privilege creation in production.
   if (process.env.NODE_ENV === 'production') return;
 
+  const supabase = supabaseAdmin as any;
+
   // Check if any admin users exist
-  const { data: existingAdmins, count } = await (supabaseAdmin as any)
+  const { count } = await supabase
     .from('admin_users')
     .select('*', { count: 'exact', head: true });
 
   // If no admins exist, create the default admin
   if (count === 0) {
-    await (supabaseAdmin as any).from('admin_users').insert({
+    await supabase.from('admin_users').insert({
       email: ADMIN_EMAIL,
       role: 'super_admin',
     });
@@ -344,8 +352,9 @@ export async function ensureAdminUser(): Promise<void> {
 /**
  * List all admin users
  */
-export async function listAdminUsers(): Promise<any[]> {
-  const { data, error } = await (supabaseAdmin as any)
+export async function listAdminUsers(): Promise<AdminUserRow[]> {
+  const supabase = supabaseAdmin as any;
+  const { data, error } = await supabase
     .from('admin_users')
     .select('*')
     .order('created_at', { ascending: false });

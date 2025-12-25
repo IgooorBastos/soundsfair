@@ -704,7 +704,8 @@ export function isEmailConfigured(): boolean {
  */
 async function isEmailUnsubscribed(email: string): Promise<boolean> {
   try {
-    const { data, error } = await (supabaseAdmin as any)
+    const supabase = supabaseAdmin as any;
+    const { data, error } = await supabase
       .from('email_preferences')
       .select('unsubscribed')
       .eq('email', email)
@@ -733,7 +734,8 @@ async function logEmailSend(params: {
   error?: string;
 }): Promise<void> {
   try {
-    await (supabaseAdmin as any).from('email_logs').insert({
+    const supabase = supabaseAdmin as any;
+    await supabase.from('email_logs').insert({
       recipient_email: params.recipientEmail,
       template_name: params.templateName,
       subject: params.subject,
@@ -800,8 +802,10 @@ async function sendEmailWithLogging(params: {
       success: true,
       messageId: result.data?.id,
     };
-  } catch (error: any) {
+  } catch (error) {
     console.error(`Failed to send ${params.templateName} email:`, error);
+
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
     // Log failure
     await logEmailSend({
@@ -809,12 +813,12 @@ async function sendEmailWithLogging(params: {
       templateName: params.templateName,
       subject: params.subject,
       status: 'failed',
-      error: error.message || 'Unknown error',
+      error: errorMessage,
     });
 
     return {
       success: false,
-      error: error.message || 'Unknown error',
+      error: errorMessage,
     };
   }
 }

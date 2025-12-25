@@ -70,10 +70,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse request body
-    const body = await request.json();
+    const body = await request.json() as Partial<SubmitQuestionResponse> & {
+      website?: unknown;
+    };
 
     // Optional honeypot (front-end can send `website`; bots often fill it).
-    if (typeof (body as any)?.website === 'string' && (body as any).website.trim().length > 0) {
+    if (typeof body?.website === 'string' && body.website.trim().length > 0) {
       return NextResponse.json<APIError>(
         { success: false, error: 'Validation failed' },
         { status: 400 }
@@ -134,10 +136,10 @@ export async function POST(request: NextRequest) {
     const amountSats = tierData.sats;
 
     // Initialize Supabase admin client
-    const supabase = supabaseAdmin;
+    const supabase = supabaseAdmin as any;
 
     // Create payment record first
-    const { data: payment, error: paymentError } = await (supabase as any)
+    const { data: payment, error: paymentError } = await supabase
       .from('payments')
       .insert({
         invoice_id: '', // Will be updated after OpenNode invoice creation
@@ -164,7 +166,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create question record
-    const { data: question, error: questionError } = await (supabase as any)
+    const { data: question, error: questionError } = await supabase
       .from('questions')
       .insert({
         user_email: data.userEmail,
@@ -223,7 +225,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update payment record with invoice details
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from('payments')
       .update({
         invoice_id: invoiceResult.invoice.invoiceId,

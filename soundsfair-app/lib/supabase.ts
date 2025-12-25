@@ -34,7 +34,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
   },
-});
+}) as any;
 
 /**
  * Create Supabase client with custom user email context
@@ -67,7 +67,7 @@ export async function setUserEmailContext(
   const { error } = await client.rpc('set_config', {
     setting: 'app.current_user_email',
     value: email,
-  } as any);
+  });
 
   if (error) {
     console.error('Failed to set user email context:', error);

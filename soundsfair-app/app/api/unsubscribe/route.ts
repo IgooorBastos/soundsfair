@@ -17,7 +17,8 @@ type APIResponse = {
  */
 export async function POST(request: NextRequest): Promise<NextResponse<APIResponse>> {
   try {
-    const body = await request.json();
+    const supabase = supabaseAdmin as any;
+    const body = await request.json() as { email?: string; reason?: string };
     const { email, reason } = body;
 
     // Validate email
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<APIRespon
     const normalizedEmail = email.toLowerCase().trim();
 
     // Check if email preferences record exists
-    const { data: existing, error: fetchError } = await (supabaseAdmin as any)
+    const { data: existing, error: fetchError } = await supabase
       .from('email_preferences')
       .select('*')
       .eq('email', normalizedEmail)
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<APIRespon
 
     if (existing) {
       // Update existing record
-      const { error: updateError } = await (supabaseAdmin as any)
+      const { error: updateError } = await supabase
         .from('email_preferences')
         .update({
           unsubscribed: true,
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<APIRespon
       }
     } else {
       // Create new record
-      const { error: insertError } = await (supabaseAdmin as any)
+      const { error: insertError } = await supabase
         .from('email_preferences')
         .insert({
           email: normalizedEmail,
@@ -103,6 +104,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<APIRespon
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
+    const supabase = supabaseAdmin as any;
     const email = request.nextUrl.searchParams.get('email');
 
     if (!email) {
@@ -114,7 +116,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    const { data, error } = await (supabaseAdmin as any)
+    const { data, error } = await supabase
       .from('email_preferences')
       .select('unsubscribed, unsubscribed_at')
       .eq('email', normalizedEmail)

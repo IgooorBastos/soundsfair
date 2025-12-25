@@ -61,7 +61,7 @@ export async function verifyAdminToken(token: string) {
     }
 
     // Check if user is in admin_users table
-    const { data: adminUser, error: dbError } = await (supabaseAdmin as any)
+    const { data: adminUser, error: dbError } = await supabaseAdmin
       .from('admin_users')
       .select('*')
       .eq('email', user.email)
@@ -72,7 +72,7 @@ export async function verifyAdminToken(token: string) {
     }
 
     // Update last login timestamp
-    await (supabaseAdmin as any)
+    await supabaseAdmin
       .from('admin_users')
       .update({ last_login: new Date().toISOString() })
       .eq('id', adminUser.id);
@@ -92,7 +92,7 @@ export async function verifyAdminToken(token: string) {
  * @param email - Admin email address
  */
 export async function createAdminUser(email: string, role: 'admin' | 'super_admin' = 'admin') {
-  const { data, error } = await (supabaseAdmin as any)
+  const { data, error } = await supabaseAdmin
     .from('admin_users')
     .insert({
       email,

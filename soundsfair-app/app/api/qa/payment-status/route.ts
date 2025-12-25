@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
       `
       )
       .eq('id', questionId)
-      .single<QuestionWithPayment>();
+      .single();
 
     if (questionError || !question) {
       return NextResponse.json<APIError>(

@@ -12,6 +12,11 @@ import { verifyWebhookSignature, parseWebhookPayload } from '@/lib/opennode';
 import { sendPaymentConfirmation, sendAdminNotification, sendPaymentExpired } from '@/lib/email';
 import { PRICING_TIERS } from '@/app/types/qa';
 import type { OpenNodeInvoice } from '@/lib/opennode';
+import type { Database } from '@/app/types/database';
+import type { PaymentStatus, PaymentProviderStatus, QuestionStatus } from '@/app/types/qa';
+
+type PaymentRecord = Pick<Database['public']['Tables']['payments']['Row'], 'id' | 'status' | 'invoice_id'>;
+type QuestionRecord = Pick<Database['public']['Tables']['questions']['Row'], 'id' | 'status' | 'payment_status' | 'payment_id'>;
 
 // ============================================================================
 // WEBHOOK HANDLER
@@ -48,12 +53,12 @@ export async function POST(request: NextRequest) {
     const payload = webhookResult.payload;
 
     // Initialize Supabase admin client
-    const supabase = supabaseAdmin;
+    const supabase = supabaseAdmin as any;
 
     // Find the payment by invoice_id
-    const { data: payment, error: paymentError } = await (supabase as any)
+    const { data: payment, error: paymentError } = await supabase
       .from('payments')
-      .select('id, status')
+      .select('id, status, invoice_id')
       .eq('invoice_id', payload.id)
       .single();
 
@@ -66,14 +71,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Update payment status
-    const { error: updatePaymentError } = await (supabase as any)
+    const webhookPayload =
+      payload as unknown as Database['public']['Tables']['payments']['Update']['webhook_payload'];
+
+    const { error: updatePaymentError } = await supabase
       .from('payments')
       .update({
-        status: payload.status,
+        status: payload.status as PaymentProviderStatus,
         paid_at: payload.status === 'paid' ? new Date().toISOString() : null,
         webhook_received: true,
         webhook_signature: signature,
-        webhook_payload: payload as any,
+        webhook_payload: webhookPayload,
       })
       .eq('id', payment.id);
 
@@ -86,9 +94,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Find associated question
-    const { data: question, error: questionError } = await (supabase as any)
+    const { data: question, error: questionError } = await supabase
       .from('questions')
-      .select('id, status')
+      .select('id, status, payment_status, payment_id')
       .eq('payment_id', payment.id)
       .single();
 
@@ -99,8 +107,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Update question status based on payment status
-    let newQuestionStatus = question.status;
-    let newPaymentStatus = 'pending';
+    let newQuestionStatus: QuestionStatus = question.status as QuestionStatus;
+    let newPaymentStatus: PaymentStatus = question.payment_status as PaymentStatus;
 
     switch (payload.status) {
       case 'paid':
@@ -131,7 +139,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update question
-    const { error: updateQuestionError } = await (supabase as any)
+    const { error: updateQuestionError } = await supabase
       .from('questions')
       .update({
         status: newQuestionStatus,
@@ -164,7 +172,7 @@ export async function POST(request: NextRequest) {
     // Send email notifications based on payment status
     if (payload.status === 'paid') {
       // Get full question details for emails
-      const { data: fullQuestion } = await (supabase as any)
+      const { data: fullQuestion } = await supabase
         .from('questions')
         .select('*')
         .eq('id', question.id)
@@ -204,7 +212,7 @@ export async function POST(request: NextRequest) {
     // Send payment expiration email if invoice expired
     if (payload.status === 'expired') {
       // Get full question details
-      const { data: fullQuestion } = await (supabase as any)
+      const { data: fullQuestion } = await supabase
         .from('questions')
         .select('*')
         .eq('id', question.id)
@@ -245,7 +253,7 @@ export async function POST(request: NextRequest) {
 // GET HANDLER (FOR TESTING)
 // ============================================================================
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   return NextResponse.json(
     {
       message: 'OpenNode webhook endpoint is active',
