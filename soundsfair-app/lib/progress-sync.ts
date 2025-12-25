@@ -113,7 +113,7 @@ export async function uploadProgressToCloud(): Promise<{
       device_id: deviceId,
     };
 
-    const { error: progressError } = await supabase
+    const { error: progressError } = await (supabase as any)
       .from('user_progress')
       .upsert(progressData);
 
@@ -154,7 +154,7 @@ export async function uploadProgressToCloud(): Promise<{
     }));
 
     if (lessonProgressArray.length > 0) {
-      const { error: lessonsError } = await supabase
+      const { error: lessonsError } = await (supabase as any)
         .from('lesson_progress')
         .upsert(lessonProgressArray, {
           onConflict: 'user_id,lesson_slug',
@@ -169,7 +169,7 @@ export async function uploadProgressToCloud(): Promise<{
       const quizResults: QuizResult[] = JSON.parse(quizResultsRaw);
 
       // Get existing quiz results from DB to avoid duplicates
-      const { data: existingQuizzes } = await supabase
+      const { data: existingQuizzes } = await (supabase as any)
         .from('quiz_results')
         .select('lesson_slug, created_at')
         .eq('user_id', user.id);
@@ -196,7 +196,7 @@ export async function uploadProgressToCloud(): Promise<{
         }));
 
       if (newQuizResults.length > 0) {
-        const { error: quizError } = await supabase
+        const { error: quizError } = await (supabase as any)
           .from('quiz_results')
           .insert(newQuizResults);
 
@@ -236,7 +236,7 @@ export async function downloadProgressFromCloud(): Promise<{
     }
 
     // Fetch user progress
-    const { data: cloudProgress, error: progressError } = await supabase
+    const { data: cloudProgress, error: progressError } = await (supabase as any)
       .from('user_progress')
       .select('*')
       .eq('id', user.id)
@@ -252,7 +252,7 @@ export async function downloadProgressFromCloud(): Promise<{
     }
 
     // Fetch lesson progress
-    const { data: cloudLessons, error: lessonsError } = await supabase
+    const { data: cloudLessons, error: lessonsError } = await (supabase as any)
       .from('lesson_progress')
       .select('*')
       .eq('user_id', user.id);
@@ -260,7 +260,7 @@ export async function downloadProgressFromCloud(): Promise<{
     if (lessonsError) throw lessonsError;
 
     // Fetch quiz results
-    const { data: cloudQuizResults, error: quizError } = await supabase
+    const { data: cloudQuizResults, error: quizError } = await (supabase as any)
       .from('quiz_results')
       .select('*')
       .eq('user_id', user.id)
@@ -357,7 +357,7 @@ export async function syncProgress(
     const localXP = parseInt(localStorage.getItem('soundsfair-xp') || '0');
 
     // Get cloud progress
-    const { data: cloudProgress, error: cloudError } = await supabase
+    const { data: cloudProgress, error: cloudError } = await (supabase as any)
       .from('user_progress')
       .select('*')
       .eq('id', user.id)
