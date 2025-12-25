@@ -53,15 +53,17 @@ export const supabaseAdmin = createClient<Database>(
  */
 export async function verifyAdminToken(token: string) {
   try {
+    const supabase = supabaseAdmin as any;
+
     // Verify the JWT token
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
     if (authError || !user || !user.email) {
       return null;
     }
 
     // Check if user is in admin_users table
-    const { data: adminUser, error: dbError } = await supabaseAdmin
+    const { data: adminUser, error: dbError } = await supabase
       .from('admin_users')
       .select('*')
       .eq('email', user.email)
@@ -72,7 +74,7 @@ export async function verifyAdminToken(token: string) {
     }
 
     // Update last login timestamp
-    await supabaseAdmin
+    await supabase
       .from('admin_users')
       .update({ last_login: new Date().toISOString() })
       .eq('id', adminUser.id);
@@ -92,7 +94,8 @@ export async function verifyAdminToken(token: string) {
  * @param email - Admin email address
  */
 export async function createAdminUser(email: string, role: 'admin' | 'super_admin' = 'admin') {
-  const { data, error } = await supabaseAdmin
+  const supabase = supabaseAdmin as any;
+  const { data, error } = await supabase
     .from('admin_users')
     .insert({
       email,
