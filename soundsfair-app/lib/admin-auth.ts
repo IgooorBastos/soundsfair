@@ -130,7 +130,7 @@ export async function verifyAdminCredentials(
   }
 
   // Check against admin_users table
-  const supabase = supabaseAdmin as any;
+  const supabase = supabaseAdmin;
   const { data: adminUser } = await supabase
     .from('admin_users')
     .select('email, role')
@@ -175,7 +175,7 @@ export async function createAdminSession(
   });
 
   // Update last_login in database
-  const supabase = supabaseAdmin as any;
+  const supabase = supabaseAdmin;
   await supabase
     .from('admin_users')
     .update({ last_login: new Date().toISOString() })
@@ -331,7 +331,7 @@ export async function ensureAdminUser(): Promise<void> {
   // Avoid implicit privilege creation in production.
   if (process.env.NODE_ENV === 'production') return;
 
-  const supabase = supabaseAdmin as any;
+  const supabase = supabaseAdmin;
 
   // Check if any admin users exist
   const { count } = await supabase
@@ -353,7 +353,7 @@ export async function ensureAdminUser(): Promise<void> {
  * List all admin users
  */
 export async function listAdminUsers(): Promise<AdminUserRow[]> {
-  const supabase = supabaseAdmin as any;
+  const supabase = supabaseAdmin;
   const { data, error } = await supabase
     .from('admin_users')
     .select('*')

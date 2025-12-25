@@ -11,12 +11,8 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { verifyWebhookSignature, parseWebhookPayload } from '@/lib/opennode';
 import { sendPaymentConfirmation, sendAdminNotification, sendPaymentExpired } from '@/lib/email';
 import { PRICING_TIERS } from '@/app/types/qa';
-import type { OpenNodeInvoice } from '@/lib/opennode';
 import type { Database } from '@/app/types/database';
 import type { PaymentStatus, PaymentProviderStatus, QuestionStatus } from '@/app/types/qa';
-
-type PaymentRecord = Pick<Database['public']['Tables']['payments']['Row'], 'id' | 'status' | 'invoice_id'>;
-type QuestionRecord = Pick<Database['public']['Tables']['questions']['Row'], 'id' | 'status' | 'payment_status' | 'payment_id'>;
 
 // ============================================================================
 // WEBHOOK HANDLER
@@ -53,7 +49,7 @@ export async function POST(request: NextRequest) {
     const payload = webhookResult.payload;
 
     // Initialize Supabase admin client
-    const supabase = supabaseAdmin as any;
+    const supabase = supabaseAdmin;
 
     // Find the payment by invoice_id
     const { data: payment, error: paymentError } = await supabase
@@ -184,7 +180,7 @@ export async function POST(request: NextRequest) {
         // Send confirmation email to user
         sendPaymentConfirmation({
           userEmail: fullQuestion.user_email,
-          userName: fullQuestion.user_name,
+          userName: fullQuestion.user_name ?? undefined,
           questionText: fullQuestion.question_text,
           amountSats: fullQuestion.amount_sats,
           tier: tierData.name,
@@ -196,7 +192,7 @@ export async function POST(request: NextRequest) {
 
         // Send notification to admin
         sendAdminNotification({
-          userName: fullQuestion.user_name,
+          userName: fullQuestion.user_name ?? undefined,
           userEmail: fullQuestion.user_email,
           questionText: fullQuestion.question_text,
           category: fullQuestion.category,
@@ -224,7 +220,7 @@ export async function POST(request: NextRequest) {
         // Send expiration email to user (non-blocking)
         sendPaymentExpired({
           userEmail: fullQuestion.user_email,
-          userName: fullQuestion.user_name,
+          userName: fullQuestion.user_name ?? undefined,
           questionText: fullQuestion.question_text,
           tier: tierData.name,
         }).catch((error) => {

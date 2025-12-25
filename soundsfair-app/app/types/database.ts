@@ -349,6 +349,106 @@ export interface Database {
           created_at?: string;
         };
       };
+      email_logs: {
+        Row: {
+          id: string;
+          recipient_email: string;
+          template_name: string;
+          subject: string;
+          status: string;
+          message_id: string | null;
+          error: string | null;
+          sent_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          recipient_email: string;
+          template_name: string;
+          subject: string;
+          status: string;
+          message_id?: string | null;
+          error?: string | null;
+          sent_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          recipient_email?: string;
+          template_name?: string;
+          subject?: string;
+          status?: string;
+          message_id?: string | null;
+          error?: string | null;
+          sent_at?: string | null;
+          updated_at?: string;
+        };
+      };
+      email_preferences: {
+        Row: {
+          email: string;
+          unsubscribed: boolean;
+          unsubscribed_at: string | null;
+          unsubscribe_reason: string | null;
+          preferences: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          email: string;
+          unsubscribed?: boolean;
+          unsubscribed_at?: string | null;
+          unsubscribe_reason?: string | null;
+          preferences?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          email?: string;
+          unsubscribed?: boolean;
+          unsubscribed_at?: string | null;
+          unsubscribe_reason?: string | null;
+          preferences?: Json;
+          updated_at?: string;
+        };
+      };
+      admin_audit_log: {
+        Row: {
+          id: string;
+          admin_email: string;
+          action: string;
+          resource_type: string | null;
+          resource_id: string | null;
+          ip_address: string | null;
+          user_agent: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          admin_email: string;
+          action: string;
+          resource_type?: string | null;
+          resource_id?: string | null;
+          ip_address?: string | null;
+          user_agent?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          admin_email?: string;
+          action?: string;
+          resource_type?: string | null;
+          resource_id?: string | null;
+          ip_address?: string | null;
+          user_agent?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+      };
     };
     Views: {
       public_qa_archive: {
@@ -409,3 +509,20 @@ export interface Database {
     };
   };
 }
+
+type TableWithRelationships<T> = T & { Relationships: [] };
+
+export type DatabaseWithRelationships = {
+  public: Database['public'] & {
+    Tables: {
+      [K in keyof Database['public']['Tables']]: TableWithRelationships<
+        Database['public']['Tables'][K]
+      >;
+    };
+    Views: {
+      [K in keyof Database['public']['Views']]: Database['public']['Views'][K] & {
+        Relationships: [];
+      };
+    };
+  };
+};
