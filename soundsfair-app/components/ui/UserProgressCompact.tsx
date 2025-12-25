@@ -18,6 +18,11 @@ export default function UserProgressCompact() {
   const [showDetails, setShowDetails] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  const updateProgress = () => {
+    setProgress(getUserProgress());
+    setXPInfo(getXPProgress());
+  };
+
   useEffect(() => {
     setMounted(true);
     updateProgress();
@@ -31,11 +36,6 @@ export default function UserProgressCompact() {
       window.removeEventListener('storage', handleProgressUpdate);
     };
   }, []);
-
-  const updateProgress = () => {
-    setProgress(getUserProgress());
-    setXPInfo(getXPProgress());
-  };
 
   if (!mounted || !progress || !xpInfo) {
     return null;

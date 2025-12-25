@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 export default function LessonsError({
   error,
   reset,
@@ -36,13 +38,13 @@ export default function LessonsError({
           >
             Try again
           </button>
-          <a
+          <Link
             href="/lessons"
             className="flex-1 px-6 py-3 border-2 border-brand-gold text-brand-gold font-semibold rounded-lg
                        hover:bg-brand-gold/10 transition-colors text-center"
           >
             Back to lessons
-          </a>
+          </Link>
         </div>
       </div>
     </div>

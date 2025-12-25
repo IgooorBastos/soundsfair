@@ -14,13 +14,11 @@
 import { supabase } from '@/lib/supabase';
 import {
   getUserProgress,
-  type UserProgress,
   type LessonProgress,
   type QuizResult,
 } from './progress';
 import type { Database } from '@/app/types/database';
 
-type UserProgressRow = Database['public']['Tables']['user_progress']['Row'];
 type LessonProgressRow = Database['public']['Tables']['lesson_progress']['Row'];
 type QuizResultRow = Database['public']['Tables']['quiz_results']['Row'];
 
@@ -115,8 +113,8 @@ export async function uploadProgressToCloud(): Promise<{
       device_id: deviceId,
     };
 
-    const { error: progressError } = await (supabase
-      .from('user_progress') as any)
+    const { error: progressError } = await supabase
+      .from('user_progress')
       .upsert(progressData);
 
     if (progressError) throw progressError;
@@ -124,9 +122,23 @@ export async function uploadProgressToCloud(): Promise<{
     // Upload lesson progress
     const lessonProgressMap = JSON.parse(
       localStorage.getItem('soundsfair-lesson-progress') || '{}'
-    );
+    ) as Record<
+      string,
+      {
+        slug: string;
+        level: number;
+        started?: boolean;
+        completed?: boolean;
+        scrollPercentage?: number;
+        timeSpent?: number;
+        quizPassed?: boolean;
+        quizScore?: number | null;
+        quizAttempts?: number;
+        lastVisited?: string;
+      }
+    >;
 
-    const lessonProgressArray: Database['public']['Tables']['lesson_progress']['Insert'][] = Object.values(lessonProgressMap).map((lesson: any) => ({
+    const lessonProgressArray: Database['public']['Tables']['lesson_progress']['Insert'][] = Object.values(lessonProgressMap).map((lesson) => ({
       user_id: user.id,
       lesson_slug: lesson.slug,
       lesson_level: lesson.level,
@@ -142,8 +154,8 @@ export async function uploadProgressToCloud(): Promise<{
     }));
 
     if (lessonProgressArray.length > 0) {
-      const { error: lessonsError } = await (supabase
-        .from('lesson_progress') as any)
+      const { error: lessonsError } = await supabase
+        .from('lesson_progress')
         .upsert(lessonProgressArray, {
           onConflict: 'user_id,lesson_slug',
         });
@@ -157,13 +169,16 @@ export async function uploadProgressToCloud(): Promise<{
       const quizResults: QuizResult[] = JSON.parse(quizResultsRaw);
 
       // Get existing quiz results from DB to avoid duplicates
-      const { data: existingQuizzes } = await (supabase
-        .from('quiz_results') as any)
+      const { data: existingQuizzes } = await supabase
+        .from('quiz_results')
         .select('lesson_slug, created_at')
         .eq('user_id', user.id);
 
       const existingSet = new Set(
-        existingQuizzes?.map((q: any) => `${q.lesson_slug}_${q.created_at}`) || []
+        existingQuizzes?.map(
+          (q: { lesson_slug: string; created_at: string }) =>
+            `${q.lesson_slug}_${q.created_at}`
+        ) || []
       );
 
       // Filter out already uploaded quizzes
@@ -181,8 +196,8 @@ export async function uploadProgressToCloud(): Promise<{
         }));
 
       if (newQuizResults.length > 0) {
-        const { error: quizError } = await (supabase
-          .from('quiz_results') as any)
+        const { error: quizError } = await supabase
+          .from('quiz_results')
           .insert(newQuizResults);
 
         if (quizError) throw quizError;
@@ -192,8 +207,8 @@ export async function uploadProgressToCloud(): Promise<{
     updateSyncStatus({ state: 'success', timestamp: Date.now() });
     return { success: true };
 
-  } catch (error: any) {
-    const errorMessage = error.message || 'Unknown sync error';
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown sync error';
     updateSyncStatus({ state: 'error', error: errorMessage, timestamp: Date.now() });
     console.error('[Progress Sync] Upload error:', error);
     return { success: false, error: errorMessage };
@@ -221,8 +236,8 @@ export async function downloadProgressFromCloud(): Promise<{
     }
 
     // Fetch user progress
-    const { data: cloudProgress, error: progressError } = await (supabase
-      .from('user_progress') as any)
+    const { data: cloudProgress, error: progressError } = await supabase
+      .from('user_progress')
       .select('*')
       .eq('id', user.id)
       .single();
@@ -237,16 +252,16 @@ export async function downloadProgressFromCloud(): Promise<{
     }
 
     // Fetch lesson progress
-    const { data: cloudLessons, error: lessonsError } = await (supabase
-      .from('lesson_progress') as any)
+    const { data: cloudLessons, error: lessonsError } = await supabase
+      .from('lesson_progress')
       .select('*')
       .eq('user_id', user.id);
 
     if (lessonsError) throw lessonsError;
 
     // Fetch quiz results
-    const { data: cloudQuizResults, error: quizError } = await (supabase
-      .from('quiz_results') as any)
+    const { data: cloudQuizResults, error: quizError } = await supabase
+      .from('quiz_results')
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: true });
@@ -264,8 +279,8 @@ export async function downloadProgressFromCloud(): Promise<{
     localStorage.setItem('soundsfair-streak', JSON.stringify(streakData));
 
     // Convert lesson progress to localStorage format
-    const lessonProgressMap: Record<string, any> = {};
-    cloudLessons?.forEach((lesson: any) => {
+    const lessonProgressMap: Record<string, LessonProgress> = {};
+    cloudLessons?.forEach((lesson: LessonProgressRow) => {
       lessonProgressMap[lesson.lesson_slug] = {
         slug: lesson.lesson_slug,
         level: lesson.lesson_level,
@@ -275,14 +290,14 @@ export async function downloadProgressFromCloud(): Promise<{
         timeSpent: lesson.time_spent,
         lastVisited: lesson.last_visited,
         quizPassed: lesson.quiz_passed,
-        quizScore: lesson.quiz_score,
+        quizScore: lesson.quiz_score ?? undefined,
         quizAttempts: lesson.quiz_attempts,
       };
     });
     localStorage.setItem('soundsfair-lesson-progress', JSON.stringify(lessonProgressMap));
 
     // Convert quiz results to localStorage format
-    const quizResultsLocal = cloudQuizResults?.map((result: any) => ({
+    const quizResultsLocal = cloudQuizResults?.map((result: QuizResultRow) => ({
       lessonSlug: result.lesson_slug,
       score: result.score,
       total: result.total,
@@ -296,8 +311,8 @@ export async function downloadProgressFromCloud(): Promise<{
     updateSyncStatus({ state: 'success', timestamp: Date.now() });
     return { success: true };
 
-  } catch (error: any) {
-    const errorMessage = error.message || 'Unknown download error';
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown download error';
     updateSyncStatus({ state: 'error', error: errorMessage, timestamp: Date.now() });
     console.error('[Progress Sync] Download error:', error);
     return { success: false, error: errorMessage };
@@ -342,8 +357,8 @@ export async function syncProgress(
     const localXP = parseInt(localStorage.getItem('soundsfair-xp') || '0');
 
     // Get cloud progress
-    const { data: cloudProgress, error: cloudError } = await (supabase
-      .from('user_progress') as any)
+    const { data: cloudProgress, error: cloudError } = await supabase
+      .from('user_progress')
       .select('*')
       .eq('id', user.id)
       .single();
@@ -387,8 +402,8 @@ export async function syncProgress(
 
     return result;
 
-  } catch (error: any) {
-    const errorMessage = error.message || 'Merge sync failed';
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Merge sync failed';
     updateSyncStatus({ state: 'error', error: errorMessage, timestamp: Date.now() });
     console.error('[Progress Sync] Merge error:', error);
     return { success: false, error: errorMessage };

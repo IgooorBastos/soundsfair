@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { AuthChangeEvent, Session, UserResponse } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import {
   getSyncStatus,
@@ -22,7 +23,8 @@ export function ProgressSyncIndicator() {
   // Check authentication and setup auto-sync
   useEffect(() => {
     // Check initial auth state
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then((response: UserResponse) => {
+      const user = response.data.user;
       setIsAuthenticated(!!user);
       if (user) {
         startAutoSync();
@@ -30,7 +32,8 @@ export function ProgressSyncIndicator() {
     });
 
     // Listen to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event: AuthChangeEvent, session: Session | null) => {
       const authenticated = !!session?.user;
       setIsAuthenticated(authenticated);
 
@@ -39,7 +42,8 @@ export function ProgressSyncIndicator() {
       } else {
         stopAutoSync();
       }
-    });
+      }
+    );
 
     // Subscribe to sync status changes
     const unsubscribe = onSyncStatusChange(setStatus);

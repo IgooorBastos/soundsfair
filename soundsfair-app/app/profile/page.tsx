@@ -32,7 +32,7 @@ export default function ProfilePage() {
     if (user) {
       // Load user profile data
       const loadProfile = async () => {
-        const { data, error } = await supabase.auth.getUser();
+        const { data } = await supabase.auth.getUser();
         if (data?.user) {
           setDisplayName(data.user.user_metadata?.display_name || data.user.email?.split('@')[0] || 'User');
         }
@@ -110,8 +110,8 @@ export default function ProfilePage() {
       setSaveMessage({ type: 'success', text: 'Name updated successfully!' });
       setIsEditingName(false);
       setTimeout(() => setSaveMessage(null), 3000);
-    } catch (error: any) {
-      setSaveMessage({ type: 'error', text: error.message || 'Failed to update name' });
+    } catch (error) {
+      setSaveMessage({ type: 'error', text: error instanceof Error ? error.message : 'Failed to update name' });
     } finally {
       setIsSaving(false);
     }
@@ -128,8 +128,8 @@ export default function ProfilePage() {
       } else {
         throw new Error(result.error || 'Upload failed');
       }
-    } catch (error: any) {
-      setSyncMessage({ type: 'error', text: error.message || 'Failed to upload progress' });
+    } catch (error) {
+      setSyncMessage({ type: 'error', text: error instanceof Error ? error.message : 'Failed to upload progress' });
     } finally {
       setIsSyncing(false);
       setTimeout(() => setSyncMessage(null), 5000);
@@ -152,8 +152,8 @@ export default function ProfilePage() {
       } else {
         throw new Error(result.error || 'Download failed');
       }
-    } catch (error: any) {
-      setSyncMessage({ type: 'error', text: error.message || 'Failed to download progress' });
+    } catch (error) {
+      setSyncMessage({ type: 'error', text: error instanceof Error ? error.message : 'Failed to download progress' });
       setIsSyncing(false);
       setTimeout(() => setSyncMessage(null), 5000);
     }
@@ -173,8 +173,8 @@ export default function ProfilePage() {
       } else {
         throw new Error(result.error || 'Sync failed');
       }
-    } catch (error: any) {
-      setSyncMessage({ type: 'error', text: error.message || 'Failed to sync progress' });
+    } catch (error) {
+      setSyncMessage({ type: 'error', text: error instanceof Error ? error.message : 'Failed to sync progress' });
     } finally {
       setIsSyncing(false);
       setTimeout(() => setSyncMessage(null), 5000);

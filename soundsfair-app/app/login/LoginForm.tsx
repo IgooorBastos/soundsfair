@@ -62,10 +62,10 @@ export default function LoginForm() {
           setTimeout(() => router.push('/lessons'), 1000);
         }
       }
-    } catch (error: any) {
+    } catch (error) {
       setMessage({
         type: 'error',
-        text: error.message || 'An error occurred. Please try again.',
+        text: error instanceof Error ? error.message : 'An error occurred. Please try again.',
       });
     } finally {
       setLoading(false);
@@ -91,10 +91,10 @@ export default function LoginForm() {
         type: 'success',
         text: 'Magic link sent! Check your email to login.',
       });
-    } catch (error: any) {
+    } catch (error) {
       setMessage({
         type: 'error',
-        text: error.message || 'An error occurred. Please try again.',
+        text: error instanceof Error ? error.message : 'An error occurred. Please try again.',
       });
     } finally {
       setLoading(false);

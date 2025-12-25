@@ -10,6 +10,11 @@ export default function UserProgress() {
   const [showDetails, setShowDetails] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  const updateProgress = () => {
+    setProgress(getUserProgress());
+    setXPInfo(getXPProgress());
+  };
+
   useEffect(() => {
     setMounted(true);
     updateProgress();
@@ -24,11 +29,6 @@ export default function UserProgress() {
       window.removeEventListener('storage', handleProgressUpdate);
     };
   }, []);
-
-  const updateProgress = () => {
-    setProgress(getUserProgress());
-    setXPInfo(getXPProgress());
-  };
 
   // Avoid hydration mismatch
   if (!mounted || !progress || !xpInfo) {
