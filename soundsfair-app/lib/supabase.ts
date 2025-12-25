@@ -6,20 +6,23 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/app/types/database';
+import type { DatabaseWithRelationships } from '@/app/types/database';
 
-// Get environment variables (use empty string as fallback for build time)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+// Get environment variables with valid placeholder fallbacks for build time
+// During build/prerendering, these placeholders allow createClient to succeed
+// At runtime in the browser, we validate and require the real values
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTI4MDAsImV4cCI6MTk2MDc2ODgwMH0.placeholder';
 
 // Validate environment variables only on client-side (runtime)
-// During build/prerendering, these variables are injected at runtime
+// During build/prerendering, placeholders are used
+// At runtime in browser, real values must be present
 if (typeof window !== 'undefined') {
-  if (!supabaseUrl) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
     throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable');
   }
 
-  if (!supabaseAnonKey) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable');
   }
 }
@@ -32,7 +35,7 @@ if (typeof window !== 'undefined') {
  * - RLS policies enforced
  * - Automatic JWT token handling
  */
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient<DatabaseWithRelationships>(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
@@ -49,7 +52,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
  * @param email - User's email address
  */
 export function createSupabaseClientWithEmail(email: string) {
-  return createClient<Database>(supabaseUrl!, supabaseAnonKey!, {
+  return createClient<DatabaseWithRelationships>(supabaseUrl!, supabaseAnonKey!, {
     global: {
       headers: {
         'x-user-email': email,
