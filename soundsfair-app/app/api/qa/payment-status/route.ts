@@ -9,7 +9,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { getInvoiceStatus } from '@/lib/opennode';
-import type { PaymentStatusResponse, APIError } from '@/app/types/qa';
+import type { PaymentStatusResponse, APIError, PaymentStatus, QuestionStatus } from '@/app/types/qa';
+import type { Database } from '@/app/types/database';
+
+type PaymentRow = Pick<Database['public']['Tables']['payments']['Row'], 'id' | 'invoice_id' | 'status' | 'paid_at'>;
+type QuestionWithPayment = Pick<
+  Database['public']['Tables']['questions']['Row'],
+  'id' | 'status' | 'payment_status' | 'payment_id' | 'response_text' | 'response_video_url' | 'responded_at'
+> & { payments: PaymentRow[] | null };
 
 // ============================================================================
 // MAIN HANDLER
@@ -45,10 +52,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Initialize Supabase admin client
-    const supabase = supabaseAdmin;
+    const supabase = supabaseAdmin as any;
 
     // Get question with payment details
-    const { data: question, error: questionError } = await (supabase as any)
+    const { data: question, error: questionError } = await supabase
       .from('questions')
       .select(
         `
@@ -68,7 +75,7 @@ export async function GET(request: NextRequest) {
       `
       )
       .eq('id', questionId)
-      .single();
+      .single<QuestionWithPayment>();
 
     if (questionError || !question) {
       return NextResponse.json<APIError>(
@@ -82,7 +89,7 @@ export async function GET(request: NextRequest) {
 
     // If payment exists, optionally check OpenNode for latest status
     // (This provides a fallback if webhook was missed)
-    if (question.payments && Array.isArray(question.payments) && question.payments.length > 0) {
+    if (question.payments && question.payments.length > 0) {
       const payment = question.payments[0];
 
       // Only check OpenNode if payment is still pending
@@ -91,8 +98,8 @@ export async function GET(request: NextRequest) {
 
         if (invoiceStatus.success && invoiceStatus.status) {
           // Update local payment status if it changed
-          if (invoiceStatus.status !== payment.status) {
-            await (supabase as any)
+          if (invoiceStatus.status !== (payment.status as string)) {
+            await supabase
               .from('payments')
               .update({
                 status: invoiceStatus.status,
@@ -104,8 +111,8 @@ export async function GET(request: NextRequest) {
               .eq('id', payment.id);
 
             // Update question status accordingly
-            let newQuestionStatus = question.status;
-            let newPaymentStatus = 'pending';
+            let newQuestionStatus: QuestionStatus = question.status as QuestionStatus;
+            let newPaymentStatus: PaymentStatus = question.payment_status as PaymentStatus;
 
             if (invoiceStatus.status === 'paid') {
               newQuestionStatus = 'in_queue';
@@ -115,7 +122,7 @@ export async function GET(request: NextRequest) {
               newPaymentStatus = 'expired';
             }
 
-            await (supabase as any)
+            await supabase
               .from('questions')
               .update({
                 status: newQuestionStatus,
@@ -135,8 +142,8 @@ export async function GET(request: NextRequest) {
     // Build response
     const response: PaymentStatusResponse = {
       questionId: question.id,
-      paymentStatus: question.payment_status as any,
-      questionStatus: question.status as any,
+      paymentStatus: question.payment_status as PaymentStatus,
+      questionStatus: question.status as QuestionStatus,
     };
 
     // Include answer if available

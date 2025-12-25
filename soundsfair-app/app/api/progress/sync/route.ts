@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/app/types/database';
+
+type ProgressPayload = {
+  total_xp?: number;
+  current_level?: number;
+  current_streak?: number;
+  longest_streak?: number;
+  last_active_date?: string | null;
+  device_id?: string | null;
+};
 
 /**
  * POST /api/progress/sync
@@ -23,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     const token = authHeader.replace('Bearer ', '');
 
-    const supabase = createClient(
+    const supabase = createClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -31,7 +41,7 @@ export async function POST(request: NextRequest) {
           headers: { Authorization: `Bearer ${token}` }
         }
       }
-    );
+    ) as any;
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -44,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json();
-    const { progressData } = body;
+    const { progressData } = body as { progressData?: ProgressPayload };
 
     // Validate progress data structure
     if (!progressData || typeof progressData !== 'object') {
@@ -83,12 +93,12 @@ export async function POST(request: NextRequest) {
       user_id: user.id,
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('[Sync API] Unexpected error:', error);
     return NextResponse.json(
       {
         error: 'Internal Server Error',
-        details: error.message
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );
@@ -113,7 +123,7 @@ export async function GET(request: NextRequest) {
 
     const token = authHeader.replace('Bearer ', '');
 
-    const supabase = createClient(
+    const supabase = createClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -121,7 +131,7 @@ export async function GET(request: NextRequest) {
           headers: { Authorization: `Bearer ${token}` }
         }
       }
-    );
+    ) as any;
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -161,10 +171,10 @@ export async function GET(request: NextRequest) {
       sync_version: progress.sync_version,
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('[Sync API GET] Error:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error', details: error.message },
+      { error: 'Internal Server Error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

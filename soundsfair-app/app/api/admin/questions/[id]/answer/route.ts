@@ -14,8 +14,8 @@ import { getClientIp } from '@/lib/rate-limit';
 import type { APIError } from '@/app/types/qa';
 import type { Database } from '@/app/types/database';
 
-type Question = Database['public']['Tables']['questions']['Row'];
 type QuestionUpdate = Database['public']['Tables']['questions']['Update'];
+type Question = Database['public']['Tables']['questions']['Row'];
 
 export async function POST(
   request: NextRequest,
@@ -56,14 +56,14 @@ export async function POST(
       );
     }
 
-    const supabase = supabaseAdmin;
+    const supabase = supabaseAdmin as any;
 
     // Get question details
     const { data: question, error: questionError } = await supabase
       .from('questions')
       .select('*')
       .eq('id', id)
-      .single() as { data: Question | null; error: any };
+      .single();
 
     if (questionError || !question) {
       return NextResponse.json<APIError>(
@@ -87,7 +87,7 @@ export async function POST(
     }
 
     // Update question with answer
-    const updatePayload: any = {
+    const updatePayload: QuestionUpdate = {
       response_text: responseText || null,
       response_video_url: responseVideoUrl || null,
       responded_at: new Date().toISOString(),
@@ -100,7 +100,7 @@ export async function POST(
           : null,
     };
 
-    const { error: updateError } = await (supabase as any)
+    const { error: updateError } = await supabase
       .from('questions')
       .update(updatePayload)
       .eq('id', id);
