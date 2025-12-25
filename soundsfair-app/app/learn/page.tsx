@@ -15,6 +15,7 @@ const lessons = [
     topics: ["History of money", "Fiat currency creation", "Inflation and purchasing power", "Central banking"],
     duration: "30 min",
     status: "available" as const,
+    slug: "level-1-fiat-system",
   },
   {
     level: 2,
@@ -23,6 +24,7 @@ const lessons = [
     topics: ["Fractional reserve banking", "Money multiplication", "Debt cycles", "Economic bubbles"],
     duration: "35 min",
     status: "available" as const,
+    slug: "level-2-banking-debt",
   },
   {
     level: 3,
@@ -31,6 +33,7 @@ const lessons = [
     topics: ["Bitcoin basics", "Decentralization", "Fixed supply", "Censorship resistance"],
     duration: "40 min",
     status: "available" as const,
+    slug: "level-3-bitcoin-revolution",
   },
   {
     level: 4,
@@ -39,6 +42,7 @@ const lessons = [
     topics: ["Monetary sovereignty", "Sanctions resistance", "Global adoption", "Nation-state involvement"],
     duration: "45 min",
     status: "available" as const,
+    slug: "level-4-bitcoin-geopolitics-intro",
   },
   {
     level: 5,
@@ -47,6 +51,7 @@ const lessons = [
     topics: ["Scarcity", "Digital gold", "Inflation protection", "Long-term value"],
     duration: "40 min",
     status: "coming-soon" as const,
+    slug: "level-5-store-of-value",
   },
   {
     level: 6,
@@ -55,6 +60,7 @@ const lessons = [
     topics: ["Self-custody", "Borderless transactions", "Financial inclusion", "Privacy"],
     duration: "40 min",
     status: "coming-soon" as const,
+    slug: "level-6-economic-freedom",
   },
   {
     level: 7,
@@ -63,6 +69,7 @@ const lessons = [
     topics: ["Adoption trends", "Regulatory landscape", "Game theory", "Future scenarios"],
     duration: "45 min",
     status: "coming-soon" as const,
+    slug: "level-7-geopolitical-future",
   },
   {
     level: 8,
@@ -71,6 +78,7 @@ const lessons = [
     topics: ["Diversification", "Bitcoin allocation", "Security best practices", "Long-term strategy"],
     duration: "50 min",
     status: "coming-soon" as const,
+    slug: "level-8-protection-strategies",
   },
   {
     level: 9,
@@ -79,6 +87,7 @@ const lessons = [
     topics: ["Key takeaways", "Action plan", "Resources", "Community"],
     duration: "30 min",
     status: "coming-soon" as const,
+    slug: "level-9-financial-freedom",
   },
 ];
 
@@ -153,7 +162,7 @@ export default function LearnPage() {
                   <div className="flex flex-col gap-2">
                     {lesson.status === "available" ? (
                       <Link
-                        href={`/lessons/level-${lesson.level}-${lesson.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`}
+                        href={`/lessons/${lesson.slug}`}
                         className="px-6 py-2 bg-brand-yellow text-black font-semibold rounded-lg hover:bg-primary-dark transition-colors whitespace-nowrap text-center"
                       >
                         Start Lesson
