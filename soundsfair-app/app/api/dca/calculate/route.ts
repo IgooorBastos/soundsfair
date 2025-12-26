@@ -13,16 +13,21 @@ async function fetchPricesForAsset(
   endDate: string,
   baseUrl: string
 ): Promise<PricePoint[]> {
-  const response = await fetch(
-    `${baseUrl}/api/prices?asset=${asset}&from=${startDate}&to=${endDate}`,
-    { cache: 'no-store' }
-  );
+  const url = `${baseUrl}/api/prices?asset=${asset}&from=${startDate}&to=${endDate}`;
+  console.log(`[fetchPricesForAsset] Calling URL:`, url);
+
+  const response = await fetch(url, { cache: 'no-store' });
+
+  console.log(`[fetchPricesForAsset] Response status:`, response.status);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch prices for ${asset}`);
+    const errorText = await response.text();
+    console.error(`[fetchPricesForAsset] Error response:`, errorText);
+    throw new Error(`Failed to fetch prices for ${asset}: ${response.status} - ${errorText}`);
   }
 
   const result = await response.json();
+  console.log(`[fetchPricesForAsset] Result:`, { hasData: !!result.data, count: result.data?.length });
   return result.data;
 }
 
@@ -68,25 +73,39 @@ export async function POST(request: NextRequest) {
 
     // Get base URL from request (works in both dev and production)
     const baseUrl = new URL(request.url).origin;
+    console.log('[DCA Calculate] Base URL:', baseUrl);
+    console.log('[DCA Calculate] Requested assets:', body.assets);
+    console.log('[DCA Calculate] Date range:', body.startDate, 'to', body.endDate);
 
     // Fetch price data for all requested assets
     const priceDataMap = new Map<Asset, PricePoint[]>();
+    const errors: Record<string, string> = {};
 
     await Promise.all(
       body.assets.map(async (asset) => {
         try {
+          console.log(`[DCA Calculate] Fetching prices for ${asset}...`);
           const prices = await fetchPricesForAsset(asset, body.startDate, body.endDate, baseUrl);
+          console.log(`[DCA Calculate] ✓ Got ${prices.length} price points for ${asset}`);
           priceDataMap.set(asset, prices);
         } catch (error) {
-          console.error(`Failed to fetch prices for ${asset}:`, error);
+          const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+          console.error(`[DCA Calculate] ✗ Failed to fetch prices for ${asset}:`, errorMsg);
+          errors[asset] = errorMsg;
           // Continue with other assets even if one fails
         }
       })
     );
 
     if (priceDataMap.size === 0) {
+      console.error('[DCA Calculate] No price data fetched for any asset. Errors:', errors);
       return NextResponse.json(
-        { error: 'Failed to fetch price data for any asset' },
+        {
+          error: 'Failed to fetch price data for any asset',
+          details: errors,
+          requestedAssets: body.assets,
+          baseUrl: baseUrl
+        },
         { status: 500 }
       );
     }
