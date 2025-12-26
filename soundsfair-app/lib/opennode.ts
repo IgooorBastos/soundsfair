@@ -12,7 +12,13 @@ import crypto from 'crypto';
 // CONFIGURATION
 // ============================================================================
 
-const OPENNODE_API_URL = 'https://api.opennode.com/v1';
+// Use DEV API for testnet keys, PROD API for production keys
+// Set OPENNODE_ENV=production to use production API
+const OPENNODE_ENV = process.env.OPENNODE_ENV || 'dev';
+const OPENNODE_API_URL = OPENNODE_ENV === 'production'
+  ? 'https://api.opennode.com/v1'
+  : 'https://dev-api.opennode.com/v1';
+
 const OPENNODE_API_KEY = process.env.OPENNODE_API_KEY;
 const OPENNODE_WEBHOOK_SECRET = process.env.OPENNODE_WEBHOOK_SECRET;
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
