@@ -307,6 +307,6 @@ export function generateColorScale(baseColor: string, steps: number = 5): string
  * @param configs - Configuration objects to merge
  * @returns Merged configuration
  */
-export function mergeConfigs<T extends Record<string, any>>(...configs: T[]): T {
+export function mergeConfigs<T extends Record<string, unknown>>(...configs: T[]): T {
   return Object.assign({}, ...configs);
 }

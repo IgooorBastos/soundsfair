@@ -35,7 +35,7 @@ export async function GET(request: Request) {
 
   try {
     // Primary source: CoinCap API
-    const priceData = await fetchFromCoinCap(currencies);
+    const priceData = await fetchFromCoinCap();
 
     // Cache the successful response
     setCachedData(cacheKey, priceData, CACHE_DURATIONS.PRICE_CURRENT);
@@ -94,7 +94,7 @@ export async function GET(request: Request) {
 /**
  * Fetch price from CoinCap API
  */
-async function fetchFromCoinCap(currencies: string[]): Promise<BitcoinPrice> {
+async function fetchFromCoinCap(): Promise<BitcoinPrice> {
   const response = await fetch(API_ENDPOINTS.COINCAP_BITCOIN, {
     next: { revalidate: 60 }
   });
@@ -113,7 +113,7 @@ async function fetchFromCoinCap(currencies: string[]): Promise<BitcoinPrice> {
   const volume24h = parseFloat(asset.volumeUsd24Hr);
 
   // For other currencies, we need to fetch exchange rates
-  const rates = await fetchExchangeRates(currencies);
+  const rates = await fetchExchangeRates();
 
   const priceData: BitcoinPrice = {
     usd: usdPrice,
@@ -181,7 +181,7 @@ async function fetchFromCoinGecko(currencies: string[]): Promise<BitcoinPrice> {
  * Fetch exchange rates (USD to other currencies)
  * Uses a simple cached exchange rate API
  */
-async function fetchExchangeRates(currencies: string[]): Promise<Record<string, number>> {
+async function fetchExchangeRates(): Promise<Record<string, number>> {
   const cacheKey = 'exchange-rates';
   const cached = getCachedData<Record<string, number>>(cacheKey, 3600); // Cache for 1 hour
 

@@ -180,7 +180,7 @@ export default function PricingTierSelector({
       </div>
 
       <p className="text-sm text-text-muted mt-4">
-        All payments are processed instantly via Lightning Network. You'll receive
+        All payments are processed instantly via Lightning Network. You&apos;ll receive
         an invoice after submitting your question.
       </p>
     </div>

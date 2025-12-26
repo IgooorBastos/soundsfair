@@ -203,7 +203,7 @@ export default function QuizComponent({ questions, lessonSlug, lessonLevel }: Qu
                   ✅ Quiz Passed!
                 </p>
                 <p className="text-text-secondary">
-                  You've earned <span className="text-brand-gold font-bold">150 XP</span> and unlocked the next level!
+                  You&apos;ve earned <span className="text-brand-gold font-bold">150 XP</span> and unlocked the next level!
                 </p>
               </div>
             ) : (
@@ -212,7 +212,7 @@ export default function QuizComponent({ questions, lessonSlug, lessonLevel }: Qu
                   📖 Review Needed
                 </p>
                 <p className="text-text-secondary">
-                  You've earned <span className="text-brand-gold font-bold">50 XP</span> for attempting. Review the lesson and try again!
+                  You&apos;ve earned <span className="text-brand-gold font-bold">50 XP</span> for attempting. Review the lesson and try again!
                 </p>
               </div>
             )}

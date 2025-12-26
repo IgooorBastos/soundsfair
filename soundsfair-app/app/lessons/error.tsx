@@ -19,7 +19,7 @@ export default function LessonsError({
         </h1>
 
         <p className="text-text-secondary mb-8">
-          We couldn't load this lesson. This might be a temporary issue.
+          We couldn&apos;t load this lesson. This might be a temporary issue.
         </p>
 
         {process.env.NODE_ENV === 'development' && error.message && (

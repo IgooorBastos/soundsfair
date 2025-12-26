@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
     const amountSats = tierData.sats;
 
     // Initialize Supabase admin client
-    const supabase = supabaseAdmin as any;
+    const supabase = supabaseAdmin;
 
     // Create payment record first
     const { data: payment, error: paymentError } = await supabase

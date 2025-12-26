@@ -240,7 +240,7 @@ export function verifyWebhookSignature(
 /**
  * Parse and validate OpenNode webhook payload
  */
-export function parseWebhookPayload(body: any): VerifyWebhookResult {
+export function parseWebhookPayload(body: unknown): VerifyWebhookResult {
   try {
     // OpenNode webhook structure
     if (!body || typeof body !== 'object') {
@@ -251,7 +251,8 @@ export function parseWebhookPayload(body: any): VerifyWebhookResult {
     }
 
     // Validate required fields
-    if (!body.id || !body.status || !body.order_id) {
+    const payload = body as Partial<OpenNodeInvoice>;
+    if (!payload.id || !payload.status || !payload.order_id) {
       return {
         valid: false,
         error: 'Missing required webhook fields',
@@ -260,7 +261,7 @@ export function parseWebhookPayload(body: any): VerifyWebhookResult {
 
     return {
       valid: true,
-      payload: body as OpenNodeInvoice,
+      payload: payload as OpenNodeInvoice,
     };
   } catch (error) {
     return {

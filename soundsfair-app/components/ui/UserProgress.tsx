@@ -16,6 +16,7 @@ export default function UserProgress() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     updateProgress();
 
@@ -208,7 +209,7 @@ export default function UserProgress() {
             )}
             {progress.lessonsCompleted.length === 5 && (
               <div className="mt-4 text-center text-xs text-brand-gold font-semibold">
-                🎓 Course completed! You're a Bitcoin expert!
+                🎓 Course completed! You&apos;re a Bitcoin expert!
               </div>
             )}
           </div>

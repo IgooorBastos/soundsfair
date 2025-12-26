@@ -8,9 +8,6 @@ import {
   btcToFiat,
   fiatToBtc,
   satsToFiat,
-  fiatToSats,
-  formatBitcoinAmount,
-  formatFiatAmount,
 } from '@/lib/bitcoin/converter';
 import type { Currency } from '@/app/types/tools';
 
@@ -54,6 +51,7 @@ export default function SatoshiConverter() {
   useEffect(() => {
     if (price && activeField !== 'usd' && activeField !== 'eur' && activeField !== 'gbp' && activeField !== 'brl') {
       const btcValue = parseFloat(values.btc) || 0;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setValues(prev => ({
         ...prev,
         usd: btcToFiat(btcValue, price.usd || 0).toFixed(2),
@@ -62,7 +60,7 @@ export default function SatoshiConverter() {
         brl: btcToFiat(btcValue, price.brl || 0).toFixed(2),
       }));
     }
-  }, [price]);
+  }, [price, activeField, values.btc]);
 
   const updateFromBtc = useCallback((btcValue: string) => {
     const btc = parseFloat(btcValue) || 0;
@@ -98,14 +96,14 @@ export default function SatoshiConverter() {
     const btc = fiatToBtc(fiat, priceInCurrency);
     const sats = btcToSats(btc);
 
-    setValues(prev => ({
+    setValues({
       btc: btc.toFixed(8),
       sats: sats.toString(),
       usd: currency === 'usd' ? fiatValue : btcToFiat(btc, price?.usd || 0).toFixed(2),
       eur: currency === 'eur' ? fiatValue : btcToFiat(btc, price?.eur || 0).toFixed(2),
       gbp: currency === 'gbp' ? fiatValue : btcToFiat(btc, price?.gbp || 0).toFixed(2),
       brl: currency === 'brl' ? fiatValue : btcToFiat(btc, price?.brl || 0).toFixed(2),
-    }));
+    });
   }, [price]);
 
   const handleInputChange = (field: keyof ConversionValues, value: string) => {
@@ -373,7 +371,7 @@ export default function SatoshiConverter() {
         <div className="bg-surface-charcoal border border-border-default rounded-lg p-6">
           <h2 className="text-2xl font-bold mb-4">What is a Satoshi?</h2>
           <p className="text-gray-300 mb-4">
-            A <strong className="text-brand-yellow">satoshi</strong> (sat) is the smallest unit of Bitcoin, named after Bitcoin's creator, Satoshi Nakamoto. One Bitcoin equals 100 million satoshis.
+            A <strong className="text-brand-yellow">satoshi</strong> (sat) is the smallest unit of Bitcoin, named after Bitcoin&apos;s creator, Satoshi Nakamoto. One Bitcoin equals 100 million satoshis.
           </p>
           <p className="text-gray-300">
             Just like a dollar can be divided into 100 cents, one Bitcoin can be divided into 100,000,000 satoshis. This divisibility makes Bitcoin practical for transactions of any size, from micro-payments to large transfers.
@@ -388,7 +386,7 @@ export default function SatoshiConverter() {
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li><strong className="text-brand-yellow">Psychological advantage:</strong> Whole numbers are easier to understand than decimals (100,000 sats vs 0.001 BTC)</li>
-              <li><strong className="text-brand-yellow">Future-proof:</strong> As Bitcoin's price increases, sats become the practical unit for everyday transactions</li>
+              <li><strong className="text-brand-yellow">Future-proof:</strong> As Bitcoin&apos;s price increases, sats become the practical unit for everyday transactions</li>
               <li><strong className="text-brand-yellow">Precision:</strong> No need for long decimal places when pricing goods and services</li>
               <li><strong className="text-brand-yellow">Lightning Network:</strong> The Lightning Network naturally operates in satoshis</li>
             </ul>

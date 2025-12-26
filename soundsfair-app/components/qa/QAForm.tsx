@@ -178,7 +178,7 @@ export default function QAForm() {
           <p className="text-semantic-error text-sm mt-1">{errors.userEmail}</p>
         )}
         <p className="text-xs text-text-muted mt-1">
-          We'll send your answer here. No spam, ever.
+          We&apos;ll send your answer here. No spam, ever.
         </p>
       </div>
 
@@ -383,7 +383,7 @@ export default function QAForm() {
       </button>
 
       <p className="text-xs text-text-muted text-center mt-4">
-        After submitting, you'll receive a Lightning invoice to complete payment.
+        After submitting, you&apos;ll receive a Lightning invoice to complete payment.
         Your question will be processed once payment is confirmed.
       </p>
     </form>

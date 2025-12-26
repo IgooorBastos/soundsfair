@@ -413,6 +413,7 @@ export function getQuizResults(): QuizResult[] {
  * All lessons are now freely accessible - no sequential progression required
  */
 export function canAccessLesson(level: number): boolean {
+  void level;
   // All lessons are freely accessible
   return true;
 }

@@ -230,7 +230,7 @@ export default function HalvingCountdown() {
             where the block reward miners receive for validating transactions is cut in half.
           </p>
           <p>
-            This mechanism is built into Bitcoin's protocol to control inflation and ensure that only
+            This mechanism is built into Bitcoin&apos;s protocol to control inflation and ensure that only
             <strong className="text-brand-yellow"> 21 million bitcoins</strong> will ever exist. As the block reward decreases over time,
             Bitcoin becomes increasingly scarce, similar to precious metals like gold.
           </p>
@@ -285,7 +285,7 @@ export default function HalvingCountdown() {
           </div>
 
           {/* Historical Halvings */}
-          {historicalHalvings.filter(h => h.era <= halvingInfo.currentEra).slice().reverse().map((halving, index) => (
+          {historicalHalvings.filter(h => h.era <= halvingInfo.currentEra).slice().reverse().map((halving) => (
             <div
               key={halving.era}
               className="flex items-start gap-4 pb-4 border-b border-gray-800 last:border-0"
@@ -335,21 +335,21 @@ export default function HalvingCountdown() {
           <div>
             <h4 className="font-semibold text-white mb-2">📉 Reduced Inflation</h4>
             <p className="text-sm text-gray-400">
-              Each halving cuts Bitcoin's inflation rate in half, making it increasingly scarce.
+              Each halving cuts Bitcoin&apos;s inflation rate in half, making it increasingly scarce.
               This deflationary model is unique compared to traditional fiat currencies.
             </p>
           </div>
           <div>
             <h4 className="font-semibold text-white mb-2">⚖️ Stock-to-Flow Ratio</h4>
             <p className="text-sm text-gray-400">
-              Halvings increase Bitcoin's stock-to-flow ratio, a metric comparing existing supply
+              Halvings increase Bitcoin&apos;s stock-to-flow ratio, a metric comparing existing supply
               to new production, similar to precious metals like gold.
             </p>
           </div>
           <div>
             <h4 className="font-semibold text-white mb-2">💰 Price Impact</h4>
             <p className="text-sm text-gray-400">
-              Historically, Bitcoin's price has increased significantly in the 12-18 months following
+              Historically, Bitcoin&apos;s price has increased significantly in the 12-18 months following
               each halving due to reduced supply and increased scarcity.
             </p>
           </div>

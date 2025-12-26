@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface CalculationResult {
   investmentAmount: number;
@@ -362,14 +362,14 @@ export default function WhatIfCalculator() {
             <h4 className="font-semibold text-white mb-2">📊 Performance Metrics</h4>
             <p className="text-sm">
               We calculate total return, percentage gain, annualized return, and return multiple
-              to give you a comprehensive view of the investment's performance over time.
+              to give you a comprehensive view of the investment&apos;s performance over time.
             </p>
           </div>
           <div>
             <h4 className="font-semibold text-white mb-2">🎯 Educational Purpose</h4>
             <p className="text-sm">
-              This tool helps you understand Bitcoin's historical performance and the power of
-              long-term holding. It's designed to educate, not to predict future returns.
+              This tool helps you understand Bitcoin&apos;s historical performance and the power of
+              long-term holding. It&apos;s designed to educate, not to predict future returns.
             </p>
           </div>
         </div>

@@ -21,7 +21,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { loadDataset } from '@/lib/charts/dataLoader';
-import { formatCompact, formatYear, formatPercent } from '@/lib/charts/formatters';
+import { formatYear, formatPercent } from '@/lib/charts/formatters';
 import {
   CHART_COLORS,
   XAXIS_CONFIG,
@@ -37,6 +37,45 @@ interface ChartData {
   Year: number;
   M2_Money_Supply_Trillion_USD: number;
   Annual_Change_Percent: number;
+}
+
+interface TooltipEntry {
+  payload: ChartData;
+}
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: TooltipEntry[];
+}
+
+function MoneySupplyTooltip({ active, payload }: TooltipProps) {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div style={TOOLTIP_CONFIG.contentStyle}>
+        <p style={TOOLTIP_CONFIG.labelStyle}>
+          <strong>{formatYear(data.Year)}</strong>
+        </p>
+        <p style={TOOLTIP_CONFIG.itemStyle}>
+          M2 Supply: ${data.M2_Money_Supply_Trillion_USD}T
+        </p>
+        <p style={TOOLTIP_CONFIG.itemStyle}>
+          Annual Change:{' '}
+          <span
+            style={{
+              color:
+                data.Annual_Change_Percent > 15
+                  ? CHART_COLORS.red
+                  : CHART_COLORS.green,
+            }}
+          >
+            {formatPercent(data.Annual_Change_Percent, 1, true)}
+          </span>
+        </p>
+      </div>
+    );
+  }
+  return null;
 }
 
 export const MoneySupplyChart: React.FC = () => {
@@ -70,41 +109,11 @@ export const MoneySupplyChart: React.FC = () => {
     );
   }
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div style={TOOLTIP_CONFIG.contentStyle}>
-          <p style={TOOLTIP_CONFIG.labelStyle}>
-            <strong>{formatYear(data.Year)}</strong>
-          </p>
-          <p style={TOOLTIP_CONFIG.itemStyle}>
-            M2 Supply: ${data.M2_Money_Supply_Trillion_USD}T
-          </p>
-          <p style={TOOLTIP_CONFIG.itemStyle}>
-            Annual Change:{' '}
-            <span
-              style={{
-                color:
-                  data.Annual_Change_Percent > 15
-                    ? CHART_COLORS.red
-                    : CHART_COLORS.green,
-              }}
-            >
-              {formatPercent(data.Annual_Change_Percent, 1, true)}
-            </span>
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <div className="vi-chart-container">
       <h3 className="vi-chart-title">US M2 Money Supply Growth (2000-2023)</h3>
       <p className="vi-chart-description">
-        Visualizing "money printer go brrr" - dramatic expansion during COVID-19
+        Visualizing &quot;money printer go brrr&quot; - dramatic expansion during COVID-19
       </p>
 
       <div className="vi-chart-wrapper">
@@ -141,7 +150,7 @@ export const MoneySupplyChart: React.FC = () => {
               />
             </YAxis>
 
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<MoneySupplyTooltip />} />
 
             {/* Reference line at 2020 (COVID spike) */}
             <ReferenceLine

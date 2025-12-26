@@ -153,11 +153,9 @@ async function testConnection() {
     'SUPABASE_SERVICE_ROLE_KEY': process.env.SUPABASE_SERVICE_ROLE_KEY,
   };
 
-  let envComplete = true;
   for (const [key, value] of Object.entries(envVars)) {
     if (!value) {
       console.error(`❌ Missing: ${key}`);
-      envComplete = false;
       hasErrors = true;
     } else {
       const preview = key.includes('KEY')

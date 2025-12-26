@@ -111,18 +111,18 @@ export default function WhatIfCalculatorPage() {
                 </p>
                 <p className="text-gray-300">
                   Current Bitcoin prices are fetched in real-time from reliable APIs (CoinCap and CoinGecko),
-                  updated every minute. This means your "what if" calculation reflects what an actual investment
+                  updated every minute. This means your &quot;what if&quot; calculation reflects what an actual investment
                   would be worth right now based on current market conditions.
                 </p>
               </div>
 
               <div className="bg-surface-charcoal border border-border-default rounded-lg p-6">
                 <h3 className="text-xl font-semibold mb-3 text-brand-yellow">
-                  What does "annualized return" mean?
+                  What does &quot;annualized return&quot; mean?
                 </h3>
                 <p className="text-gray-300 mb-2">
                   Annualized return is the average yearly percentage gain of your investment, accounting for
-                  the time period you held it. It's calculated using the compound annual growth rate (CAGR) formula:
+                  the time period you held it. It&apos;s calculated using the compound annual growth rate (CAGR) formula:
                 </p>
                 <p className="text-gray-300 mb-2">
                   For example, if you invested $1,000 and it grew to $10,000 over 5 years, the total return is 900%,
@@ -130,7 +130,7 @@ export default function WhatIfCalculatorPage() {
                   investment grew by an average of 58.5% per year when compounded.
                 </p>
                 <p className="text-gray-300">
-                  This metric is useful for comparing Bitcoin's performance to traditional investments like stocks,
+                  This metric is useful for comparing Bitcoin&apos;s performance to traditional investments like stocks,
                   bonds, or real estate, which are typically measured in annual returns.
                 </p>
               </div>
@@ -141,7 +141,7 @@ export default function WhatIfCalculatorPage() {
                 </h3>
                 <p className="text-gray-300 mb-2">
                   <strong className="text-red-400">No.</strong> This calculator is strictly for educational purposes
-                  to show Bitcoin's <em>historical</em> performance. It cannot and does not predict future prices.
+                  to show Bitcoin&apos;s <em>historical</em> performance. It cannot and does not predict future prices.
                 </p>
                 <p className="text-gray-300 mb-2">
                   While Bitcoin has historically appreciated in value over the long term, past performance does not
@@ -164,7 +164,7 @@ export default function WhatIfCalculatorPage() {
                   Why do some dates show incredibly high returns?
                 </h3>
                 <p className="text-gray-300 mb-2">
-                  Bitcoin's price history includes periods of exponential growth, especially in its early years:
+                  Bitcoin&apos;s price history includes periods of exponential growth, especially in its early years:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-gray-300 ml-4">
                   <li><strong>2010-2011:</strong> Bitcoin went from $0.06 to $30 (50,000% gain)</li>
@@ -173,12 +173,12 @@ export default function WhatIfCalculatorPage() {
                   <li><strong>2020-2021:</strong> Climbed from $10,000 to $69,000 (600%+ gain)</li>
                 </ul>
                 <p className="text-gray-300 mt-2">
-                  These massive returns reflect Bitcoin's journey from an unknown experiment to a globally
+                  These massive returns reflect Bitcoin&apos;s journey from an unknown experiment to a globally
                   recognized asset class. Early adopters who held through extreme volatility were rewarded,
                   but they also endured multiple 50-80% crashes along the way.
                 </p>
                 <p className="text-gray-300 mt-2">
-                  As Bitcoin's market cap has grown (now in the trillions), the volatility has decreased
+                  As Bitcoin&apos;s market cap has grown (now in the trillions), the volatility has decreased
                   somewhat, and future returns are unlikely to match the astronomical gains of the early years.
                 </p>
               </div>
@@ -198,7 +198,7 @@ export default function WhatIfCalculatorPage() {
                   <li><strong>Custody costs:</strong> Hardware wallets, insurance, etc.</li>
                 </ul>
                 <p className="text-gray-300 mt-2">
-                  For a more realistic picture, you'd need to subtract these costs. For example, in the US,
+                  For a more realistic picture, you&apos;d need to subtract these costs. For example, in the US,
                   long-term capital gains tax ranges from 0-20% depending on income, plus potential state taxes.
                   This can significantly impact your actual after-tax returns.
                 </p>
@@ -216,17 +216,17 @@ export default function WhatIfCalculatorPage() {
                     <h4 className="font-semibold text-white mb-2">What If Calculator (This Tool)</h4>
                     <p className="text-sm text-gray-300">
                       <strong className="text-brand-yellow">One-time lump sum investment</strong> on a specific date.
-                      Example: "I bought $10,000 of Bitcoin on January 1, 2020"
+                      Example: &quot;I bought $10,000 of Bitcoin on January 1, 2020&quot;
                     </p>
                     <p className="text-sm text-gray-400 mt-2">
-                      Best for: Understanding timing impact, historical context, "if only" scenarios
+                      Best for: Understanding timing impact, historical context, &quot;if only&quot; scenarios
                     </p>
                   </div>
                   <div className="bg-black/40 rounded-lg p-4">
                     <h4 className="font-semibold text-white mb-2">DCA Calculator</h4>
                     <p className="text-sm text-gray-300">
                       <strong className="text-brand-yellow">Recurring periodic investments</strong> over time.
-                      Example: "I bought $100 of Bitcoin every week for 5 years"
+                      Example: &quot;I bought $100 of Bitcoin every week for 5 years&quot;
                     </p>
                     <p className="text-sm text-gray-400 mt-2">
                       Best for: Evaluating consistent savings strategies, reducing timing risk

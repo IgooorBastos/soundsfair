@@ -187,7 +187,7 @@ export default function LearnPage() {
               <div className="text-brand-yellow text-4xl mb-4">📊</div>
               <h4 className="text-xl font-semibold mb-3">DCA Calculator</h4>
               <p className="text-gray-400 mb-4">
-                Compare Bitcoin's performance against traditional assets.
+                Compare Bitcoin&apos;s performance against traditional assets.
               </p>
               <button className="text-brand-yellow hover:underline">Coming Soon</button>
             </div>

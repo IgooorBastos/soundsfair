@@ -122,25 +122,25 @@ export default function HalvingCountdownPage() {
                   <li><strong>Current reward (2024-2028):</strong> 3.125 BTC per block</li>
                   <li><strong>After next halving (2028):</strong> 1.5625 BTC per block</li>
                   <li><strong>Frequency:</strong> Every 210,000 blocks (~4 years)</li>
-                  <li><strong>Purpose:</strong> Control Bitcoin's inflation and enforce the 21 million supply cap</li>
+                  <li><strong>Purpose:</strong> Control Bitcoin&apos;s inflation and enforce the 21 million supply cap</li>
                 </ul>
               </div>
 
               <div className="bg-surface-charcoal border border-border-default rounded-lg p-6">
                 <h3 className="text-xl font-semibold mb-3 text-brand-yellow">
-                  How does halving affect Bitcoin's price?
+                  How does halving affect Bitcoin&apos;s price?
                 </h3>
                 <p className="text-gray-300 mb-2">
-                  While past performance doesn't guarantee future results, historical data shows a pattern:
+                  While past performance doesn&apos;t guarantee future results, historical data shows a pattern:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-gray-300 ml-4">
                   <li><strong>Supply shock:</strong> Reduced new supply creates scarcity</li>
                   <li><strong>Stock-to-Flow ratio:</strong> Increases after each halving, similar to gold</li>
-                  <li><strong>Historical trend:</strong> Bitcoin's price has typically increased 12-18 months after halvings</li>
+                  <li><strong>Historical trend:</strong> Bitcoin&apos;s price has typically increased 12-18 months after halvings</li>
                   <li><strong>Market cycles:</strong> Halvings often mark the beginning of new bull market cycles</li>
                 </ul>
                 <p className="text-gray-400 text-sm mt-3">
-                  Note: Many factors affect Bitcoin's price. Halving is just one component of Bitcoin's monetary policy.
+                  Note: Many factors affect Bitcoin&apos;s price. Halving is just one component of Bitcoin&apos;s monetary policy.
                 </p>
               </div>
 
@@ -151,7 +151,7 @@ export default function HalvingCountdownPage() {
                 <p className="text-gray-300">
                   There will be approximately <strong>32 total halvings</strong> until around the year 2140. After the final
                   halving, the block reward will be so small that it effectively becomes zero. At that point, miners will be
-                  compensated entirely through transaction fees. Currently, we've experienced 4 halvings (2012, 2016, 2020, 2024),
+                  compensated entirely through transaction fees. Currently, we&apos;ve experienced 4 halvings (2012, 2016, 2020, 2024),
                   meaning about 28 halvings remain.
                 </p>
               </div>
@@ -161,7 +161,7 @@ export default function HalvingCountdownPage() {
                   Why is the halving important for Bitcoin?
                 </h3>
                 <p className="text-gray-300 mb-2">
-                  The halving is fundamental to Bitcoin's value proposition:
+                  The halving is fundamental to Bitcoin&apos;s value proposition:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-gray-300 ml-4">
                   <li><strong>Predictable supply:</strong> Unlike fiat currencies, Bitcoin has a fixed monetary policy</li>
@@ -253,10 +253,10 @@ export default function HalvingCountdownPage() {
           <div className="max-w-6xl mx-auto mt-16 text-center">
             <div className="bg-gradient-to-r from-brand-yellow/10 to-transparent border-2 border-brand-yellow rounded-lg p-8">
               <h2 className="text-2xl font-bold mb-4">
-                Want to understand Bitcoin's monetary policy?
+                Want to understand Bitcoin&apos;s monetary policy?
               </h2>
               <p className="text-gray-300 mb-6">
-                Learn about Bitcoin's fixed supply, halving schedule, and how it compares to traditional fiat currencies
+                Learn about Bitcoin&apos;s fixed supply, halving schedule, and how it compares to traditional fiat currencies
               </p>
               <Link
                 href="/lessons/level-5-store-of-value"

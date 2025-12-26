@@ -73,7 +73,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
   let lesson;
   try {
     lesson = await getLessonBySlug(canonicalSlug);
-  } catch (error) {
+  } catch {
     notFound();
   }
 

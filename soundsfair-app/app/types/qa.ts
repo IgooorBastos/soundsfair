@@ -77,7 +77,7 @@ export interface Payment {
   expires_at: string;
   webhook_received: boolean;
   webhook_signature?: string;
-  webhook_payload?: Record<string, any>;
+  webhook_payload?: Record<string, unknown>;
   created_at: string;
   updated_at: string;
   refunded: boolean;
@@ -229,7 +229,7 @@ export interface OpenNodeWebhookPayload {
   auto_settle?: boolean;
   notif_email?: string;
   address?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   chain_invoice?: {
     address: string;
   };
@@ -294,8 +294,18 @@ export interface APIError {
 export type APIResponse<T> = T | APIError;
 
 // Type guard for API errors
-export function isAPIError(response: any): response is APIError {
-  return response && response.success === false && 'error' in response;
+export function isAPIError(response: unknown): response is APIError {
+  if (
+    typeof response === 'object' &&
+    response !== null &&
+    'success' in response &&
+    'error' in response
+  ) {
+    const candidate = response as { success?: unknown; error?: unknown };
+    return candidate.success === false && typeof candidate.error === 'string';
+  }
+
+  return false;
 }
 
 // ============================================================================

@@ -40,6 +40,38 @@ interface ChartData {
   Remaining_BTC: number;
 }
 
+type TooltipPayload = {
+  payload: ChartData;
+};
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: TooltipPayload[];
+}
+
+function SupplyTooltip({ active, payload }: TooltipProps) {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div style={TOOLTIP_CONFIG.contentStyle}>
+        <p style={TOOLTIP_CONFIG.labelStyle}>
+          <strong>{formatYear(data.Year)}</strong>
+        </p>
+        <p style={TOOLTIP_CONFIG.itemStyle}>
+          Total Mined: {formatBTC(data.Total_BTC_Mined * 1000000, 2)}M
+        </p>
+        <p style={TOOLTIP_CONFIG.itemStyle}>
+          Percentage: {formatPercent(data.Percent_Of_Total_Supply, 1, true)}
+        </p>
+        <p style={TOOLTIP_CONFIG.itemStyle}>
+          Remaining: {formatBTC(data.Remaining_BTC * 1000000, 2)}M
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
+
 export const BitcoinSupplyCurveChart: React.FC = () => {
   const [data, setData] = useState<ChartData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,29 +103,6 @@ export const BitcoinSupplyCurveChart: React.FC = () => {
       </div>
     );
   }
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div style={TOOLTIP_CONFIG.contentStyle}>
-          <p style={TOOLTIP_CONFIG.labelStyle}>
-            <strong>{formatYear(data.Year)}</strong>
-          </p>
-          <p style={TOOLTIP_CONFIG.itemStyle}>
-            Total Mined: {formatBTC(data.Total_BTC_Mined * 1000000, 2)}M
-          </p>
-          <p style={TOOLTIP_CONFIG.itemStyle}>
-            Percentage: {formatPercent(data.Percent_Of_Total_Supply, 1, true)}
-          </p>
-          <p style={TOOLTIP_CONFIG.itemStyle}>
-            Remaining: {formatBTC(data.Remaining_BTC * 1000000, 2)}M
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="vi-chart-container">
@@ -146,7 +155,7 @@ export const BitcoinSupplyCurveChart: React.FC = () => {
               />
             </YAxis>
 
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<SupplyTooltip />} />
 
             {/* Reference line at 21M cap */}
             <ReferenceLine
@@ -209,7 +218,7 @@ export const BitcoinSupplyCurveChart: React.FC = () => {
 
       <div className="mt-4 p-4 bg-vi-chart-grid rounded-lg text-sm">
         <p className="text-vi-text-muted">
-          <strong className="text-vi-gold">Key Insight:</strong> Bitcoin's supply follows a predictable S-curve,
+          <strong className="text-vi-gold">Key Insight:</strong> Bitcoin&apos;s supply follows a predictable S-curve,
           asymptotically approaching but <strong>never exceeding</strong> 21 million BTC. This absolute scarcity
           is enforced by mathematics, not policy.
         </p>

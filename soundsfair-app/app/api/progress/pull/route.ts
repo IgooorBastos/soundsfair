@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import type { DatabaseWithRelationships } from '@/app/types/database';
 
 /**
  * GET /api/progress/pull
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     const token = authHeader.replace('Bearer ', '');
 
-    const supabase = createClient(
+    const supabase = createClient<DatabaseWithRelationships>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -106,12 +107,12 @@ export async function GET(request: NextRequest) {
       pulled_at: new Date().toISOString(),
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('[Pull API] Unexpected error:', error);
     return NextResponse.json(
       {
         error: 'Internal Server Error',
-        details: error.message
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );

@@ -21,7 +21,7 @@ export default function DCACalculatorPage() {
             <div className="prose prose-invert max-w-none">
               <p className="text-gray-300 leading-relaxed mb-4">
                 Dollar Cost Averaging is an investment strategy where you invest a fixed amount of money
-                at regular intervals, regardless of the asset's price. This approach helps reduce the impact
+                at regular intervals, regardless of the asset&apos;s price. This approach helps reduce the impact
                 of market volatility and removes the emotional aspect of trying to time the market.
               </p>
               <p className="text-gray-300 leading-relaxed">

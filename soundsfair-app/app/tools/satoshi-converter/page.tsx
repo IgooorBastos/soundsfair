@@ -135,7 +135,7 @@ export default function SatoshiConverterPage() {
                 <ul className="list-disc list-inside space-y-2 text-gray-300 ml-4">
                   <li><strong>Easier to understand:</strong> Whole numbers (100,000 sats) vs decimals (0.001 BTC)</li>
                   <li><strong>Lightning Network:</strong> Lightning natively uses satoshis</li>
-                  <li><strong>Future-proof:</strong> As Bitcoin's price rises, sats become the practical unit</li>
+                  <li><strong>Future-proof:</strong> As Bitcoin&apos;s price rises, sats become the practical unit</li>
                   <li><strong>Micro-payments:</strong> Better suited for small everyday transactions</li>
                 </ul>
               </div>

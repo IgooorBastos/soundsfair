@@ -72,21 +72,15 @@ export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
   forcePlaceholder = false,
 }) => {
   const [imageExists, setImageExists] = useState(false);
-  const [isDevMode, setIsDevMode] = useState(false);
+  const isDevMode = process.env.NODE_ENV === 'development';
 
   // Construct image path based on imageId
   const imagePath = `/images/lessons/${imageId}.webp`;
   const fallbackPath = `/images/lessons/${imageId}.png`;
 
-  // Detect development mode
-  useEffect(() => {
-    setIsDevMode(process.env.NODE_ENV === 'development');
-  }, []);
-
   // Check if image file exists
   useEffect(() => {
     if (forcePlaceholder) {
-      setImageExists(false);
       return;
     }
 

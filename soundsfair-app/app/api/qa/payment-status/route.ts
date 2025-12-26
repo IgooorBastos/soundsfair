@@ -11,12 +11,17 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { getInvoiceStatus } from '@/lib/opennode';
 import type { PaymentStatusResponse, APIError, PaymentStatus, QuestionStatus } from '@/app/types/qa';
 import type { Database } from '@/app/types/database';
+import type { PostgrestError } from '@supabase/supabase-js';
 
-type PaymentRow = Pick<Database['public']['Tables']['payments']['Row'], 'id' | 'invoice_id' | 'status' | 'paid_at'>;
+type PaymentRow = Pick<
+  Database['public']['Tables']['payments']['Row'],
+  'id' | 'invoice_id' | 'status' | 'paid_at'
+>;
 type QuestionWithPayment = Pick<
   Database['public']['Tables']['questions']['Row'],
   'id' | 'status' | 'payment_status' | 'payment_id' | 'response_text' | 'response_video_url' | 'responded_at'
 > & { payments: PaymentRow[] | null };
+
 
 // ============================================================================
 // MAIN HANDLER
@@ -52,10 +57,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Initialize Supabase admin client
-    const supabase = supabaseAdmin as any;
+    const supabase = supabaseAdmin;
 
     // Get question with payment details
-    const { data: question, error: questionError } = await supabase
+    const { data: question, error: questionError }: {
+      data: QuestionWithPayment | null;
+      error: PostgrestError | null;
+    } = await supabase
       .from('questions')
       .select(
         `

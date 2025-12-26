@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/app/types/database';
+import type { DatabaseWithRelationships } from '@/app/types/database';
 
 type ProgressPayload = {
   total_xp?: number;
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     const token = authHeader.replace('Bearer ', '');
 
-    const supabase = createClient<Database>(
+    const supabase = createClient<DatabaseWithRelationships>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
           headers: { Authorization: `Bearer ${token}` }
         }
       }
-    ) as any;
+    );
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
 
     const token = authHeader.replace('Bearer ', '');
 
-    const supabase = createClient<Database>(
+    const supabase = createClient<DatabaseWithRelationships>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -131,7 +131,7 @@ export async function GET(request: NextRequest) {
           headers: { Authorization: `Bearer ${token}` }
         }
       }
-    ) as any;
+    );
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 

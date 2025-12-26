@@ -704,7 +704,7 @@ export function isEmailConfigured(): boolean {
  */
 async function isEmailUnsubscribed(email: string): Promise<boolean> {
   try {
-    const supabase = supabaseAdmin as any;
+    const supabase = supabaseAdmin;
     const { data, error } = await supabase
       .from('email_preferences')
       .select('unsubscribed')
@@ -734,7 +734,7 @@ async function logEmailSend(params: {
   error?: string;
 }): Promise<void> {
   try {
-    const supabase = supabaseAdmin as any;
+    const supabase = supabaseAdmin;
     await supabase.from('email_logs').insert({
       recipient_email: params.recipientEmail,
       template_name: params.templateName,

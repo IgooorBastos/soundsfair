@@ -145,9 +145,9 @@ export function useBitcoinPrice(options: UseBitcoinPriceOptions = {}): UseBitcoi
         onPriceUpdate(priceData);
       }
 
-    } catch (err: any) {
+    } catch (err) {
       // Ignore abort errors
-      if (err.name === 'AbortError') {
+      if (err instanceof DOMException && err.name === 'AbortError') {
         return;
       }
 

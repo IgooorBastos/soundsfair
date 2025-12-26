@@ -1,5 +1,12 @@
 import { addDays, addWeeks, addMonths, differenceInDays, parseISO, format } from 'date-fns';
-import type { DCAInput, DCAResult, Transaction, Frequency, Asset } from '@/app/types/tools';
+import type {
+  Asset,
+  ChartDataPoint,
+  DCAInput,
+  DCAResult,
+  Frequency,
+  Transaction,
+} from '@/app/types/tools';
 
 interface PricePoint {
   date: string;
@@ -45,8 +52,6 @@ function generateTransactions(
   prices: PricePoint[]
 ): Transaction[] {
   const transactions: Transaction[] = [];
-  const priceMap = new Map(prices.map(p => [p.date, p.price]));
-
   let currentDate = parseISO(startDate);
   const end = parseISO(endDate);
   let cumulativeUnits = 0;
@@ -206,7 +211,7 @@ function calculateVolatility(transactions: Transaction[]): number {
   return stdDev * Math.sqrt(252) * 100; // 252 trading days per year
 }
 
-export function generateChartData(results: DCAResult[]): any[] {
+export function generateChartData(results: DCAResult[]): ChartDataPoint[] {
   if (results.length === 0) return [];
 
   // Get all unique dates from all assets
@@ -219,7 +224,7 @@ export function generateChartData(results: DCAResult[]): any[] {
 
   // Create chart data points
   const chartData = sortedDates.map(date => {
-    const point: any = { date };
+    const point: ChartDataPoint = { date };
 
     results.forEach(result => {
       const transactionIndex = result.transactions.findIndex(t => t.date === date);

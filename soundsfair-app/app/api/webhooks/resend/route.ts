@@ -153,7 +153,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // Initialize Supabase client
-    const supabase = supabaseAdmin as any;
+    const supabase = supabaseAdmin;
 
     // Find existing log entry by message_id
     const { data: existingLog, error: fetchError } = await supabase

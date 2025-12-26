@@ -412,7 +412,7 @@ export default function FearGreedIndex() {
           <div className="bg-black/40 rounded-lg p-4">
             <h4 className="font-semibold text-red-400 mb-2">😱 Extreme Fear (0-24)</h4>
             <p className="text-sm text-gray-400">
-              Investors are very worried. This could be a buying opportunity, as "Be fearful when others are greedy, and greedy when others are fearful" - Warren Buffett.
+              Investors are very worried. This could be a buying opportunity, as &quot;Be fearful when others are greedy, and greedy when others are fearful&quot; - Warren Buffett.
             </p>
           </div>
           <div className="bg-black/40 rounded-lg p-4">

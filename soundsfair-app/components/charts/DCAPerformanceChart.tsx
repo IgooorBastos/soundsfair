@@ -42,6 +42,37 @@ interface ChartData {
   DCA_Start_2021: number;
 }
 
+interface TooltipEntry {
+  payload: ChartData;
+  value: number;
+  name: string;
+  color?: string;
+}
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: TooltipEntry[];
+}
+
+function DCAPerformanceTooltip({ active, payload }: TooltipProps) {
+  if (active && payload && payload.length) {
+    const monthLabel = formatDuration(payload[0].payload.Month);
+    return (
+      <div style={TOOLTIP_CONFIG.contentStyle}>
+        <p style={TOOLTIP_CONFIG.labelStyle}>
+          <strong>After {monthLabel}</strong>
+        </p>
+        {payload.map((entry) => (
+          <p key={entry.name} style={{ ...TOOLTIP_CONFIG.itemStyle, color: entry.color }}>
+            {entry.name}: {formatCurrency(entry.value, 0)}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+}
+
 export const DCAPerformanceChart: React.FC = () => {
   const [data, setData] = useState<ChartData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,25 +105,6 @@ export const DCAPerformanceChart: React.FC = () => {
       </div>
     );
   }
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const monthLabel = formatDuration(payload[0].payload.Month);
-      return (
-        <div style={TOOLTIP_CONFIG.contentStyle}>
-          <p style={TOOLTIP_CONFIG.labelStyle}>
-            <strong>After {monthLabel}</strong>
-          </p>
-          {payload.map((entry: any, index: number) => (
-            <p key={index} style={{ ...TOOLTIP_CONFIG.itemStyle, color: entry.color }}>
-              {entry.name}: {formatCurrency(entry.value, 0)}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="vi-chart-container">
@@ -138,7 +150,7 @@ export const DCAPerformanceChart: React.FC = () => {
               />
             </YAxis>
 
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<DCAPerformanceTooltip />} />
 
             <Legend
               {...LEGEND_CONFIG}
@@ -220,7 +232,7 @@ export const DCAPerformanceChart: React.FC = () => {
 
       <div className="mt-4 p-4 border border-vi-chart-grid rounded-lg text-xs text-vi-text-muted">
         <p><strong>Assumptions:</strong> $100/month consistent investment | Zero fees (add 1-2% for realism) |
-        Monthly average price used | Past performance doesn't guarantee future results</p>
+        Monthly average price used | Past performance doesn&apos;t guarantee future results</p>
       </div>
     </div>
   );

@@ -59,7 +59,7 @@ export default function AboutPage() {
               <div className="text-brand-yellow text-3xl mb-4">📊</div>
               <h4 className="text-xl font-semibold mb-3">Interactive Tools</h4>
               <p className="text-gray-400">
-                Hands-on calculators and tools to help you understand Bitcoin's
+                Hands-on calculators and tools to help you understand Bitcoin&apos;s
                 performance and make informed decisions about your financial future.
               </p>
             </div>
@@ -77,7 +77,7 @@ export default function AboutPage() {
               <div className="text-brand-yellow text-3xl mb-4">🌍</div>
               <h4 className="text-xl font-semibold mb-3">Global Perspective</h4>
               <p className="text-gray-400">
-                Understanding Bitcoin's role in geopolitics and its potential to
+                Understanding Bitcoin&apos;s role in geopolitics and its potential to
                 provide economic freedom across borders.
               </p>
             </div>

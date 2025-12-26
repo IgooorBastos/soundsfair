@@ -37,8 +37,9 @@ async function testAuth() {
       console.log('   ✅ Conexão com Auth funcionando!');
       console.log(`   Sessão atual: ${session ? 'Usuário logado' : 'Nenhum usuário logado'}`);
     }
-  } catch (error: any) {
-    console.error('   ❌ Erro:', error.message);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('   ❌ Erro:', message);
   }
 
   console.log('\n3️⃣ Configuração verificada!');

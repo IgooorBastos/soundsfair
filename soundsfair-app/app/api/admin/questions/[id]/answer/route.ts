@@ -13,9 +13,10 @@ import { validateCSRFToken, getCSRFTokenFromRequest } from '@/lib/csrf';
 import { getClientIp } from '@/lib/rate-limit';
 import type { APIError } from '@/app/types/qa';
 import type { Database } from '@/app/types/database';
+import type { PostgrestError } from '@supabase/supabase-js';
 
 type QuestionUpdate = Database['public']['Tables']['questions']['Update'];
-type Question = Database['public']['Tables']['questions']['Row'];
+type QuestionRow = Database['public']['Tables']['questions']['Row'];
 
 export async function POST(
   request: NextRequest,
@@ -56,10 +57,13 @@ export async function POST(
       );
     }
 
-    const supabase = supabaseAdmin as any;
+    const supabase = supabaseAdmin;
 
     // Get question details
-    const { data: question, error: questionError } = await supabase
+    const { data: question, error: questionError }: {
+      data: QuestionRow | null;
+      error: PostgrestError | null;
+    } = await supabase
       .from('questions')
       .select('*')
       .eq('id', id)

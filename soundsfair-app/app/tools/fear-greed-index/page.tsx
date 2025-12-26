@@ -142,8 +142,8 @@ export default function FearGreedIndexPage() {
                   How should I use the Fear & Greed Index for trading?
                 </h3>
                 <p className="text-gray-300 mb-3">
-                  The index is a contrarian indicator based on Warren Buffett's principle:
-                  <em className="text-brand-yellow"> "Be fearful when others are greedy, and greedy when others are fearful."</em>
+                  The index is a contrarian indicator based on Warren Buffett&apos;s principle:
+                  <em className="text-brand-yellow"> &quot;Be fearful when others are greedy, and greedy when others are fearful.&quot;</em>
                 </p>
                 <div className="space-y-2 text-gray-300">
                   <p><strong className="text-red-400">Extreme Fear (0-24):</strong> Consider accumulating. Market may be oversold.</p>
@@ -168,7 +168,7 @@ export default function FearGreedIndexPage() {
                 <ul className="list-disc list-inside space-y-2 text-gray-300 ml-4">
                   <li><strong>Lagging indicator:</strong> Reflects current sentiment, not future prices</li>
                   <li><strong>Extended periods:</strong> Markets can remain in extreme fear or greed for weeks/months</li>
-                  <li><strong>Not predictive:</strong> High greed doesn't guarantee an immediate crash</li>
+                  <li><strong>Not predictive:</strong> High greed doesn&apos;t guarantee an immediate crash</li>
                   <li><strong>Complementary tool:</strong> Best used alongside technical and fundamental analysis</li>
                 </ul>
                 <p className="text-gray-300 mt-3">
@@ -179,7 +179,7 @@ export default function FearGreedIndexPage() {
 
               <div className="bg-surface-charcoal border border-border-default rounded-lg p-6">
                 <h3 className="text-xl font-semibold mb-3 text-brand-yellow">
-                  What's the difference between Fear & Greed Index and other sentiment indicators?
+                  What&apos;s the difference between Fear & Greed Index and other sentiment indicators?
                 </h3>
                 <p className="text-gray-300 mb-2">
                   Unlike single-metric indicators, the Fear & Greed Index:

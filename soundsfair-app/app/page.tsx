@@ -72,7 +72,7 @@ export default function Home() {
         <section id="learn" className="py-20">
           <div className="text-center mb-16">
             <h3 className="text-3xl md:text-4xl font-bold mb-4">
-              What You'll Learn
+              What You&apos;ll Learn
             </h3>
             <p className="text-xl text-gray-400">
               From zero to advanced Bitcoin knowledge

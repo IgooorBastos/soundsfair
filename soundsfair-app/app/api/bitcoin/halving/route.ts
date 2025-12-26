@@ -178,7 +178,7 @@ export async function HEAD() {
       cached: false
     });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json<ApiResponse<{ blockHeight: number }>>({
       success: false,
       error: {

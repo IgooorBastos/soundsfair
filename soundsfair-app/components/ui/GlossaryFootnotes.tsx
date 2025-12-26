@@ -56,6 +56,7 @@ export default function GlossaryFootnotes({ content, glossary }: GlossaryFootnot
       }
     });
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFootnotes(matches);
   }, [content, glossary]);
 

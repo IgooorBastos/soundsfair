@@ -58,7 +58,7 @@ export async function getLessonBySlug(slug: string): Promise<Lesson> {
   }
   const fileContents = fs.readFileSync(fullPath, 'utf8');
 
-  const { data, content } = matter(fileContents);
+  const { content } = matter(fileContents);
 
   // Extract metadata from content
   const titleMatch = content.match(/^#\s+(.+)$/m);
@@ -142,7 +142,7 @@ export function parseQuizFromContent(content: string): Array<{
 
   let match;
   while ((match = questionRegex.exec(quizSection)) !== null) {
-    const [, questionNumber, questionText, optionsText, correctAnswer, explanation] = match;
+    const [, , questionText, optionsText, correctAnswer, explanation] = match;
 
     const options = optionsText
       .trim()
@@ -220,10 +220,6 @@ export async function getFAQs(): Promise<FAQ[]> {
 
   let match;
   let currentCategory = 'General';
-
-  // Extract categories
-  const categoryMatches = fileContents.matchAll(/##\s+(.+?)\n/g);
-  const categories = Array.from(categoryMatches).map(m => m[1]);
 
   while ((match = faqRegex.exec(fileContents)) !== null) {
     const [, number, question, shortAnswer, detailedAnswer] = match;

@@ -10,96 +10,83 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  TooltipProps
+  TooltipContentProps
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
-import type { DCAResult } from '@/app/types/tools';
+import type { ChartDataPoint, DCAResult } from '@/app/types/tools';
 import { formatCurrency, formatNumber } from '@/lib/dca-calculator';
 
 interface DCAChartProps {
-  chartData: any[];
+  chartData: ChartDataPoint[];
   results: DCAResult[];
   startDate: string;
 }
 
 type ViewMode = 'indexed' | 'absolute';
 
+type DCAChartTooltipProps = Partial<TooltipContentProps<number, string>> & {
+  results: DCAResult[];
+  viewMode: ViewMode;
+};
+
+function DCAChartTooltip({ active, payload, label, results, viewMode }: DCAChartTooltipProps) {
+  if (!active || !payload || !payload.length || !label) return null;
+
+  const dateLabel = typeof label === 'string' ? label : String(label);
+  const formattedDate = format(parseISO(dateLabel), 'MMM d, yyyy');
+
+  return (
+    <div className="bg-dark-grey border-2 border-brand-yellow rounded-lg p-4 shadow-glow">
+      <p className="text-sm font-semibold text-brand-yellow mb-2">{formattedDate}</p>
+      <div className="space-y-2">
+        {payload.map((entry) => {
+          const assetName = typeof entry.name === 'string' ? entry.name : String(entry.name ?? '');
+          const result = results.find((r) => r.asset === assetName);
+          if (!result || typeof entry.value !== 'number') return null;
+
+          const transaction = result.transactions.find(t => t.date === dateLabel);
+          if (!transaction) return null;
+
+          return (
+            <div key={assetName} className="text-sm border-t border-gray-800 pt-2 first:border-t-0 first:pt-0">
+              <div className="flex items-center justify-between gap-4 mb-1.5">
+                <span className="font-medium text-white">
+                  ₿ Bitcoin
+                </span>
+                <span className="font-bold text-brand-yellow">
+                  {viewMode === 'indexed'
+                    ? `${formatNumber(entry.value, 1)}x`
+                    : formatCurrency(transaction.portfolioValue)
+                  }
+                </span>
+              </div>
+              <div className="flex justify-between text-xs text-gray-400 mb-1">
+                <span>Total Invested:</span>
+                <span className="text-white">{formatCurrency(
+                  result.transactions
+                    .filter(t => t.date <= dateLabel)
+                    .reduce((sum, t) => sum + t.invested, 0)
+                )}</span>
+              </div>
+              <div className="flex justify-between text-xs text-gray-400">
+                <span>Accumulated:</span>
+                <span className="text-white">{formatNumber(transaction.cumulativeUnits, 6)} BTC</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function DCAChart({ chartData, results, startDate }: DCAChartProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('indexed');
-
-  // Custom tooltip component
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (!active || !payload || !payload.length) return null;
-
-    const date = label;
-    const formattedDate = date ? format(parseISO(date), 'MMM d, yyyy') : '';
-
-    return (
-      <div className="bg-dark-grey border-2 border-brand-yellow rounded-lg p-4 shadow-glow">
-        <p className="text-sm font-semibold text-brand-yellow mb-2">{formattedDate}</p>
-        <div className="space-y-2">
-          {payload.map((entry: any, index: number) => {
-            const result = results.find(r => r.asset === entry.name);
-            if (!result) return null;
-
-            // Find the transaction for this date
-            const transaction = result.transactions.find(t => t.date === date);
-            if (!transaction) return null;
-
-            return (
-              <div key={index} className="text-sm border-t border-gray-800 pt-2 first:border-t-0 first:pt-0">
-                <div className="flex items-center justify-between gap-4 mb-1.5">
-                  <span className="font-medium text-white">
-                    ₿ Bitcoin
-                  </span>
-                  <span className="font-bold text-brand-yellow">
-                    {viewMode === 'indexed'
-                      ? `${formatNumber(entry.value as number, 1)}x`
-                      : formatCurrency(transaction.portfolioValue)
-                    }
-                  </span>
-                </div>
-                <div className="flex justify-between text-xs text-gray-400 mb-1">
-                  <span>Total Invested:</span>
-                  <span className="text-white">{formatCurrency(
-                    result.transactions
-                      .filter(t => t.date <= date)
-                      .reduce((sum, t) => sum + t.invested, 0)
-                  )}</span>
-                </div>
-                <div className="flex justify-between text-xs text-gray-400">
-                  <span>Accumulated:</span>
-                  <span className="text-white">{formatNumber(transaction.cumulativeUnits, 6)} BTC</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
-  // Custom dot component for hover effect
-  const CustomDot = (props: any) => {
-    const { cx, cy, stroke, payload, dataKey } = props;
-
-    return (
-      <circle
-        cx={cx}
-        cy={cy}
-        r={4}
-        fill={stroke}
-        stroke="#000"
-        strokeWidth={2}
-        className="opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-      />
-    );
-  };
 
   // Generate absolute value chart data
   const getAbsoluteChartData = () => {
     return chartData.map(point => {
-      const newPoint: any = { date: point.date };
+      const newPoint: ChartDataPoint = { date: point.date };
       results.forEach(result => {
         // Use the pre-calculated values from generateChartData
         newPoint[result.asset] = point[`${result.asset}_portfolioValue`];
@@ -201,7 +188,7 @@ export default function DCAChart({ chartData, results, startDate }: DCAChartProp
               }}
             />
             <Tooltip
-              content={<CustomTooltip />}
+              content={<DCAChartTooltip results={results} viewMode={viewMode} />}
               cursor={{
                 stroke: '#FFD000',
                 strokeWidth: 1,
@@ -219,7 +206,7 @@ export default function DCAChart({ chartData, results, startDate }: DCAChartProp
               }}
             />
 
-            {results.map((result, index) => {
+            {results.map((result) => {
               const config = assetConfig[result.asset as keyof typeof assetConfig] || {
                 name: result.asset,
                 color: '#FFD000',
@@ -302,7 +289,7 @@ export default function DCAChart({ chartData, results, startDate }: DCAChartProp
         <p className="text-xs text-gray-400">
           <span className="font-semibold text-white">Yellow line</span> = Portfolio Value (what your investment is worth) •{' '}
           <span className="font-semibold text-white">Gray dashed line</span> = Total Invested (money you put in) •{' '}
-          When yellow is above gray, you're in profit!
+          When yellow is above gray, you&apos;re in profit!
         </p>
       </div>
     </div>

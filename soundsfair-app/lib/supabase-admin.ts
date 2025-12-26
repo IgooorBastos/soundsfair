@@ -7,7 +7,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/app/types/database';
+import type { DatabaseWithRelationships } from '@/app/types/database';
 
 // Validate environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -32,7 +32,7 @@ if (!supabaseServiceRoleKey) {
  * - Bypasses RLS policies
  * - Server-side only
  */
-export const supabaseAdmin = createClient<Database>(
+export const supabaseAdmin = createClient<DatabaseWithRelationships>(
   supabaseUrl,
   supabaseServiceRoleKey,
   {
@@ -53,7 +53,7 @@ export const supabaseAdmin = createClient<Database>(
  */
 export async function verifyAdminToken(token: string) {
   try {
-    const supabase = supabaseAdmin as any;
+    const supabase = supabaseAdmin;
 
     // Verify the JWT token
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
@@ -94,7 +94,7 @@ export async function verifyAdminToken(token: string) {
  * @param email - Admin email address
  */
 export async function createAdminUser(email: string, role: 'admin' | 'super_admin' = 'admin') {
-  const supabase = supabaseAdmin as any;
+  const supabase = supabaseAdmin;
   const { data, error } = await supabase
     .from('admin_users')
     .insert({

@@ -9,6 +9,7 @@ export default function ContinueLearning() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     setProgress(getUserProgress());
   }, []);
@@ -64,7 +65,7 @@ export default function ContinueLearning() {
           Congratulations!
         </h3>
         <p className="text-xl text-text-secondary mb-6">
-          You've completed all Bitcoin lessons. You're now a certified Bitcoin expert!
+          You&apos;ve completed all Bitcoin lessons. You&apos;re now a certified Bitcoin expert!
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link

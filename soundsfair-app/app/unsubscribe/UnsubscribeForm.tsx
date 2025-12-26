@@ -77,7 +77,7 @@ export default function UnsubscribeForm() {
           Unsubscribe from Emails
         </h1>
         <p className="text-text-secondary">
-          We're sorry to see you go. Enter your email address to unsubscribe from all soundsfair emails.
+          We&apos;re sorry to see you go. Enter your email address to unsubscribe from all soundsfair emails.
         </p>
       </div>
 

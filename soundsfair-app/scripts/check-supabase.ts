@@ -25,7 +25,7 @@ async function checkTables() {
   let errors = 0;
 
   for (const table of tables) {
-    const { data, error } = await supabase.from(table).select('*').limit(0);
+    const { error } = await supabase.from(table).select('*').limit(0);
     if (error) {
       console.log(`  ❌ ${table} - ${error.message}`);
       errors++;

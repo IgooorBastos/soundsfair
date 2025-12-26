@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import UserProgressCompact from "@/components/ui/UserProgressCompact";
 import { useAuth } from "@/lib/hooks/useAuth";
 
@@ -41,7 +41,19 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<typeof searchableContent>([]);
+  const searchResults = useMemo(() => {
+    if (searchQuery.length === 0) {
+      return [];
+    }
+
+    const results = searchableContent.filter(
+      (item) =>
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    return results.slice(0, 8);
+  }, [searchQuery]);
   const [learnDropdownOpen, setLearnDropdownOpen] = useState(false);
   const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -53,20 +65,6 @@ export default function Header() {
     if (path === "/") return pathname === "/";
     return pathname.startsWith(path);
   };
-
-  // Search functionality
-  useEffect(() => {
-    if (searchQuery.length > 0) {
-      const results = searchableContent.filter(
-        (item) =>
-          item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.category.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setSearchResults(results.slice(0, 8));
-    } else {
-      setSearchResults([]);
-    }
-  }, [searchQuery]);
 
   // Focus search input when opened
   useEffect(() => {
@@ -579,7 +577,7 @@ export default function Header() {
                         </div>
                       ) : (
                         <div className="px-4 py-8 text-center text-sm text-gray-500">
-                          No results found for "{searchQuery}"
+                          No results found for &quot;{searchQuery}&quot;
                         </div>
                       )}
                     </div>

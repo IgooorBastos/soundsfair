@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
-import type { DCAInput, DCAResult, Asset, Frequency } from '@/app/types/tools';
+import type { DCAInput, DCAResult, Frequency, ChartDataPoint } from '@/app/types/tools';
 import { formatCurrency, formatPercentage, formatNumber } from '@/lib/dca-calculator';
 import { exportDCAToCSV } from '@/lib/csv-export';
 import DCAChart from '@/components/tools/DCAChart';
@@ -19,15 +19,15 @@ export default function DCACalculator() {
   });
 
   const [results, setResults] = useState<DCAResult[] | null>(null);
-  const [chartData, setChartData] = useState<any[] | null>(null);
+  const [chartData, setChartData] = useState<ChartDataPoint[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [earliestDate, setEarliestDate] = useState<string>('2013-04-28'); // CoinCap earliest BTC data
+  const [earliestDate] = useState<string>('2013-04-28'); // CoinCap earliest BTC data
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [shareableUrl, setShareableUrl] = useState<string | null>(null);
 
-  const handleCalculateWithData = async (data: DCAInput) => {
+  const handleCalculateWithData = useCallback(async (data: DCAInput) => {
     setLoading(true);
     setError(null);
 
@@ -53,7 +53,7 @@ export default function DCACalculator() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Load parameters from URL on mount
   useEffect(() => {
@@ -80,8 +80,7 @@ export default function DCACalculator() {
         }, 500);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, [searchParams, handleCalculateWithData]);
 
   // Generate shareable URL
   const generateShareableUrl = () => {
@@ -114,7 +113,7 @@ export default function DCACalculator() {
     }
   };
 
-  const handleInputChange = (field: keyof DCAInput, value: any) => {
+  const handleInputChange = (field: keyof DCAInput, value: DCAInput[keyof DCAInput]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -164,7 +163,7 @@ export default function DCACalculator() {
         </p>
         <div className="mt-3 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
           <p className="text-sm text-gray-400 italic">
-            "The only truly scarce digital asset - 21 million forever"
+            &quot;The only truly scarce digital asset - 21 million forever&quot;
           </p>
           <span className="hidden sm:inline text-gray-600">•</span>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-500/10 border border-green-500/30 rounded-full text-xs">
@@ -264,7 +263,7 @@ export default function DCACalculator() {
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 italic">
-                  That's over {Math.floor((new Date().getTime() - new Date(earliestDate).getTime()) / (1000 * 60 * 60 * 24 * 365))} years of real market data!
+                  That&apos;s over {Math.floor((new Date().getTime() - new Date(earliestDate).getTime()) / (1000 * 60 * 60 * 24 * 365))} years of real market data!
                 </p>
               </div>
             </div>

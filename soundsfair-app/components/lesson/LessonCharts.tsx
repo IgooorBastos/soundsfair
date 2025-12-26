@@ -30,7 +30,7 @@ export default function LessonCharts({ level }: LessonChartsProps) {
                 📊 Interactive Data Visualizations
               </h2>
               <p className="text-text-secondary">
-                Explore the data behind fiat money's failures
+                Explore the data behind fiat money&apos;s failures
               </p>
             </div>
 
@@ -59,10 +59,10 @@ export default function LessonCharts({ level }: LessonChartsProps) {
           <div className="border-t-2 border-brand-gold/30 pt-8">
             <div className="mb-6">
               <h2 className="text-3xl font-bold text-text-primary mb-2">
-                📊 Bitcoin's Mathematical Certainty
+                📊 Bitcoin&apos;s Mathematical Certainty
               </h2>
               <p className="text-text-secondary">
-                Visualize Bitcoin's predictable supply and absolute scarcity
+                Visualize Bitcoin&apos;s predictable supply and absolute scarcity
               </p>
             </div>
 
@@ -78,7 +78,7 @@ export default function LessonCharts({ level }: LessonChartsProps) {
 
             <div className="p-4 bg-surface-charcoal border-l-4 border-brand-gold rounded">
               <p className="text-text-secondary text-sm">
-                <strong className="text-brand-gold">💡 Key Takeaway:</strong> Unlike fiat currency where supply is unlimited and unpredictable, Bitcoin's supply is mathematically fixed and transparent. Every 4 years, the issuance rate halves, creating absolute scarcity enforced by code, not policy.
+                <strong className="text-brand-gold">💡 Key Takeaway:</strong> Unlike fiat currency where supply is unlimited and unpredictable, Bitcoin&apos;s supply is mathematically fixed and transparent. Every 4 years, the issuance rate halves, creating absolute scarcity enforced by code, not policy.
               </p>
             </div>
           </div>

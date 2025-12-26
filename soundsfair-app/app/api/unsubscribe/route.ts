@@ -17,7 +17,7 @@ type APIResponse = {
  */
 export async function POST(request: NextRequest): Promise<NextResponse<APIResponse>> {
   try {
-    const supabase = supabaseAdmin as any;
+    const supabase = supabaseAdmin;
     const body = await request.json() as { email?: string; reason?: string };
     const { email, reason } = body;
 
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<APIRespon
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    const supabase = supabaseAdmin as any;
+    const supabase = supabaseAdmin;
     const email = request.nextUrl.searchParams.get('email');
 
     if (!email) {

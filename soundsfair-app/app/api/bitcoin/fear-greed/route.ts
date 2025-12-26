@@ -12,7 +12,6 @@ import {
   getFearGreedColor,
   getFearGreedDescription,
   getFearGreedSuggestion,
-  calculateAverageFearGreed,
   findFearGreedExtremes,
   calculateFearGreedTrend,
   getFearGreedEmoji,
@@ -192,7 +191,7 @@ export async function HEAD() {
       cached: false
     });
 
-  } catch (error) {
+  } catch {
     return NextResponse.json<ApiResponse<{ value: number; classification: string }>>({
       success: false,
       error: {

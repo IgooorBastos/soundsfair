@@ -232,7 +232,7 @@ async function fetchFromCoinGecko(dateString: string): Promise<HistoricalPrice> 
   }
 
   // Get the first price [timestamp, price]
-  const [timestamp, price] = data.prices[0];
+  const [, price] = data.prices[0];
 
   if (isNaN(price) || price <= 0) {
     throw new Error('Invalid price data received');

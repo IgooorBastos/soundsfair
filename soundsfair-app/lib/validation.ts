@@ -5,7 +5,6 @@
  */
 
 import { z } from 'zod';
-import type { QuestionCategory, PricingTier } from '@/app/types/qa';
 
 // ============================================================================
 // QUESTION CATEGORY & PRICING TIER SCHEMAS
@@ -296,8 +295,6 @@ export function validateQuestionContent(text: string): {
   valid: boolean;
   reason?: string;
 } {
-  const lowerText = text.toLowerCase();
-
   // Check for excessive repetition
   const words = text.split(/\s+/);
   const uniqueWords = new Set(words);

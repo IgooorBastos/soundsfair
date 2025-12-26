@@ -1,4 +1,4 @@
-import type { DCAInput, DCAResult, Transaction } from '@/app/types/tools';
+import type { DCAInput, DCAResult } from '@/app/types/tools';
 import { formatCurrency, formatPercentage, formatNumber } from './dca-calculator';
 
 /**

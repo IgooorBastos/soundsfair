@@ -15,7 +15,6 @@ interface PaymentInvoiceProps {
 }
 
 export default function PaymentInvoice({
-  invoiceId,
   invoiceUrl,
   lightningInvoice,
   qrCodeData,
@@ -111,7 +110,7 @@ export default function PaymentInvoice({
           Payment Confirmed!
         </h3>
         <p className="text-text-secondary mb-4">
-          Your question has been added to the queue. You'll receive an answer
+          Your question has been added to the queue. You&apos;ll receive an answer
           via email according to your chosen tier.
         </p>
         <p className="text-sm text-text-muted">Question ID: {questionId}</p>
@@ -224,7 +223,7 @@ export default function PaymentInvoice({
             hover:border-border-muted transition-colors
           "
         >
-          I've Already Paid
+          I&apos;ve Already Paid
         </button>
       </div>
 

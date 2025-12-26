@@ -46,7 +46,7 @@ export function validateCSRFToken(
 
     // Timing-safe comparison to prevent timing attacks
     return timingSafeEqual(providedBuffer, expectedBuffer);
-  } catch (error) {
+  } catch {
     // Invalid hex strings or other errors
     return false;
   }
@@ -65,7 +65,7 @@ export function validateCSRFToken(
  */
 export function getCSRFTokenFromRequest(
   request: Request,
-  body?: any
+  body?: unknown
 ): string | null {
   // Check header first (recommended approach)
   const headerToken = request.headers.get('X-CSRF-Token');
@@ -75,7 +75,8 @@ export function getCSRFTokenFromRequest(
 
   // Fallback to body field
   if (body && typeof body === 'object' && 'csrf_token' in body) {
-    return body.csrf_token;
+    const token = (body as { csrf_token?: string }).csrf_token;
+    return token || null;
   }
 
   return null;

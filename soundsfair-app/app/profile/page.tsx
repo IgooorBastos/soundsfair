@@ -435,7 +435,7 @@ export default function ProfilePage() {
               </li>
             </ul>
             <p className="text-xs text-gray-500 mt-3 italic">
-              💡 Your progress auto-syncs every 5 minutes when you're logged in
+              💡 Your progress auto-syncs every 5 minutes when you&apos;re logged in
             </p>
           </div>
         </div>

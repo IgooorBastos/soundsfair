@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useMemo } from 'react';
 import type { FAQ } from '@/lib/markdown';
 
@@ -162,20 +163,20 @@ export default function FAQClient({ faqs }: FAQClientProps) {
           Check out our comprehensive course or ask via our Lightning-powered Q&A service
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
+          <Link
             href="/lessons"
             className="px-6 py-3 bg-brand-gold text-surface-black font-semibold rounded-lg
               hover:bg-brand-gold-hover transition-colors"
           >
             Start Learning
-          </a>
-          <a
+          </Link>
+          <Link
             href="/qa"
             className="px-6 py-3 border-2 border-brand-gold text-brand-gold font-semibold rounded-lg
               hover:bg-brand-gold hover:text-surface-black transition-colors"
           >
             Ask a Question
-          </a>
+          </Link>
         </div>
       </div>
     </div>

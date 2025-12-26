@@ -163,7 +163,7 @@ export default function QAPage() {
 
               <div>
                 <h3 className="text-lg font-semibold text-brand-gold mb-2">
-                  What's included in a Video Response?
+                  What&apos;s included in a Video Response?
                 </h3>
                 <p className="text-text-tertiary">
                   The Video Response tier includes a personalized video explanation (5-10 minutes)

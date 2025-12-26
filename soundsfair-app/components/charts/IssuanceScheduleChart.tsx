@@ -41,6 +41,38 @@ interface ChartData {
   Annual_Issuance_BTC: number;
 }
 
+interface TooltipEntry {
+  payload: ChartData;
+}
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: TooltipEntry[];
+}
+
+function IssuanceTooltip({ active, payload }: TooltipProps) {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div style={TOOLTIP_CONFIG.contentStyle}>
+        <p style={TOOLTIP_CONFIG.labelStyle}>
+          <strong>{formatYear(data.Year)}</strong>
+        </p>
+        <p style={TOOLTIP_CONFIG.itemStyle}>
+          Block Reward: {formatBTC(data.Block_Reward_BTC, 3)}
+        </p>
+        <p style={TOOLTIP_CONFIG.itemStyle}>
+          Daily Issuance: {formatBTC(data.Daily_Issuance_BTC, 0)}
+        </p>
+        <p style={TOOLTIP_CONFIG.itemStyle}>
+          Block Height: {formatNumber(data.Block_Height, 0)}
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
+
 export const IssuanceScheduleChart: React.FC = () => {
   const [data, setData] = useState<ChartData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,29 +105,6 @@ export const IssuanceScheduleChart: React.FC = () => {
       </div>
     );
   }
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div style={TOOLTIP_CONFIG.contentStyle}>
-          <p style={TOOLTIP_CONFIG.labelStyle}>
-            <strong>{formatYear(data.Year)}</strong>
-          </p>
-          <p style={TOOLTIP_CONFIG.itemStyle}>
-            Block Reward: {formatBTC(data.Block_Reward_BTC, 3)}
-          </p>
-          <p style={TOOLTIP_CONFIG.itemStyle}>
-            Daily Issuance: {formatBTC(data.Daily_Issuance_BTC, 0)}
-          </p>
-          <p style={TOOLTIP_CONFIG.itemStyle}>
-            Block Height: {formatNumber(data.Block_Height, 0)}
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   const halvingYears = [2012, 2016, 2020, 2024, 2028];
 
@@ -144,7 +153,7 @@ export const IssuanceScheduleChart: React.FC = () => {
               />
             </YAxis>
 
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<IssuanceTooltip />} />
 
             {/* Reference lines for halving events */}
             {halvingYears.map((year) => (
@@ -190,7 +199,7 @@ export const IssuanceScheduleChart: React.FC = () => {
 
       <div className="mt-4 p-4 bg-vi-chart-grid rounded-lg text-sm">
         <p className="text-vi-text-muted">
-          <strong className="text-vi-gold">Key Insight:</strong> Bitcoin's issuance is <strong>predetermined and decreasing</strong>.
+          <strong className="text-vi-gold">Key Insight:</strong> Bitcoin&apos;s issuance is <strong>predetermined and decreasing</strong>.
           Each halving cuts new supply by 50%, making Bitcoin increasingly scarce. Final bitcoin will be mined around 2140.
         </p>
       </div>

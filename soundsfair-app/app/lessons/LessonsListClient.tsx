@@ -26,12 +26,13 @@ export default function LessonsListClient({ lessons }: LessonsListClientProps) {
       }
     });
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLessonProgress(progress);
   }, [lessons]);
 
   return (
     <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6">
-      {lessons.map((lesson, index) => {
+      {lessons.map((lesson) => {
         const isCompleted = lessonProgress[lesson.metadata.slug]?.completed || false;
         const percentage = lessonProgress[lesson.metadata.slug]?.percentage || 0;
 

@@ -38,6 +38,35 @@ interface ChartData {
   Cumulative_Inflation_Percent: number;
 }
 
+interface TooltipEntry {
+  payload: ChartData;
+}
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: TooltipEntry[];
+}
+
+function PurchasingPowerTooltip({ active, payload }: TooltipProps) {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div style={TOOLTIP_CONFIG.contentStyle}>
+        <p style={TOOLTIP_CONFIG.labelStyle}>
+          <strong>{formatYear(data.Year)}</strong>
+        </p>
+        <p style={TOOLTIP_CONFIG.itemStyle}>
+          Purchasing Power: {formatCurrency(data.Purchasing_Power_USD, 2)}
+        </p>
+        <p style={TOOLTIP_CONFIG.itemStyle}>
+          Cumulative Inflation: {formatPercent(data.Cumulative_Inflation_Percent, 1, true)}
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
+
 export const PurchasingPowerChart: React.FC = () => {
   const [data, setData] = useState<ChartData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,26 +97,6 @@ export const PurchasingPowerChart: React.FC = () => {
       </div>
     );
   }
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div style={TOOLTIP_CONFIG.contentStyle}>
-          <p style={TOOLTIP_CONFIG.labelStyle}>
-            <strong>{formatYear(data.Year)}</strong>
-          </p>
-          <p style={TOOLTIP_CONFIG.itemStyle}>
-            Purchasing Power: {formatCurrency(data.Purchasing_Power_USD, 2)}
-          </p>
-          <p style={TOOLTIP_CONFIG.itemStyle}>
-            Cumulative Inflation: {formatPercent(data.Cumulative_Inflation_Percent, 1, true)}
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="vi-chart-container">
@@ -139,7 +148,7 @@ export const PurchasingPowerChart: React.FC = () => {
               />
             </YAxis>
 
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<PurchasingPowerTooltip />} />
 
             <Area
               type="monotone"
@@ -156,7 +165,7 @@ export const PurchasingPowerChart: React.FC = () => {
       <div className="mt-4 p-4 bg-vi-chart-grid rounded-lg text-sm">
         <p className="text-vi-text-muted">
           <strong className="text-vi-gold">Key Insight:</strong> $1.00 in 1950 has the buying power of only $0.05 today.
-          That's a <strong className="text-vi-red">95% loss</strong> of purchasing power due to continuous inflation.
+          That&apos;s a <strong className="text-vi-red">95% loss</strong> of purchasing power due to continuous inflation.
         </p>
       </div>
     </div>

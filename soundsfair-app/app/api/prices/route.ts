@@ -4,8 +4,13 @@ import { NextRequest, NextResponse } from 'next/server';
 const CACHE_DURATION_HISTORICAL = 24 * 60 * 60; // 24 hours in seconds
 const CACHE_DURATION_RECENT = 5 * 60; // 5 minutes in seconds
 
+interface PricePoint {
+  date: string;
+  price: number;
+}
+
 interface PriceCache {
-  data: any;
+  data: PricePoint[];
   timestamp: number;
 }
 
@@ -21,7 +26,7 @@ function isCacheValid(cacheEntry: PriceCache, isHistorical: boolean): boolean {
   return (now - cacheEntry.timestamp) < maxAge;
 }
 
-async function fetchBitcoinPrice(from: string, to: string): Promise<any[]> {
+async function fetchBitcoinPrice(from: string, to: string): Promise<PricePoint[]> {
   const fromDate = new Date(from).getTime();
   const toDate = new Date(to).getTime();
 
@@ -39,7 +44,7 @@ async function fetchBitcoinPrice(from: string, to: string): Promise<any[]> {
       throw new Error(`CoinCap API failed with status ${response.status}`);
     }
 
-    const data = await response.json();
+    const data: { data?: { time: number; priceUsd: string }[] } = await response.json();
 
     if (!data.data || data.data.length === 0) {
       console.error('[CoinCap] No data returned');
@@ -48,7 +53,7 @@ async function fetchBitcoinPrice(from: string, to: string): Promise<any[]> {
 
     console.log(`[CoinCap] ✓ Successfully fetched ${data.data.length} price points`);
 
-    return data.data.map((item: any) => ({
+    return data.data.map((item) => ({
       date: new Date(item.time).toISOString().split('T')[0],
       price: parseFloat(item.priceUsd)
     }));
@@ -60,7 +65,7 @@ async function fetchBitcoinPrice(from: string, to: string): Promise<any[]> {
   }
 }
 
-async function fetchBitcoinPriceCoinGecko(from: string, to: string): Promise<any[]> {
+async function fetchBitcoinPriceCoinGecko(from: string, to: string): Promise<PricePoint[]> {
   try {
     console.log(`[CoinGecko] Fetching Bitcoin prices from ${from} to ${to}`);
 
@@ -75,7 +80,7 @@ async function fetchBitcoinPriceCoinGecko(from: string, to: string): Promise<any
       throw new Error(`CoinGecko API failed with status ${response.status}`);
     }
 
-    const data = await response.json();
+    const data: { prices?: [number, number][] } = await response.json();
 
     if (!data.prices || data.prices.length === 0) {
       console.error('[CoinGecko] No price data returned');
@@ -102,12 +107,12 @@ async function fetchBitcoinPriceCoinGecko(from: string, to: string): Promise<any
 
 // Fallback: Generate mock data for development when APIs fail
 // IMPORTANT: This uses REALISTIC historical prices based on actual Bitcoin market data
-function generateMockBitcoinData(from: string, to: string): any[] {
+function generateMockBitcoinData(from: string, to: string): PricePoint[] {
   console.warn('⚠️ Using mock Bitcoin price data - APIs failed. Data is based on real historical prices.');
 
   const startDate = new Date(from);
   const endDate = new Date(to);
-  const mockData: any[] = [];
+  const mockData: PricePoint[] = [];
 
   const daysInRange = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
