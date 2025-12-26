@@ -11,8 +11,8 @@ import { supabaseAdmin } from './supabase-admin';
 // CONFIGURATION
 // ============================================================================
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'bitcoinnalata@proton.me';
+const RESEND_API_KEY = process.env.RESEND_API_KEY?.trim();
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim() || 'bitcoinnalata@proton.me';
 const FROM_EMAIL = 'soundsfair <noreply@soundsfair.com>'; // Update with your verified domain
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
