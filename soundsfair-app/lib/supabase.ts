@@ -8,24 +8,11 @@
 import { createClient } from '@supabase/supabase-js';
 import type { DatabaseWithRelationships } from '@/app/types/database';
 
-// Get environment variables with valid placeholder fallbacks for build time
-// During build/prerendering, these placeholders allow createClient to succeed
-// At runtime in the browser, we validate and require the real values
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTI4MDAsImV4cCI6MTk2MDc2ODgwMH0.placeholder';
-
-// Validate environment variables only on client-side (runtime)
-// During build/prerendering, placeholders are used
-// At runtime in browser, real values must be present
-if (typeof window !== 'undefined') {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable');
-  }
-
-  if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable');
-  }
-}
+// Environment variables are injected at build time by Next.js
+// NEXT_PUBLIC_* vars must be set in Vercel dashboard or .env.local
+// If missing, Supabase client will fail at runtime with connection errors
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 /**
  * Create Supabase client for client-side usage
