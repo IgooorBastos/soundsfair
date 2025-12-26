@@ -8,11 +8,11 @@
 import { createClient } from '@supabase/supabase-js';
 import type { DatabaseWithRelationships } from '@/app/types/database';
 
-// Environment variables are injected at build time by Next.js
-// NEXT_PUBLIC_* vars must be set in Vercel dashboard or .env.local
-// If missing, Supabase client will fail at runtime with connection errors
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Environment variables with fallback placeholders for build-time prerendering
+// Real values are injected by Next.js from Vercel env vars or .env.local
+// Placeholders allow prerendering to succeed; real values used at runtime
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTI4MDAsImV4cCI6MTk2MDc2ODgwMH0.placeholder';
 
 /**
  * Create Supabase client for client-side usage
