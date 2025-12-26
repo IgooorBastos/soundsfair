@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { calculateDCA, generateChartData, generateShareableId } from '@/lib/dca-calculator';
 import type { DCAInput, Asset } from '@/app/types/tools';
+import { GET as getPricesAPI } from '@/app/api/prices/route';
 
 interface PricePoint {
   date: string;
@@ -10,13 +11,18 @@ interface PricePoint {
 async function fetchPricesForAsset(
   asset: Asset,
   startDate: string,
-  endDate: string,
-  baseUrl: string
+  endDate: string
 ): Promise<PricePoint[]> {
-  const url = `${baseUrl}/api/prices?asset=${asset}&from=${startDate}&to=${endDate}`;
-  console.log(`[fetchPricesForAsset] Calling URL:`, url);
+  console.log(`[fetchPricesForAsset] Fetching ${asset} prices from ${startDate} to ${endDate}`);
 
-  const response = await fetch(url, { cache: 'no-store' });
+  // Call /api/prices directly as a function (avoid HTTP fetch blocked by Deployment Protection)
+  const url = new URL(`http://localhost:3000/api/prices`);
+  url.searchParams.set('asset', asset);
+  url.searchParams.set('from', startDate);
+  url.searchParams.set('to', endDate);
+
+  const request = new NextRequest(url);
+  const response = await getPricesAPI(request);
 
   console.log(`[fetchPricesForAsset] Response status:`, response.status);
 
@@ -71,9 +77,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get base URL from request (works in both dev and production)
-    const baseUrl = new URL(request.url).origin;
-    console.log('[DCA Calculate] Base URL:', baseUrl);
     console.log('[DCA Calculate] Requested assets:', body.assets);
     console.log('[DCA Calculate] Date range:', body.startDate, 'to', body.endDate);
 
@@ -85,7 +88,7 @@ export async function POST(request: NextRequest) {
       body.assets.map(async (asset) => {
         try {
           console.log(`[DCA Calculate] Fetching prices for ${asset}...`);
-          const prices = await fetchPricesForAsset(asset, body.startDate, body.endDate, baseUrl);
+          const prices = await fetchPricesForAsset(asset, body.startDate, body.endDate);
           console.log(`[DCA Calculate] ✓ Got ${prices.length} price points for ${asset}`);
           priceDataMap.set(asset, prices);
         } catch (error) {
@@ -103,8 +106,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Failed to fetch price data for any asset',
           details: errors,
-          requestedAssets: body.assets,
-          baseUrl: baseUrl
+          requestedAssets: body.assets
         },
         { status: 500 }
       );
