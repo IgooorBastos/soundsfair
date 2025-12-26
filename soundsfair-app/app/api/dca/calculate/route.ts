@@ -10,10 +10,9 @@ interface PricePoint {
 async function fetchPricesForAsset(
   asset: Asset,
   startDate: string,
-  endDate: string
+  endDate: string,
+  baseUrl: string
 ): Promise<PricePoint[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
   const response = await fetch(
     `${baseUrl}/api/prices?asset=${asset}&from=${startDate}&to=${endDate}`,
     { cache: 'no-store' }
@@ -67,13 +66,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get base URL from request (works in both dev and production)
+    const baseUrl = new URL(request.url).origin;
+
     // Fetch price data for all requested assets
     const priceDataMap = new Map<Asset, PricePoint[]>();
 
     await Promise.all(
       body.assets.map(async (asset) => {
         try {
-          const prices = await fetchPricesForAsset(asset, body.startDate, body.endDate);
+          const prices = await fetchPricesForAsset(asset, body.startDate, body.endDate, baseUrl);
           priceDataMap.set(asset, prices);
         } catch (error) {
           console.error(`Failed to fetch prices for ${asset}:`, error);
