@@ -1,6 +1,7 @@
 // Types for Tools Suite
 
-export type Asset = 'BTC' | 'SP500' | 'GOLD' | 'MSCI_WORLD';
+// Bitcoin-only focus: "The only truly scarce digital asset - 21 million forever"
+export type Asset = 'BTC';
 
 export type Frequency = 'daily' | 'weekly' | 'biweekly' | 'monthly';
 
