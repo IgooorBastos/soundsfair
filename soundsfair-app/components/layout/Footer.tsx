@@ -11,25 +11,28 @@ export default function Footer() {
       { label: "Level 5: Store of Value", href: "/lessons/level-5-store-of-value" },
       { label: "Level 6: Economic Freedom", href: "/lessons/level-6-economic-freedom" },
       { label: "Level 7: Geopolitical Future", href: "/lessons/level-7-geopolitical-future" },
-      { label: "FAQ", href: "/faq" },
+      { label: "All Tools", href: "/tools" },
     ],
     resources: [
-      { label: "DCA Calculator", href: "/tools/dca" },
+      { label: "Bitcoin Books", href: "/resources/books" },
+      { label: "Podcasts", href: "/resources/podcasts" },
+      { label: "Video Library", href: "/resources/videos" },
+      { label: "Reflections", href: "/reflections" },
+      { label: "Newsletter", href: "/substack" },
       { label: "Glossary", href: "/glossary" },
-      { label: "Video Library", href: "#" },
-      { label: "Reading List", href: "#" },
+      { label: "FAQ", href: "/faq" },
     ],
     company: [
       { label: "About Us", href: "/about" },
       { label: "Mission & Vision", href: "/about#mission" },
       { label: "Our Principles", href: "/about#principles" },
-      { label: "Contact", href: "#" },
+      { label: "Lightning Q&A", href: "/qa" },
     ],
     legal: [
-      { label: "Privacy Policy", href: "#" },
-      { label: "Terms of Service", href: "#" },
-      { label: "Disclaimer", href: "#" },
-      { label: "Cookie Policy", href: "#" },
+      { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Terms of Service", href: "/terms-of-service" },
+      { label: "Disclaimer", href: "/disclaimer" },
+      { label: "Cookie Policy", href: "/cookie-policy" },
     ],
   };
 
@@ -109,9 +112,6 @@ export default function Footer() {
                     className="text-sm text-gray-400 transition-colors hover:text-brand-yellow"
                   >
                     {link.label}
-                    {link.href === "#" && (
-                      <span className="ml-2 text-xs text-gray-600">(Soon)</span>
-                    )}
                   </Link>
                 </li>
               ))}
@@ -157,26 +157,24 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Newsletter Section (Optional) */}
+        {/* Newsletter Section */}
         <div className="border-t border-gray-800 py-8">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="text-center md:text-left">
               <h4 className="mb-1 text-lg font-semibold text-white">
-                Stay Updated
+                Weekly Bitcoin Insights
               </h4>
               <p className="text-sm text-gray-400">
-                Get notified when we launch new lessons and features.
+                Subscribe to our newsletter for in-depth analysis and perspectives.
               </p>
             </div>
-            <div className="flex w-full max-w-md gap-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 rounded-lg border border-gray-800 bg-gray-900 px-4 py-2 text-sm text-white placeholder-gray-500 focus:border-brand-yellow focus:outline-none focus:ring-1 focus:ring-brand-yellow"
-              />
-              <button className="whitespace-nowrap rounded-lg bg-brand-yellow px-6 py-2 text-sm font-semibold text-black transition-all hover:bg-primary-dark">
-                Notify Me
-              </button>
+            <div className="flex gap-2">
+              <Link
+                href="/substack"
+                className="whitespace-nowrap rounded-lg bg-brand-yellow px-6 py-2 text-sm font-semibold text-black transition-all hover:bg-primary-dark"
+              >
+                Subscribe to Newsletter
+              </Link>
             </div>
           </div>
         </div>

@@ -1,27 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import PricingTierSelector from "@/components/qa/PricingTierSelector";
+import SatsSlider from "@/components/qa/SatsSlider";
 import PaymentInvoice from "@/components/qa/PaymentInvoice";
-import { submitQuestionSchema } from "@/lib/validation";
-import type { QuestionCategory, PricingTier, SubmitQuestionResponse } from "@/app/types/qa";
-import { z } from "zod";
-
-const CATEGORIES: Array<{ id: QuestionCategory; label: string; icon: string }> = [
-  { id: "technical", label: "Technical", icon: "⚙️" },
-  { id: "economics", label: "Economics", icon: "💰" },
-  { id: "security", label: "Security", icon: "🔒" },
-  { id: "getting-started", label: "Getting Started", icon: "🚀" },
-  { id: "geopolitics", label: "Geopolitics", icon: "🌍" },
-];
+import type { SubmitQuestionResponse } from "@/app/types/qa";
 
 export default function QAForm() {
   const [formData, setFormData] = useState({
     userEmail: "",
     userName: "",
-    category: "" as QuestionCategory | "",
     questionText: "",
-    pricingTier: null as PricingTier | null,
+    amountSats: 5000, // Default to middle tier
     publishToArchive: false,
   });
 
@@ -32,7 +21,7 @@ export default function QAForm() {
 
   const handleInputChange = (
     field: string,
-    value: string | boolean | PricingTier | QuestionCategory
+    value: string | boolean | number
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
@@ -47,25 +36,34 @@ export default function QAForm() {
   };
 
   const validateForm = () => {
-    try {
-      submitQuestionSchema.parse({
-        ...formData,
-        category: formData.category || undefined,
-        pricingTier: formData.pricingTier || undefined,
-      });
-      setErrors({});
-      return true;
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const newErrors: Record<string, string> = {};
-        error.issues.forEach((err) => {
-          const field = err.path[0] as string;
-          newErrors[field] = err.message;
-        });
-        setErrors(newErrors);
-      }
-      return false;
+    const newErrors: Record<string, string> = {};
+
+    // Email validation
+    if (!formData.userEmail) {
+      newErrors.userEmail = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.userEmail)) {
+      newErrors.userEmail = "Please enter a valid email address";
     }
+
+    // Question validation
+    if (!formData.questionText) {
+      newErrors.questionText = "Please enter your question";
+    } else if (formData.questionText.length < 20) {
+      newErrors.questionText = "Question must be at least 20 characters";
+    } else if (formData.questionText.length > 5000) {
+      newErrors.questionText = "Question must be less than 5000 characters";
+    }
+
+    // Amount validation
+    if (formData.amountSats < 1000) {
+      newErrors.amountSats = "Minimum amount is 1,000 sats";
+    } else if (formData.amountSats > 1000000) {
+      // Soft maximum suggestion (1M sats = ~$1,000 at $100k BTC)
+      newErrors.amountSats = "For amounts above 1M sats, please contact us directly for custom service";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -87,9 +85,8 @@ export default function QAForm() {
         body: JSON.stringify({
           userEmail: formData.userEmail,
           userName: formData.userName || undefined,
-          category: formData.category,
           questionText: formData.questionText,
-          pricingTier: formData.pricingTier,
+          amountSats: formData.amountSats,
           publishToArchive: formData.publishToArchive,
         }),
       });
@@ -135,9 +132,8 @@ export default function QAForm() {
           setFormData({
             userEmail: "",
             userName: "",
-            category: "" as QuestionCategory | "",
             questionText: "",
-            pricingTier: null,
+            amountSats: 5000,
             publishToArchive: false,
           });
         }}
@@ -206,40 +202,6 @@ export default function QAForm() {
         />
       </div>
 
-      {/* Category */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-text-secondary mb-3">
-          Question Category <span className="text-semantic-error">*</span>
-        </label>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          {CATEGORIES.map((cat) => {
-            const isSelected = formData.category === cat.id;
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => handleInputChange("category", cat.id)}
-                className={`
-                  p-3 rounded-lg border-2 transition-all text-center
-                  ${
-                    isSelected
-                      ? "border-brand-gold bg-brand-gold/10"
-                      : "border-border-default bg-surface-black hover:border-border-muted"
-                  }
-                `}
-                disabled={isSubmitting}
-              >
-                <div className="text-2xl mb-1">{cat.icon}</div>
-                <div className="text-sm font-medium">{cat.label}</div>
-              </button>
-            );
-          })}
-        </div>
-        {errors.category && (
-          <p className="text-semantic-error text-sm mt-2">{errors.category}</p>
-        )}
-      </div>
-
       {/* Question Text */}
       <div className="mb-6">
         <label
@@ -291,15 +253,15 @@ export default function QAForm() {
         </div>
       </div>
 
-      {/* Pricing Tier Selector */}
+      {/* Sats Amount Slider */}
       <div className="mb-6">
-        <PricingTierSelector
-          selectedTier={formData.pricingTier}
-          onSelectTier={(tier) => handleInputChange("pricingTier", tier)}
+        <SatsSlider
+          value={formData.amountSats}
+          onChange={(value) => handleInputChange("amountSats", value)}
         />
-        {errors.pricingTier && (
+        {errors.amountSats && (
           <p className="text-semantic-error text-sm mt-2">
-            {errors.pricingTier}
+            {errors.amountSats}
           </p>
         )}
       </div>

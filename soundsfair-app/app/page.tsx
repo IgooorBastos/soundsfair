@@ -2,6 +2,10 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import CinematicHero from "@/components/ui/CinematicHero";
+import FeatureCard from "@/components/ui/FeatureCard";
+import GlowButton from "@/components/ui/GlowButton";
+import { CyberGrid, ScanLines, GlowOrb } from "@/components/effects";
 import ContinueLearning from "@/components/ui/ContinueLearning";
 
 export const metadata: Metadata = {
@@ -32,197 +36,311 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-surface-black relative overflow-hidden">
+      {/* Background Effects */}
+      <CyberGrid intensity="medium" animated={true} />
+      <ScanLines opacity={0.03} />
+
       <Header />
 
-      {/* Hero Section */}
-      <main className="container mx-auto px-4">
-        <section className="min-h-[80vh] flex flex-col items-center justify-center text-center py-20">
-          <div className="max-w-4xl">
-            <h2 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              Learn About{" "}
-              <span className="text-brand-yellow">Fair Money</span>
+      <main className="relative z-10">
+        {/* Cinematic Hero Section */}
+        <CinematicHero
+          subtitle="The Future of Money"
+          title="Learn Bitcoin. Embrace Sound Money. Achieve Economic Freedom."
+          description="Master Bitcoin from zero to advanced with our comprehensive course, interactive tools, and expert guidance. Join the monetary revolution."
+          cta={{
+            text: "Start Learning",
+            href: "/lessons"
+          }}
+          secondaryCta={{
+            text: "Explore Tools",
+            href: "/tools"
+          }}
+        />
+
+        {/* Continue Learning Section (shows if user has progress) */}
+        <section className="container mx-auto px-6 py-12">
+          <ContinueLearning />
+        </section>
+
+        {/* Tools Showcase */}
+        <section className="container mx-auto px-6 py-20 relative">
+          {/* Background accent */}
+          <GlowOrb position={{ x: '90%', y: '50%' }} size="xl" color="gold" opacity={0.15} />
+
+          <div className="text-center mb-16">
+            <span className="inline-block px-4 py-2 bg-brand-gold/10 border border-brand-gold/30 rounded-full text-brand-gold font-mono text-sm uppercase tracking-wider mb-6">
+              Interactive Tools
+            </span>
+            <h2 className="text-h1 font-display text-text-primary mb-4">
+              Powerful <span className="text-brand-gold text-shadow-glow">Bitcoin</span> Tools
             </h2>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
-              An educational platform about Bitcoin, economic freedom, and sound monetary principles.
+            <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
+              Calculators, converters, and real-time data to help you understand Bitcoin's value and potential
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/lessons"
-                className="px-8 py-4 bg-brand-yellow text-black font-semibold rounded-lg hover:bg-primary-dark transition-colors"
-              >
-                Start Learning
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            <FeatureCard
+              icon="⚡"
+              title="DCA Calculator"
+              description="Compare Bitcoin's Dollar-Cost Averaging performance against traditional assets."
+              features={[
+                "Multi-asset comparison (BTC, S&P500, Gold, MSCI World)",
+                "Historical data visualization",
+                "CSV export and shareable links"
+              ]}
+              href="/tools/dca"
+              ctaText="Calculate Returns"
+            />
+
+            <FeatureCard
+              icon="🔄"
+              title="Satoshi Converter"
+              description="Instantly convert between Bitcoin, Satoshis, and fiat currencies."
+              features={[
+                "Real-time price data",
+                "Multiple fiat currencies",
+                "Quick conversion presets"
+              ]}
+              href="/tools/satoshi-converter"
+              ctaText="Convert Now"
+            />
+
+            <FeatureCard
+              icon="😱"
+              title="Fear & Greed Index"
+              description="Track Bitcoin market sentiment and make informed decisions."
+              features={[
+                "Real-time sentiment analysis",
+                "Historical trends",
+                "Color-coded indicators"
+              ]}
+              href="/tools/fear-greed-index"
+              ctaText="Check Sentiment"
+            />
+
+            <FeatureCard
+              icon="📈"
+              title="What-If Calculator"
+              description="Discover what your investment would be worth if you bought Bitcoin earlier."
+              features={[
+                "Historical return calculations",
+                "Annualized performance metrics",
+                "ROI visualization"
+              ]}
+              href="/tools/what-if-calculator"
+              ctaText="Calculate What-If"
+            />
+
+            <FeatureCard
+              icon="⏰"
+              title="Halving Countdown"
+              description="Track the next Bitcoin halving event and supply reduction."
+              features={[
+                "Live countdown timer",
+                "Block height tracking",
+                "Historical halving data"
+              ]}
+              href="/tools/halving-countdown"
+              ctaText="View Countdown"
+            />
+
+            <FeatureCard
+              icon="🎯"
+              title="All Tools"
+              description="Explore our complete suite of Bitcoin educational tools and calculators."
+              features={[
+                "5+ interactive calculators",
+                "Real-time data feeds",
+                "Mobile-optimized"
+              ]}
+              href="/tools"
+              ctaText="Browse All Tools"
+            />
+          </div>
+        </section>
+
+        {/* Course Preview */}
+        <section className="container mx-auto px-6 py-20 relative">
+          {/* Background accent */}
+          <GlowOrb position={{ x: '10%', y: '50%' }} size="lg" color="orange" opacity={0.15} />
+
+          <div className="text-center mb-16">
+            <span className="inline-block px-4 py-2 bg-brand-gold/10 border border-brand-gold/30 rounded-full text-brand-gold font-mono text-sm uppercase tracking-wider mb-6">
+              Education
+            </span>
+            <h2 className="text-h1 font-display text-text-primary mb-4">
+              The Complete <span className="text-brand-gold text-shadow-glow">Bitcoin</span> Course
+            </h2>
+            <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
+              9 progressive lessons covering everything from fiat system failures to Bitcoin as economic freedom
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 max-w-7xl mx-auto mb-12">
+            <FeatureCard
+              icon="🎓"
+              title="Beginner Friendly"
+              description="Start from zero with clear explanations of the fiat system, banking, and Bitcoin basics."
+              features={[
+                "Level 1-3: Foundation",
+                "No prior knowledge needed",
+                "Interactive quizzes"
+              ]}
+              href="/lessons?difficulty=beginner"
+              ctaText="Start Beginner"
+            />
+
+            <FeatureCard
+              icon="📊"
+              title="Intermediate Depth"
+              description="Understand Bitcoin's role in geopolitics, economics, and as a store of value."
+              features={[
+                "Level 4-6: Core Concepts",
+                "Economic freedom analysis",
+                "Geopolitical implications"
+              ]}
+              href="/lessons?difficulty=intermediate"
+              ctaText="Explore Intermediate"
+            />
+
+            <FeatureCard
+              icon="🚀"
+              title="Advanced Strategies"
+              description="Master protection strategies, future scenarios, and achieve true financial sovereignty."
+              features={[
+                "Level 7-9: Expert Topics",
+                "Protection strategies",
+                "Future of Bitcoin"
+              ]}
+              href="/lessons?difficulty=advanced"
+              ctaText="Master Advanced"
+            />
+          </div>
+
+          <div className="text-center">
+            <GlowButton href="/lessons" variant="primary" size="lg">
+              View All Lessons
+            </GlowButton>
+          </div>
+        </section>
+
+        {/* Resources Grid */}
+        <section className="container mx-auto px-6 py-20 relative">
+          <div className="text-center mb-16">
+            <span className="inline-block px-4 py-2 bg-brand-gold/10 border border-brand-gold/30 rounded-full text-brand-gold font-mono text-sm uppercase tracking-wider mb-6">
+              Resources
+            </span>
+            <h2 className="text-h1 font-display text-text-primary mb-4">
+              Knowledge <span className="text-brand-gold text-shadow-glow">Base</span>
+            </h2>
+            <p className="text-body-lg text-text-secondary max-w-2xl mx-auto">
+              Everything you need to understand Bitcoin terminology and common questions
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div className="relative group">
+              <Link href="/glossary">
+                <div className="
+                  bg-surface-charcoal
+                  border-2
+                  border-border-default
+                  rounded-card
+                  p-8
+                  transition-all
+                  duration-300
+                  hover:border-brand-gold
+                  hover:shadow-glow
+                  hover:-translate-y-2
+                  cursor-pointer
+                  overflow-hidden
+                ">
+                  {/* Hover gradient */}
+                  <div className="absolute inset-0 bg-radial-gold opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  <div className="relative z-10">
+                    <div className="text-brand-gold text-5xl mb-6 group-hover:scale-110 transition-transform">
+                      📖
+                    </div>
+                    <h3 className="text-h3 font-display text-text-primary mb-3 group-hover:text-shadow-glow transition-all">
+                      Bitcoin Glossary
+                    </h3>
+                    <p className="text-body text-text-secondary mb-6">
+                      50+ essential Bitcoin terms with clear definitions, examples, and related concepts. Searchable and beginner-friendly.
+                    </p>
+                    <div className="flex items-center text-brand-gold font-display text-sm uppercase tracking-wider group-hover:text-shadow-glow transition-all">
+                      <span>Browse Glossary</span>
+                      <span className="ml-2 transform group-hover:translate-x-2 transition-transform">→</span>
+                    </div>
+                  </div>
+                </div>
               </Link>
-              <Link
-                href="/tools/dca"
-                className="px-8 py-4 border-2 border-brand-yellow text-brand-yellow font-semibold rounded-lg hover:bg-brand-yellow hover:text-black transition-colors"
-              >
-                DCA Calculator
+            </div>
+
+            <div className="relative group">
+              <Link href="/faq">
+                <div className="
+                  bg-surface-charcoal
+                  border-2
+                  border-border-default
+                  rounded-card
+                  p-8
+                  transition-all
+                  duration-300
+                  hover:border-brand-gold
+                  hover:shadow-glow
+                  hover:-translate-y-2
+                  cursor-pointer
+                  overflow-hidden
+                ">
+                  {/* Hover gradient */}
+                  <div className="absolute inset-0 bg-radial-gold opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  <div className="relative z-10">
+                    <div className="text-brand-gold text-5xl mb-6 group-hover:scale-110 transition-transform">
+                      ❓
+                    </div>
+                    <h3 className="text-h3 font-display text-text-primary mb-3 group-hover:text-shadow-glow transition-all">
+                      FAQ
+                    </h3>
+                    <p className="text-body text-text-secondary mb-6">
+                      20+ comprehensive answers to the most common questions about Bitcoin, security, privacy, and getting started.
+                    </p>
+                    <div className="flex items-center text-brand-gold font-display text-sm uppercase tracking-wider group-hover:text-shadow-glow transition-all">
+                      <span>View FAQs</span>
+                      <span className="ml-2 transform group-hover:translate-x-2 transition-transform">→</span>
+                    </div>
+                  </div>
+                </div>
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Continue Learning Section (shows if user has progress) */}
-        <section className="py-12">
-          <ContinueLearning />
-        </section>
+        {/* Final CTA */}
+        <section className="container mx-auto px-6 py-32 text-center relative">
+          {/* Background accents */}
+          <GlowOrb position={{ x: '30%', y: '50%' }} size="lg" color="gold" opacity={0.2} />
+          <GlowOrb position={{ x: '70%', y: '50%' }} size="lg" color="orange" opacity={0.2} />
 
-        {/* Features Preview */}
-        <section id="learn" className="py-20">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4">
-              What You&apos;ll Learn
-            </h3>
-            <p className="text-xl text-gray-400">
-              From zero to advanced Bitcoin knowledge
+          <div className="max-w-3xl mx-auto relative z-10">
+            <h2 className="text-h1 font-display text-text-primary mb-6 leading-tight">
+              Ready to Master <span className="text-brand-gold text-shadow-glow-lg">Sound Money</span>?
+            </h2>
+            <p className="text-body-lg text-text-secondary mb-12 max-w-2xl mx-auto">
+              Join thousands learning about Bitcoin, economic freedom, and the future of money. Start your journey today.
             </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <Link href="/lessons" className="group relative p-8 border-2 border-border-default rounded-card
-                                             hover:border-brand-gold transition-all duration-300
-                                             hover:-translate-y-2 hover:shadow-glow bg-surface-charcoal
-                                             overflow-hidden">
-              {/* Subtle gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-gold/5 to-transparent
-                              opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-              <div className="relative">
-                <div className="text-brand-gold text-5xl mb-6 group-hover:scale-110 transition-transform">📚</div>
-                <h4 className="text-2xl font-bold mb-4 group-hover:text-brand-gold transition-colors">
-                  Educational Lessons
-                </h4>
-                <p className="text-text-secondary leading-relaxed mb-6">
-                  5 comprehensive lessons covering Bitcoin as store of value, economic freedom, geopolitics, and protection strategies.
-                </p>
-                <span className="text-brand-gold text-sm font-semibold inline-flex items-center gap-2 group-hover:gap-3 transition-all">
-                  Start Learning <span className="transition-transform group-hover:translate-x-1">→</span>
-                </span>
-              </div>
-            </Link>
-
-            <Link href="/tools/dca" className="group relative p-8 border-2 border-border-default rounded-card
-                                             hover:border-brand-gold transition-all duration-300
-                                             hover:-translate-y-2 hover:shadow-glow bg-surface-charcoal
-                                             overflow-hidden">
-              {/* Subtle gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-orange/5 to-transparent
-                              opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-              <div className="relative">
-                <div className="text-brand-orange text-5xl mb-6 group-hover:scale-110 transition-transform">📊</div>
-                <h4 className="text-2xl font-bold mb-4 group-hover:text-brand-gold transition-colors">
-                  DCA Calculator
-                </h4>
-                <p className="text-text-secondary leading-relaxed mb-6">
-                  Compare Bitcoin performance against S&P500, Gold, and other assets with our interactive DCA calculator.
-                </p>
-                <span className="text-brand-gold text-sm font-semibold inline-flex items-center gap-2 group-hover:gap-3 transition-all">
-                  Try Calculator <span className="transition-transform group-hover:translate-x-1">→</span>
-                </span>
-              </div>
-            </Link>
-
-            <Link href="/glossary" className="group relative p-8 border-2 border-border-default rounded-card
-                                             hover:border-brand-gold transition-all duration-300
-                                             hover:-translate-y-2 hover:shadow-glow bg-surface-charcoal
-                                             overflow-hidden">
-              {/* Subtle gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-gold/5 to-transparent
-                              opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-              <div className="relative">
-                <div className="text-brand-gold text-5xl mb-6 group-hover:scale-110 transition-transform">📖</div>
-                <h4 className="text-2xl font-bold mb-4 group-hover:text-brand-gold transition-colors">
-                  Bitcoin Glossary
-                </h4>
-                <p className="text-text-secondary leading-relaxed mb-6">
-                  50+ essential Bitcoin terms explained. Searchable, filterable, and easy to understand definitions.
-                </p>
-                <span className="text-brand-gold text-sm font-semibold inline-flex items-center gap-2 group-hover:gap-3 transition-all">
-                  Browse Terms <span className="transition-transform group-hover:translate-x-1">→</span>
-                </span>
-              </div>
-            </Link>
-          </div>
-        </section>
-
-        {/* Quick Access Section */}
-        <section className="py-20">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4">
-              More Resources
-            </h3>
-            <p className="text-xl text-gray-400">
-              Everything you need to master Bitcoin knowledge
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <Link href="/faq" className="group relative p-8 border-2 border-border-default rounded-card
-                                         hover:border-brand-gold transition-all duration-300
-                                         hover:-translate-y-1 hover:shadow-glow bg-surface-charcoal
-                                         overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-gold/5 to-transparent
-                              opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-              <div className="relative flex items-start gap-4">
-                <div className="text-brand-gold text-4xl group-hover:scale-110 transition-transform flex-shrink-0">❓</div>
-                <div className="flex-1">
-                  <h4 className="text-xl font-bold mb-3 group-hover:text-brand-gold transition-colors">
-                    Frequently Asked Questions
-                  </h4>
-                  <p className="text-text-secondary leading-relaxed mb-4">
-                    20 comprehensive answers to the most common Bitcoin questions
-                  </p>
-                  <span className="text-brand-gold text-sm font-semibold inline-flex items-center gap-2 group-hover:gap-3 transition-all">
-                    View FAQs <span className="transition-transform group-hover:translate-x-1">→</span>
-                  </span>
-                </div>
-              </div>
-            </Link>
-
-            <Link href="/glossary" className="group relative p-8 border-2 border-border-default rounded-card
-                                             hover:border-brand-gold transition-all duration-300
-                                             hover:-translate-y-1 hover:shadow-glow bg-surface-charcoal
-                                             overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-gold/5 to-transparent
-                              opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-              <div className="relative flex items-start gap-4">
-                <div className="text-brand-gold text-4xl group-hover:scale-110 transition-transform flex-shrink-0">📖</div>
-                <div className="flex-1">
-                  <h4 className="text-xl font-bold mb-3 group-hover:text-brand-gold transition-colors">
-                    Bitcoin Glossary
-                  </h4>
-                  <p className="text-text-secondary leading-relaxed mb-4">
-                    50+ essential terms with clear definitions and related concepts
-                  </p>
-                  <span className="text-brand-gold text-sm font-semibold inline-flex items-center gap-2 group-hover:gap-3 transition-all">
-                    Browse Glossary <span className="transition-transform group-hover:translate-x-1">→</span>
-                  </span>
-                </div>
-              </div>
-            </Link>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-20 text-center">
-          <div className="max-w-2xl mx-auto">
-            <h3 className="text-3xl md:text-4xl font-bold mb-6">
-              Ready to Start Your Journey?
-            </h3>
-            <p className="text-xl text-gray-400 mb-8">
-              Join thousands learning about sound money and economic freedom.
-            </p>
-            <Link
-              href="/lessons"
-              className="inline-block px-8 py-4 bg-brand-yellow text-black font-semibold rounded-lg hover:bg-primary-dark transition-colors"
-            >
-              Begin Learning Now
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <GlowButton href="/lessons" variant="primary" size="lg">
+                Start Learning Now
+              </GlowButton>
+              <GlowButton href="/about" variant="outline" size="lg">
+                About soundsfair
+              </GlowButton>
+            </div>
           </div>
         </section>
       </main>

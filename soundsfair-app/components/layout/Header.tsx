@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useMemo, useRef } from "react";
-import UserProgressCompact from "@/components/ui/UserProgressCompact";
+import UserProfileMenu from "@/components/layout/UserProfileMenu";
 import { useAuth } from "@/lib/hooks/useAuth";
 
 // Lessons data
@@ -28,6 +28,11 @@ const searchableContent = [
   { title: "Fear & Greed Index", url: "/tools/fear-greed-index", category: "Tools" },
   { title: "Halving Countdown", url: "/tools/halving-countdown", category: "Tools" },
   { title: "All Tools", url: "/tools", category: "Tools" },
+  { title: "Books", url: "/resources/books", category: "Resources" },
+  { title: "Podcasts", url: "/resources/podcasts", category: "Resources" },
+  { title: "Videos", url: "/resources/videos", category: "Resources" },
+  { title: "Reflections & Blog", url: "/reflections", category: "Resources" },
+  { title: "Newsletter", url: "/substack", category: "Resources" },
   { title: "Glossary", url: "/glossary", category: "Resources" },
   { title: "FAQ", url: "/faq", category: "Resources" },
   { title: "Ask Question (Lightning Q&A)", url: "/qa", category: "Q&A" },
@@ -56,10 +61,12 @@ export default function Header() {
   }, [searchQuery]);
   const [learnDropdownOpen, setLearnDropdownOpen] = useState(false);
   const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false);
+  const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const learnDropdownRef = useRef<HTMLDivElement>(null);
   const toolsDropdownRef = useRef<HTMLDivElement>(null);
+  const resourcesDropdownRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => {
     if (path === "/") return pathname === "/";
@@ -84,6 +91,10 @@ export default function Header() {
 
       if (toolsDropdownRef.current && !toolsDropdownRef.current.contains(target)) {
         setToolsDropdownOpen(false);
+      }
+
+      if (resourcesDropdownRef.current && !resourcesDropdownRef.current.contains(target)) {
+        setResourcesDropdownOpen(false);
       }
 
       if (!target.closest(".search-container")) {
@@ -117,8 +128,8 @@ export default function Header() {
   return (
     <header className={`sticky top-0 z-50 border-b transition-all duration-300 ${
       isScrolled
-        ? 'border-gray-800 bg-black/95 backdrop-blur-xl shadow-lg'
-        : 'border-gray-800/50 bg-black/80 backdrop-blur-md'
+        ? 'border-brand-gold/20 bg-surface-black/95 backdrop-blur-xl shadow-glow'
+        : 'border-border-default/50 bg-surface-black/80 backdrop-blur-md'
     } supports-[backdrop-filter]:bg-black/60`}>
       <div className="container mx-auto px-4 lg:px-6">
         {/* Main Header */}
@@ -163,13 +174,22 @@ export default function Header() {
             </Link>
 
             {/* Learn Dropdown */}
-            <div ref={learnDropdownRef} className="relative">
+            <div
+              ref={learnDropdownRef}
+              className="relative"
+              onMouseEnter={() => {
+                setLearnDropdownOpen(true);
+                setToolsDropdownOpen(false);
+                setResourcesDropdownOpen(false);
+              }}
+              onMouseLeave={() => setLearnDropdownOpen(false)}
+            >
               <button
                 onClick={() => {
                   setLearnDropdownOpen(!learnDropdownOpen);
                   setToolsDropdownOpen(false);
+                  setResourcesDropdownOpen(false);
                 }}
-                onMouseEnter={() => setLearnDropdownOpen(true)}
                 className={`flex items-center gap-1 text-sm font-medium transition-all duration-200 px-3 py-2 rounded-lg ${
                   isActive("/learn") || isActive("/lessons")
                     ? "text-brand-yellow bg-brand-yellow/10"
@@ -197,7 +217,6 @@ export default function Header() {
               {/* Learn Dropdown Menu */}
               {learnDropdownOpen && (
                 <div
-                  onMouseLeave={() => setLearnDropdownOpen(false)}
                   className="absolute left-0 top-full mt-2 w-96 rounded-lg border border-gray-800 bg-black shadow-2xl"
                 >
                   <div className="p-4">
@@ -254,15 +273,24 @@ export default function Header() {
             </div>
 
             {/* Tools Dropdown */}
-            <div ref={toolsDropdownRef} className="relative">
+            <div
+              ref={toolsDropdownRef}
+              className="relative"
+              onMouseEnter={() => {
+                setToolsDropdownOpen(true);
+                setLearnDropdownOpen(false);
+                setResourcesDropdownOpen(false);
+              }}
+              onMouseLeave={() => setToolsDropdownOpen(false)}
+            >
               <button
                 onClick={() => {
                   setToolsDropdownOpen(!toolsDropdownOpen);
                   setLearnDropdownOpen(false);
+                  setResourcesDropdownOpen(false);
                 }}
-                onMouseEnter={() => setToolsDropdownOpen(true)}
                 className={`flex items-center gap-1 text-sm font-medium transition-all duration-200 px-3 py-2 rounded-lg ${
-                  isActive("/tools") || isActive("/faq") || isActive("/glossary")
+                  isActive("/tools")
                     ? "text-brand-yellow bg-brand-yellow/10"
                     : "text-gray-300 hover:text-white hover:bg-gray-900/50"
                 }`}
@@ -288,7 +316,6 @@ export default function Header() {
               {/* Tools Dropdown Menu */}
               {toolsDropdownOpen && (
                 <div
-                  onMouseLeave={() => setToolsDropdownOpen(false)}
                   className="absolute left-0 top-full mt-2 w-80 rounded-lg border border-gray-800 bg-black shadow-2xl"
                 >
                   <div className="p-3">
@@ -380,40 +407,6 @@ export default function Header() {
                       </Link>
                     </div>
 
-                    {/* Resources Section */}
-                    <div className="border-t border-gray-800 mt-2 pt-2">
-                      <div className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gray-600">
-                        Resources
-                      </div>
-                      <Link
-                        href="/glossary"
-                        onClick={() => setToolsDropdownOpen(false)}
-                        className="flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-900"
-                      >
-                        <div className="text-2xl">📖</div>
-                        <div>
-                          <div className="font-semibold text-white">Bitcoin Glossary</div>
-                          <div className="text-xs text-gray-400">
-                            50+ essential Bitcoin terms
-                          </div>
-                        </div>
-                      </Link>
-
-                      <Link
-                        href="/faq"
-                        onClick={() => setToolsDropdownOpen(false)}
-                        className="flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-900"
-                      >
-                        <div className="text-2xl">❓</div>
-                        <div>
-                          <div className="font-semibold text-white">FAQ</div>
-                          <div className="text-xs text-gray-400">
-                            Frequently asked questions
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-
                     {/* View All Link */}
                     <div className="border-t border-gray-800 mt-2 pt-2">
                       <Link
@@ -425,6 +418,173 @@ export default function Header() {
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Resources Dropdown */}
+            <div
+              ref={resourcesDropdownRef}
+              className="relative"
+              onMouseEnter={() => {
+                setResourcesDropdownOpen(true);
+                setLearnDropdownOpen(false);
+                setToolsDropdownOpen(false);
+              }}
+              onMouseLeave={() => setResourcesDropdownOpen(false)}
+            >
+              <button
+                onClick={() => {
+                  setResourcesDropdownOpen(!resourcesDropdownOpen);
+                  setLearnDropdownOpen(false);
+                  setToolsDropdownOpen(false);
+                }}
+                className={`flex items-center gap-1 text-sm font-medium transition-all duration-200 px-3 py-2 rounded-lg ${
+                  isActive("/resources") || isActive("/reflections") || isActive("/substack") || isActive("/glossary") || isActive("/faq")
+                    ? "text-brand-yellow bg-brand-yellow/10"
+                    : "text-gray-300 hover:text-white hover:bg-gray-900/50"
+                }`}
+              >
+                <span>Resources</span>
+                <svg
+                  className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                    resourcesDropdownOpen ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {/* Resources Dropdown Menu */}
+              {resourcesDropdownOpen && (
+                <div
+                  className="absolute left-0 top-full mt-2 w-80 rounded-lg border border-gray-800 bg-black shadow-2xl"
+                >
+                  <div className="p-3">
+                    {/* Learning Resources */}
+                    <div className="mb-2">
+                      <div className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gray-600">
+                        Learning Resources
+                      </div>
+                      <Link
+                        href="/resources/books"
+                        onClick={() => setResourcesDropdownOpen(false)}
+                        className="flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-900"
+                      >
+                        <div className="text-2xl">📚</div>
+                        <div>
+                          <div className="font-semibold text-white">Bitcoin Books</div>
+                          <div className="text-xs text-gray-400">
+                            Curated reading list with reviews
+                          </div>
+                        </div>
+                      </Link>
+
+                      <Link
+                        href="/resources/podcasts"
+                        onClick={() => setResourcesDropdownOpen(false)}
+                        className="flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-900"
+                      >
+                        <div className="text-2xl">🎙️</div>
+                        <div>
+                          <div className="font-semibold text-white">Podcasts</div>
+                          <div className="text-xs text-gray-400">
+                            Best Bitcoin shows to follow
+                          </div>
+                        </div>
+                      </Link>
+
+                      <Link
+                        href="/resources/videos"
+                        onClick={() => setResourcesDropdownOpen(false)}
+                        className="flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-900"
+                      >
+                        <div className="text-2xl">🎬</div>
+                        <div>
+                          <div className="font-semibold text-white">Video Library</div>
+                          <div className="text-xs text-gray-400">
+                            Curated YouTube videos
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+
+                    {/* Content & Community */}
+                    <div className="border-t border-gray-800 mb-2 pt-2">
+                      <div className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gray-600">
+                        Content & Community
+                      </div>
+                      <Link
+                        href="/reflections"
+                        onClick={() => setResourcesDropdownOpen(false)}
+                        className="flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-900"
+                      >
+                        <div className="text-2xl">✍️</div>
+                        <div>
+                          <div className="font-semibold text-white">Reflections</div>
+                          <div className="text-xs text-gray-400">
+                            Our thoughts on Bitcoin & freedom
+                          </div>
+                        </div>
+                      </Link>
+
+                      <Link
+                        href="/substack"
+                        onClick={() => setResourcesDropdownOpen(false)}
+                        className="flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-900"
+                      >
+                        <div className="text-2xl">📬</div>
+                        <div>
+                          <div className="font-semibold text-white">Newsletter</div>
+                          <div className="text-xs text-gray-400">
+                            Weekly Bitcoin insights
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+
+                    {/* Reference */}
+                    <div className="border-t border-gray-800 mb-2 pt-2">
+                      <div className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gray-600">
+                        Reference
+                      </div>
+                      <Link
+                        href="/glossary"
+                        onClick={() => setResourcesDropdownOpen(false)}
+                        className="flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-900"
+                      >
+                        <div className="text-2xl">📖</div>
+                        <div>
+                          <div className="font-semibold text-white">Glossary</div>
+                          <div className="text-xs text-gray-400">
+                            50+ Bitcoin terms explained
+                          </div>
+                        </div>
+                      </Link>
+
+                      <Link
+                        href="/faq"
+                        onClick={() => setResourcesDropdownOpen(false)}
+                        className="flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-900"
+                      >
+                        <div className="text-2xl">❓</div>
+                        <div>
+                          <div className="font-semibold text-white">FAQ</div>
+                          <div className="text-xs text-gray-400">
+                            Common questions answered
+                          </div>
+                        </div>
                       </Link>
                     </div>
                   </div>
@@ -460,11 +620,8 @@ export default function Header() {
             </Link>
           </nav>
 
-          {/* Search, Progress & CTA */}
+          {/* Search, Profile & CTA */}
           <div className="hidden items-center gap-3 lg:flex">
-            {/* User Progress Tracker - Only show when authenticated */}
-            {isAuthenticated && <UserProgressCompact />}
-
             {/* Search Bar */}
             <div className="search-container relative">
               {!searchOpen ? (
@@ -586,18 +743,24 @@ export default function Header() {
               )}
             </div>
 
-            {/* CTA Button - Changes based on auth status */}
+            {/* User Profile Menu (when authenticated) or Login Button */}
             {!authLoading && (
-              <Link
-                href={isAuthenticated ? "/lessons" : "/login"}
-                className="group relative overflow-hidden rounded-lg bg-brand-yellow px-5 py-2.5 text-sm font-semibold
-                           text-black transition-all hover:bg-yellow-400 hover:shadow-lg hover:shadow-brand-yellow/20
-                           active:scale-95"
-              >
-                <span className="relative z-10">{isAuthenticated ? "Start Learning" : "Login"}</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-brand-yellow opacity-0
-                                group-hover:opacity-100 transition-opacity duration-300"></div>
-              </Link>
+              <>
+                {isAuthenticated ? (
+                  <UserProfileMenu />
+                ) : (
+                  <Link
+                    href="/login"
+                    className="group relative overflow-hidden rounded-lg bg-brand-gold px-5 py-2.5 text-sm font-display font-semibold uppercase tracking-wider
+                               text-surface-black transition-all hover:bg-brand-gold-hover hover:shadow-glow hover:shadow-glow-lg
+                               active:scale-95"
+                  >
+                    <span className="relative z-10">Login</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-brand-gold-hover to-brand-gold opacity-0
+                                    group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </Link>
+                )}
+              </>
             )}
           </div>
 
@@ -715,29 +878,88 @@ export default function Header() {
                 Tools & Calculators
               </Link>
 
-              <Link
-                href="/glossary"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`text-base font-medium transition-colors ${
-                  isActive("/glossary")
-                    ? "text-brand-yellow"
-                    : "text-gray-300 hover:text-white"
-                }`}
-              >
-                Glossary
-              </Link>
-
-              <Link
-                href="/faq"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`text-base font-medium transition-colors ${
-                  isActive("/faq")
-                    ? "text-brand-yellow"
-                    : "text-gray-300 hover:text-white"
-                }`}
-              >
-                FAQ
-              </Link>
+              <div className="pt-2 border-t border-gray-800">
+                <div className="text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">
+                  Resources
+                </div>
+                <Link
+                  href="/resources/books"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-base font-medium transition-colors block mb-3 ${
+                    isActive("/resources/books")
+                      ? "text-brand-yellow"
+                      : "text-gray-300 hover:text-white"
+                  }`}
+                >
+                  📚 Books
+                </Link>
+                <Link
+                  href="/resources/podcasts"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-base font-medium transition-colors block mb-3 ${
+                    isActive("/resources/podcasts")
+                      ? "text-brand-yellow"
+                      : "text-gray-300 hover:text-white"
+                  }`}
+                >
+                  🎙️ Podcasts
+                </Link>
+                <Link
+                  href="/resources/videos"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-base font-medium transition-colors block mb-3 ${
+                    isActive("/resources/videos")
+                      ? "text-brand-yellow"
+                      : "text-gray-300 hover:text-white"
+                  }`}
+                >
+                  🎬 Videos
+                </Link>
+                <Link
+                  href="/reflections"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-base font-medium transition-colors block mb-3 ${
+                    isActive("/reflections")
+                      ? "text-brand-yellow"
+                      : "text-gray-300 hover:text-white"
+                  }`}
+                >
+                  ✍️ Reflections
+                </Link>
+                <Link
+                  href="/substack"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-base font-medium transition-colors block mb-3 ${
+                    isActive("/substack")
+                      ? "text-brand-yellow"
+                      : "text-gray-300 hover:text-white"
+                  }`}
+                >
+                  📬 Newsletter
+                </Link>
+                <Link
+                  href="/glossary"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-base font-medium transition-colors block mb-3 ${
+                    isActive("/glossary")
+                      ? "text-brand-yellow"
+                      : "text-gray-300 hover:text-white"
+                  }`}
+                >
+                  📖 Glossary
+                </Link>
+                <Link
+                  href="/faq"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-base font-medium transition-colors block mb-3 ${
+                    isActive("/faq")
+                      ? "text-brand-yellow"
+                      : "text-gray-300 hover:text-white"
+                  }`}
+                >
+                  ❓ FAQ
+                </Link>
+              </div>
 
               <Link
                 href="/qa"

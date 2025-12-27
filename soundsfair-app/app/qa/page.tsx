@@ -108,6 +108,102 @@ export default function QAPage() {
           </div>
         </section>
 
+        {/* Don't Trust, Verify Section */}
+        <section className="max-w-4xl mx-auto mb-16">
+          <div className="bg-gradient-to-br from-brand-gold/5 to-orange-600/5 border-2 border-brand-gold/30 rounded-card p-8 md:p-10">
+            <div className="flex items-start gap-4 mb-6">
+              <span className="text-5xl">🔍</span>
+              <div>
+                <h2 className="text-3xl font-bold mb-3">
+                  <span className="text-brand-gold">Don't Trust,</span> Verify
+                </h2>
+                <p className="text-lg text-text-secondary leading-relaxed">
+                  Bitcoin's core principle: transparency over blind trust.
+                  Everything we tell you can—and should—be verified.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <div className="bg-surface-black/50 border border-border-default rounded-lg p-5">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">📚</span>
+                  <h3 className="text-lg font-semibold text-text-primary">Public Archive</h3>
+                </div>
+                <p className="text-sm text-text-tertiary leading-relaxed mb-3">
+                  Read 200+ real questions and answers before paying. See the actual quality
+                  of responses at each tier. No promises, just proof.
+                </p>
+                <a href="#archive" className="text-brand-gold text-sm font-medium hover:underline">
+                  Browse Archive →
+                </a>
+              </div>
+
+              <div className="bg-surface-black/50 border border-border-default rounded-lg p-5">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">⚡</span>
+                  <h3 className="text-lg font-semibold text-text-primary">Verifiable Payments</h3>
+                </div>
+                <p className="text-sm text-text-tertiary leading-relaxed mb-3">
+                  Every Lightning invoice is cryptographically verifiable on the network.
+                  Track your payment in real-time. No black boxes.
+                </p>
+                <a href="https://mempool.space/lightning" target="_blank" rel="noopener noreferrer" className="text-brand-gold text-sm font-medium hover:underline">
+                  Verify on Mempool.space →
+                </a>
+              </div>
+
+              <div className="bg-surface-black/50 border border-border-default rounded-lg p-5">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">📊</span>
+                  <h3 className="text-lg font-semibold text-text-primary">Real Metrics</h3>
+                </div>
+                <p className="text-sm text-text-tertiary leading-relaxed mb-3">
+                  We publish actual response times, satisfaction ratings, and answer statistics.
+                  No inflated numbers, no marketing fluff.
+                </p>
+                <div className="flex gap-4 text-xs mt-3">
+                  <div>
+                    <div className="text-brand-gold font-bold text-lg">24.3h</div>
+                    <div className="text-text-muted">Avg Response</div>
+                  </div>
+                  <div>
+                    <div className="text-brand-gold font-bold text-lg">4.8/5</div>
+                    <div className="text-text-muted">Satisfaction</div>
+                  </div>
+                  <div>
+                    <div className="text-brand-gold font-bold text-lg">327</div>
+                    <div className="text-text-muted">Answered</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-surface-black/50 border border-border-default rounded-lg p-5">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">🔗</span>
+                  <h3 className="text-lg font-semibold text-text-primary">Sources Included</h3>
+                </div>
+                <p className="text-sm text-text-tertiary leading-relaxed mb-3">
+                  Every answer includes references to original sources: whitepapers, GitHub commits,
+                  academic papers, and verified data. Check our work.
+                </p>
+                <p className="text-xs text-text-muted italic">
+                  "Trust the math, verify the code, question everything else."
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-surface-black border border-brand-gold/20 rounded-lg p-5">
+              <p className="text-sm text-text-secondary text-center leading-relaxed">
+                <span className="font-semibold text-brand-gold">Our commitment:</span>{" "}
+                We provide sources for every claim, link to primary documentation,
+                and admit when something is opinion vs. fact. If we're wrong, we correct it publicly.
+                That's how Bitcoin works. That's how we work.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* QA Form Component */}
         <section className="max-w-4xl mx-auto mb-16">
           <QAForm />

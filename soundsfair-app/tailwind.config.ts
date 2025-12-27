@@ -8,6 +8,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'display': ['var(--font-orbitron)', 'Rajdhani', 'monospace'],
+        'mono': ['var(--font-jetbrains)', 'JetBrains Mono', 'Space Mono', 'monospace'],
+        'body': ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
+      },
       colors: {
         // Primary Brand Colors (Research-backed 2025 standards)
         "brand": {
@@ -105,12 +110,32 @@ const config: Config = {
         'large': '16px',
       },
 
+      // Background Images & Gradients
+      backgroundImage: {
+        'grid-gold': 'linear-gradient(to right, rgba(255, 215, 0, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 215, 0, 0.1) 1px, transparent 1px)',
+        'radial-gold': 'radial-gradient(circle at center, rgba(255, 215, 0, 0.15) 0%, transparent 70%)',
+        'cyber-gradient': 'linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 50%, #0A0A0A 100%)',
+        'gold-shimmer': 'linear-gradient(90deg, transparent 0%, rgba(255, 215, 0, 0.3) 50%, transparent 100%)',
+      },
+
+      backgroundSize: {
+        'grid-sm': '20px 20px',
+        'grid-md': '40px 40px',
+        'grid-lg': '60px 60px',
+      },
+
       // Animation
       animation: {
         'shimmer': 'shimmer 1.5s infinite',
         'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
         'fade-in': 'fade-in 0.3s ease-in',
         'slide-up': 'slide-up 0.5s ease-out',
+        'slide-down': 'slide-down 0.3s ease-out',
+        'scan': 'scan 3s linear infinite',
+        'glitch': 'glitch 0.5s infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'grid-flow': 'grid-flow 20s linear infinite',
+        'lightning': 'lightning 0.2s ease-in-out',
       },
 
       keyframes: {
@@ -130,6 +155,37 @@ const config: Config = {
           '0%': { transform: 'translateY(20px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
+        'slide-down': {
+          '0%': { transform: 'translateY(-10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        scan: {
+          '0%, 100%': { transform: 'translateY(-100%)' },
+          '50%': { transform: 'translateY(100%)' },
+        },
+        glitch: {
+          '0%, 100%': { transform: 'translate(0)' },
+          '33%': { transform: 'translate(-2px, 2px)' },
+          '66%': { transform: 'translate(2px, -2px)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+        'grid-flow': {
+          '0%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(60px)' },
+        },
+        lightning: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.5' },
+        },
+      },
+
+      // Text Shadow (for glow effects)
+      textShadow: {
+        'glow': '0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3)',
+        'glow-lg': '0 0 15px rgba(255, 215, 0, 0.6), 0 0 30px rgba(255, 215, 0, 0.4), 0 0 45px rgba(255, 215, 0, 0.2)',
       },
 
       // Backdrop Blur
@@ -138,7 +194,19 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // Plugin for text shadow utility
+    function({ matchUtilities, theme }: any) {
+      matchUtilities(
+        {
+          'text-shadow': (value: string) => ({
+            textShadow: value,
+          }),
+        },
+        { values: theme('textShadow') }
+      )
+    },
+  ],
 };
 
 export default config;
