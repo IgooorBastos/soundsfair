@@ -53,3 +53,5 @@ ATUALIZAR_NEXTJS.md
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.env*.local
+CREDENTIALS*.md

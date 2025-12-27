@@ -1,6 +1,6 @@
 # soundsfair - Production Launch Readiness
 
-**Version:** 1.0.0
+**Version:** 0.1.0
 **Status:** ✅ Ready for Production
 **Date:** December 16, 2025
 
@@ -668,7 +668,7 @@ If admin access is broken:
 
 **Verified By:** Claude Code (AI)
 **Date:** December 16, 2025
-**Version:** 1.0.0
+**Version:** 0.1.0
 
 **All systems:**
 - ✅ Code quality: PASSED

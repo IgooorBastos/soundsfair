@@ -2,7 +2,7 @@
 
 **Complete guide for administrators managing the Lightning Q&A system**
 
-**Version:** 1.0.0 | **Last Updated:** December 2025
+**Version:** 0.1.0 | **Last Updated:** December 27, 2025
 
 ---
 

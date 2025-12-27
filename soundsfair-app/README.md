@@ -2,7 +2,7 @@
 
 **Educational platform about Bitcoin, fair money, economic freedom, and sound monetary principles.**
 
-**Version:** 1.0.0 | **Status:** ✅ Production Ready
+**Version:** 0.1.0 | **Status:** ✅ Production Ready
 
 ---
 
@@ -11,8 +11,15 @@
 ```bash
 npm install                    # Install dependencies
 cp .env.example .env.local     # Create environment file (see DEPLOYMENT.md)
-npm run dev                    # Run development server
-npm run build                  # Build for production
+
+# Development (uses Turbopack for 10× faster dev experience)
+npm run dev                    # Dev server with Turbopack (recommended)
+npm run dev:webpack            # Dev server with Webpack (fallback)
+
+# Production
+npm run build                  # Production build with Webpack (stable)
+npm run build:turbo            # Production build with Turbopack (experimental)
+npm start                      # Start production server
 ```
 
 **First time deploying?** See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for complete setup guide.
@@ -58,18 +65,20 @@ npm run build                  # Build for production
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **Framework:** Next.js 16.0.4 (App Router, React Server Components)
-- **Language:** TypeScript 5.7.2 (strict mode)
-- **Styling:** Tailwind CSS 4.0.2
-- **Charts:** Recharts 2.15.0
-- **Validation:** Zod
+- **Framework:** Next.js 16.1.0 (App Router, React Server Components)
+- **Bundler:** Turbopack (dev mode) + Webpack (production builds)
+- **Runtime:** React 19.2.0 (latest)
+- **Language:** TypeScript ^5 (strict mode)
+- **Styling:** Tailwind CSS 3.4.17 + Custom Design System
+- **Charts:** Recharts 3.6.0
+- **Validation:** Zod 4.1.13
 
 ### Backend
-- **Database:** Supabase (PostgreSQL with Row Level Security)
-- **Payments:** OpenNode (Lightning Network testnet & production)
-- **Email:** Resend (transactional emails with webhook tracking)
-- **Price Data:** CoinGecko API with fallback caching
-- **Hosting:** Vercel (serverless functions + edge network)
+- **Database:** Supabase 2.89.0 (PostgreSQL with Row Level Security)
+- **Payments:** OpenNode API v1 (Lightning Network DEV/Testnet ready)
+- **Email:** Resend 6.5.2 (transactional emails with webhook tracking)
+- **Price Data:** CoinGecko API with CoinCap/Mock fallbacks
+- **Hosting:** Vercel (Production - https://soundsfair.vercel.app/)
 
 ### Third-Party Integrations
 - **OpenNode:** Lightning invoice generation and webhooks
@@ -139,8 +148,9 @@ soundsfair-app/
 ### 🏗️ Architecture & Development
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Complete system architecture
   - Tech stack details
-  - Database schema (7 tables)
-  - API routes documentation
+  - Database schema (8 tables: payments, questions, email_logs, email_preferences, admin_audit_log, csrf_tokens, quiz_responses, admin_users)
+  - User progress tracking (user_progress, lesson_progress tables)
+  - API routes documentation (17 endpoints)
   - Authentication flows
   - Payment system architecture
   - Email system design
@@ -212,13 +222,16 @@ See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for detailed setup instructions.
 
 ### Tables
 
-1. **`payments`** - Lightning invoices and payment status
-2. **`questions`** - Q&A questions linked to payments
-3. **`email_logs`** - Email delivery tracking and audit trail
-4. **`email_preferences`** - User subscription preferences
-5. **`admin_audit_log`** - Admin action logging
-6. **`csrf_tokens`** - CSRF protection tokens
-7. **`quiz_responses`** - User quiz submissions for progress tracking
+1. **`admin_users`** - Admin authentication and access control
+2. **`payments`** - Lightning invoices and payment status
+3. **`questions`** - Q&A questions linked to payments
+4. **`email_logs`** - Email delivery tracking and audit trail
+5. **`email_preferences`** - User subscription preferences
+6. **`admin_audit_log`** - Admin action logging
+7. **`csrf_tokens`** - CSRF protection tokens
+8. **`quiz_responses`** - User quiz submissions for progress tracking
+9. **`user_progress`** - User learning progress tracking
+10. **`lesson_progress`** - Individual lesson completion tracking
 
 ### Migrations
 
@@ -319,7 +332,7 @@ npm run build        # Production build (must pass)
 - [x] **Admin Dashboard:** Question management with audit logs
 - [x] **Security:** CSRF, rate limiting, webhook verification
 - [x] **SEO:** Metadata, Open Graph, Twitter Cards, Schema.org
-- [x] **Database:** Complete schema with 7 tables
+- [x] **Database:** Complete schema with 10 tables (includes user progress tracking)
 - [x] **Documentation:** Deployment, architecture, testing guides
 - [x] **Build:** TypeScript strict mode, no errors
 
@@ -390,9 +403,9 @@ Proprietary - All rights reserved
 
 ---
 
-**Version:** 1.0.0
+**Version:** 0.1.0
 **Status:** ✅ Production Ready
-**Last Updated:** December 16, 2025
-**Build:** Next.js 16.0.4 | TypeScript 5.7.2 | Tailwind CSS 4.0.2
+**Last Updated:** December 27, 2025
+**Build:** Next.js 16.1.0 (Turbopack) | React 19.2.0 | TypeScript ^5 | Tailwind CSS 3.4.17 | Recharts 3.6.0
 
 🤖 Built with [Claude Code](https://claude.com/claude-code)

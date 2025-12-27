@@ -9,7 +9,7 @@
 
 **An educational platform about Bitcoin, economic freedom, and sound monetary principles.**
 
-[Live Demo](https://soundsfair.netlify.app) · [Documentation](./docs/planning/ROADMAP.md) · [Report Bug](https://github.com/yourusername/soundsfair/issues)
+[Live Demo](https://soundsfair.vercel.app) · [Documentation](./soundsfair-app/docs/) · [Report Bug](https://github.com/yourusername/soundsfair/issues)
 
 </div>
 
@@ -26,25 +26,42 @@
 
 ### Key Features
 
-✨ **5 Comprehensive Lessons** - From store of value to financial freedom
-🎮 **Gamification** - XP system, levels, streaks, and achievements
-📊 **DCA Calculator** - Compare Bitcoin vs traditional assets
+#### 📚 Educational Content
+✨ **9 Progressive Lessons** - Complete Bitcoin education from beginner to advanced
+🎯 **Interactive Quizzes** - Knowledge validation for each lesson
+📈 **Progress Tracking** - Database-backed learning journey
+
+#### 🛠️ Interactive Tools
+📊 **DCA Calculator** - Multi-asset comparison (BTC, S&P500, Gold, MSCI World)
+💰 **Satoshi Converter** - BTC ↔ Sats ↔ USD conversion
+😨 **Fear & Greed Index** - Real-time Bitcoin market sentiment
+⏰ **Halving Countdown** - Next Bitcoin halving tracker
+🔮 **What-If Calculator** - Historical investment simulator
+
+#### ⚡ Lightning Network
+💳 **Lightning Payments** - OpenNode integration (Testnet)
+❓ **Paid Q&A Service** - Submit questions via Bitcoin payments
+🔔 **Payment Webhooks** - Automated verification system
+
+#### 📖 Reference Materials
 📖 **50+ Glossary Terms** - Searchable Bitcoin dictionary
 ❓ **20 FAQs** - Comprehensive answers to common questions
 🔗 **Smart Auto-linking** - Contextual links between content
-📈 **Progress Tracking** - Track your learning journey
-🎓 **Certificates** - Downloadable completion certificates (coming soon)
 
 ---
 
 ## 🚀 Tech Stack
 
-- **Framework:** Next.js 16 (App Router)
+- **Framework:** Next.js 16.1.0 (App Router)
+- **Bundler:** Turbopack (dev) + Webpack (production)
 - **Language:** TypeScript 5
-- **Styling:** Tailwind CSS 3
-- **Markdown:** Remark + Gray Matter
-- **Charts:** Recharts
-- **Deployment:** Netlify / Vercel
+- **Runtime:** React 19.2
+- **Styling:** Tailwind CSS 3.4.17 + Custom Design System
+- **Database:** Supabase (PostgreSQL + Row Level Security)
+- **Payments:** OpenNode API v1 (Lightning Network + On-chain)
+- **Email:** Resend API with transactional templates
+- **Charts:** Recharts 3.6.0
+- **Deployment:** Vercel (Production)
 
 ---
 
@@ -283,7 +300,7 @@ This project is licensed under the ISC License - see the [LICENSE](LICENSE) file
 
 **Project Link:** [https://github.com/yourusername/soundsfair](https://github.com/yourusername/soundsfair)
 
-**Live Site:** [https://soundsfair.netlify.app](https://soundsfair.netlify.app)
+**Live Site:** [https://soundsfair.vercel.app](https://soundsfair.vercel.app)
 
 ---
 
@@ -291,6 +308,6 @@ This project is licensed under the ISC License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ for Bitcoin education**
 
-⚡ Powered by Next.js · 🎨 Styled with Tailwind · 🚀 Deployed on Netlify
+⚡ Powered by Next.js 16 · 🎨 Styled with Tailwind CSS · 🚀 Deployed on Vercel
 
 </div>

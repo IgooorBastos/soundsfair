@@ -1,8 +1,8 @@
 # soundsfair Platform Architecture
 
-**Version:** 1.0.0
-**Last Updated:** December 2025
-**Status:** Production Ready
+**Version:** 0.1.0
+**Last Updated:** December 27, 2025
+**Status:** ✅ Production Ready (Deployed on Vercel)
 
 ---
 
@@ -45,29 +45,31 @@
 
 ### Frontend
 
-- **Framework:** Next.js 16.0.4 (App Router)
-- **Language:** TypeScript 5.7.2
-- **Styling:** Tailwind CSS 4.0.2
-- **UI Components:** Custom React components with Radix UI primitives
-- **Charts:** Recharts 2.15.0
-- **Forms:** Native HTML forms with Zod validation
+- **Framework:** Next.js 16.1.0 (App Router)
+- **Bundler:** Turbopack (development) + Webpack (production)
+- **Runtime:** React 19.2.0
+- **Language:** TypeScript ^5 (strict mode)
+- **Styling:** Tailwind CSS 3.4.17 + Custom Design System
+- **UI Components:** Custom React components
+- **Charts:** Recharts 3.6.0
+- **Forms:** Native HTML forms with Zod 4.1.13 validation
 - **State:** React hooks + localStorage for client state
 
 ### Backend
 
-- **Runtime:** Node.js (via Next.js API routes)
-- **Database:** Supabase PostgreSQL
-- **ORM:** Supabase Client (REST API)
-- **Validation:** Zod schemas
-- **API Architecture:** RESTful API routes
+- **Runtime:** Node.js (via Next.js API routes / Vercel serverless)
+- **Database:** Supabase 2.89.0 (PostgreSQL with Row Level Security)
+- **Client:** @supabase/supabase-js 2.89.0
+- **Validation:** Zod 4.1.13 schemas
+- **API Architecture:** RESTful API routes (17 endpoints)
 
 ### Third-Party Services
 
-- **Payments:** OpenNode (Lightning Network)
-- **Email:** Resend (transactional emails)
-- **Price Data:** CoinGecko API
-- **Hosting:** Vercel (frontend + serverless functions)
-- **Database:** Supabase (hosted PostgreSQL)
+- **Payments:** OpenNode API v1 (Lightning Network - DEV/Testnet)
+- **Email:** Resend 6.5.2 (transactional emails with webhooks)
+- **Price Data:** CoinGecko API with CoinCap/Mock fallbacks
+- **Hosting:** Vercel (Production - https://soundsfair.vercel.app/)
+- **Database:** Supabase (hosted PostgreSQL with real-time capabilities)
 
 ### Development Tools
 
@@ -191,7 +193,11 @@ soundsfair-app/
 
 ### Overview
 
-PostgreSQL database hosted on Supabase with the following tables:
+PostgreSQL database hosted on Supabase with **10 tables**:
+- Core Q&A system (payments, questions)
+- Email system (email_logs, email_preferences)
+- Admin system (admin_users, admin_audit_log, csrf_tokens)
+- User learning (quiz_responses, user_progress, lesson_progress)
 
 ### 1. `payments`
 
@@ -326,6 +332,69 @@ Stores user quiz submissions for progress tracking.
 
 **Indexes:**
 - `idx_quiz_user_lesson` on `user_id, lesson_slug`
+
+### 8. `admin_users`
+
+Admin authentication and access control.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID | Primary key |
+| `email` | TEXT | Admin email (unique) |
+| `password_hash` | TEXT | Bcrypt password hash |
+| `role` | TEXT | Admin role (e.g., `super_admin`, `moderator`) |
+| `is_active` | BOOLEAN | Account status |
+| `last_login_at` | TIMESTAMPTZ | Last login timestamp (nullable) |
+| `created_at` | TIMESTAMPTZ | Account creation timestamp |
+| `updated_at` | TIMESTAMPTZ | Last update timestamp |
+
+**Indexes:**
+- `idx_admin_users_email` on `email` (unique)
+- `idx_admin_users_is_active` on `is_active`
+
+**Row Level Security (RLS):**
+- RLS disabled for admin operations (admin bypasses RLS via service role key)
+
+### 9. `user_progress`
+
+Tracks overall user learning progress across the platform.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID | Primary key |
+| `user_id` | TEXT | Anonymous user identifier |
+| `total_lessons_completed` | INTEGER | Count of completed lessons |
+| `total_quizzes_passed` | INTEGER | Count of passed quizzes |
+| `current_level` | INTEGER | User level (1-10) |
+| `total_xp` | INTEGER | Total experience points |
+| `streak_days` | INTEGER | Current learning streak |
+| `last_activity_at` | TIMESTAMPTZ | Last learning activity |
+| `created_at` | TIMESTAMPTZ | Progress tracking start |
+| `updated_at` | TIMESTAMPTZ | Last progress update |
+
+**Indexes:**
+- `idx_user_progress_user_id` on `user_id` (unique)
+- `idx_user_progress_level` on `current_level`
+
+### 10. `lesson_progress`
+
+Tracks individual lesson completion and scores.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID | Primary key |
+| `user_id` | TEXT | Anonymous user identifier |
+| `lesson_slug` | TEXT | Lesson identifier |
+| `completed` | BOOLEAN | Lesson completion status |
+| `quiz_score` | INTEGER | Quiz score (0-100, nullable) |
+| `reading_position` | INTEGER | Last reading position (%) |
+| `completed_at` | TIMESTAMPTZ | Completion timestamp (nullable) |
+| `created_at` | TIMESTAMPTZ | First access timestamp |
+| `updated_at` | TIMESTAMPTZ | Last update timestamp |
+
+**Indexes:**
+- `idx_lesson_progress_user_lesson` on `user_id, lesson_slug` (unique)
+- `idx_lesson_progress_completed` on `completed`
 
 ---
 

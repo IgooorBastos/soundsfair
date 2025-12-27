@@ -5,8 +5,10 @@
   "author": "Igor",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "next dev --turbo",
+    "dev:webpack": "next dev --webpack",
     "build": "next build --webpack",
+    "build:turbo": "next build --turbo",
     "start": "next start",
     "lint": "eslint",
     "crawl": "tsx scripts/crawl-site.ts"
@@ -23,7 +25,7 @@
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-syntax-highlighter": "^16.1.0",
-    "recharts": "^3.5.0",
+    "recharts": "^3.6.0",
     "rehype-stringify": "^10.0.1",
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.1",

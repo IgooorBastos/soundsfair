@@ -5,32 +5,22 @@ import { fileURLToPath } from "url";
 const configDir = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
-  // Output standalone for better Netlify compatibility
+  // Output standalone for better Vercel compatibility
   output: "standalone",
 
   // Avoid Next.js picking an incorrect workspace root when multiple lockfiles exist.
   outputFileTracingRoot: configDir,
 
-  // Disable static optimization for API routes to work on Netlify
+  // Experimental features
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb',
     },
   },
 
-  // Use Webpack for production builds (more stable with Tailwind)
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      // Don't resolve 'fs' module on the client to prevent this error on build
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        path: false,
-        os: false,
-      };
-    }
-    return config;
-  },
+  // Turbopack configuration (Next.js 16+ default bundler)
+  // Empty config indicates we're using Turbopack with default settings
+  turbopack: {},
 
   async headers() {
     return [

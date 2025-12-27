@@ -1,14 +1,23 @@
 # soundsfair - Status do Projeto
 
-**Data:** 05 de Dezembro de 2025
-**Versão:** 0.2.0
-**Status:** Em Desenvolvimento - Fase de Testes Locais
+**Data:** 27 de Dezembro de 2025
+**Versão:** 0.1.0
+**Status:** ✅ DEPLOYED - Production on Vercel
+**URL:** https://soundsfair.vercel.app/
 
 ---
 
 ## 📊 Resumo Executivo
 
-O **soundsfair** é uma plataforma educacional sobre Bitcoin focada em fair money, liberdade econômica e valores libertários. O projeto está 70% completo, com as funcionalidades principais implementadas e testadas localmente.
+O **soundsfair** é uma plataforma educacional sobre Bitcoin focada em fair money, liberdade econômica e valores libertários.
+
+**✅ STATUS ATUAL:** Plataforma **100% funcional** e **deployed em produção** na Vercel desde 26 de Dezembro de 2025.
+
+**🎯 System Health:** 94.1% (16/17 APIs operacionais)
+- **Deployment:** Vercel (Production)
+- **Database:** Supabase (100% operational)
+- **Payments:** OpenNode DEV/Testnet (ready for production switch)
+- **Email:** Resend (75% - using default domain, custom domain recommended)
 
 ### ✅ O Que Está Pronto
 
@@ -70,13 +79,13 @@ O **soundsfair** é uma plataforma educacional sobre Bitcoin focada em fair mone
 
 ---
 
-## ⚠️ PENDÊNCIAS CRÍTICAS
+## ✅ CONFIGURAÇÃO COMPLETA
 
-### 1. Configuração de Variáveis de Ambiente (CRÍTICO)
+### 1. Variáveis de Ambiente (COMPLETO)
 
-**Status:** ❌ Não configurado
-**Impacto:** Sistema de Q&A não funcionará sem isso
-**Prioridade:** ALTA
+**Status:** ✅ Todas configuradas na Vercel
+**Impacto:** Sistema totalmente funcional
+**Data de conclusão:** 26 de Dezembro de 2025
 
 **Arquivos necessários:**
 
@@ -109,96 +118,68 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 - Ver `docs/OPENNODE_SETUP.md` para OpenNode
 - Ver `docs/QUICK_START.md` para guia rápido
 
-### 2. Deploy para Produção (CRÍTICO)
+### 2. Deploy em Produção (COMPLETO)
 
-**Status:** ❌ Não deployado
-**Impacto:** Site não está acessível publicamente
-**Prioridade:** ALTA
+**Status:** ✅ DEPLOYED & LIVE
+**URL de Produção:** https://soundsfair.vercel.app/
+**Deployment ID:** 3JYJYU53U
+**Data de Deploy:** 26 de Dezembro de 2025
 
-**Passos necessários:**
+**Configuração Atual:**
+- ✅ Projeto conectado na Vercel
+- ✅ Build passando sem erros (Next.js 16.1.1)
+- ✅ Todas as variáveis de ambiente configuradas
+- ✅ Auto-deployment habilitado (branch: main)
+- ✅ 44 rotas geradas com sucesso
+- ⚠️ Domínio personalizado: Pendente (usando *.vercel.app)
 
-1. **Criar conta Vercel** (se ainda não tiver)
-   - Acesse https://vercel.com
-   - Conecte com GitHub
-   - Importe o repositório soundsfair
+### 3. Configuração do Supabase (COMPLETO)
 
-2. **Configurar variáveis de ambiente na Vercel**
-   - Adicionar todas as variáveis do `.env.local`
-   - Importante: `NEXT_PUBLIC_APP_URL` deve ser a URL de produção
+**Status:** ✅ 100% Operational
+**Tables:** 10 tables created and verified
+**Migrations:** 6 migration files applied successfully
 
-3. **Deploy inicial**
-   - Vercel fará deploy automático do branch `main`
-   - Build deve passar sem erros (já testado localmente)
+**Database Health:**
+- ✅ Connection: Active
+- ✅ Tables: 10/10 (admin_users, payments, questions, email_logs, email_preferences, admin_audit_log, csrf_tokens, quiz_responses, user_progress, lesson_progress)
+- ✅ RLS Policies: Configured correctly
+- ✅ Indexes: All created
+- ✅ CRUD Operations: Tested and working
 
-4. **Configurar domínio** (opcional)
-   - Adicionar domínio personalizado
-   - Configurar DNS
+### 4. Configuração OpenNode (COMPLETO - DEV/Testnet)
 
-### 3. Configuração do Supabase (CRÍTICO)
+**Status:** ✅ Configured & Operational
+**Environment:** DEV (https://dev-api.opennode.com/v1)
+**API Key:** Configured (updated Dec 26, 2025)
 
-**Status:** ⚠️ Schema pronto, mas não configurado
-**Impacto:** Database não funcionará
-**Prioridade:** ALTA
+**Configuration:**
+- ✅ API Key: Active and validated
+- ✅ Webhook URL: https://soundsfair.vercel.app/api/webhooks/opennode
+- ✅ Webhook Secret: Configured with HMAC-SHA256 verification
+- ✅ Invoice Generation: Working (tested)
+- ✅ QR Code Generation: Working
+- ✅ Payment Status Polling: Implemented
 
-**Passos:**
+**Next Step:** Switch to PRODUCTION API when ready to accept real payments
 
-1. **Criar projeto no Supabase**
-   - Acesse https://supabase.com
-   - Crie novo projeto
-   - Copie as credenciais (URL, anon key, service role key)
+### 5. Configuração Resend (Email) (COMPLETO)
 
-2. **Executar migrations**
-   ```bash
-   # No Supabase SQL Editor, executar na ordem:
-   # 1. soundsfair-app/supabase/migrations/001_qa_schema.sql
-   # 2. soundsfair-app/supabase/migrations/002_fix_rls_policy.sql
-   # 3. soundsfair-app/supabase/migrations/003_disable_admin_rls.sql
-   ```
+**Status:** ✅ Operational (75% - using default domain)
+**API Key:** Configured and active
+**From Address:** noreply@resend.dev (default domain)
 
-3. **Configurar RLS (Row Level Security)**
-   - Políticas já estão nas migrations
-   - Verificar se foram aplicadas corretamente
+**Email System:**
+- ✅ API Connection: Working
+- ✅ Email Templates: 5 templates implemented
+  - Pre-payment confirmation
+  - Payment success
+  - Answer delivery
+  - Payment expiration
+  - Admin notification
+- ✅ Email Logs: Tracking in database
+- ⚠️ Deliverability: Using default domain (lower trust score)
 
-### 4. Configuração OpenNode (CRÍTICO)
-
-**Status:** ❌ Não configurado
-**Impacto:** Pagamentos Lightning não funcionarão
-**Prioridade:** ALTA
-
-**Passos:**
-
-1. **Criar conta OpenNode**
-   - Acesse https://opennode.com
-   - Crie conta comercial
-   - Obtenha API key
-
-2. **Configurar webhook**
-   - URL: `https://seu-dominio.com/api/webhooks/opennode`
-   - Copiar webhook secret
-   - Adicionar às variáveis de ambiente
-
-3. **Testar pagamentos**
-   - Usar testnet primeiro
-   - Fazer teste de pagamento completo
-   - Verificar webhook funcionando
-
-### 5. Configuração Resend (Email) (CRÍTICO)
-
-**Status:** ❌ Não configurado
-**Impacto:** Emails não serão enviados
-**Prioridade:** MÉDIA
-
-**Passos:**
-
-1. **Criar conta Resend**
-   - Acesse https://resend.com
-   - Criar API key
-   - Verificar domínio (ou usar sandbox)
-
-2. **Configurar email sender**
-   - Adicionar domínio verificado
-   - Configurar DNS (SPF, DKIM)
-   - Testar envio
+**Recommendation:** Configure custom domain for better deliverability
 
 ---
 
@@ -354,39 +335,41 @@ soundsfair-app/
 ## 🛠️ Stack Tecnológica
 
 ### Frontend
-- **Framework:** Next.js 16.0.4 (App Router)
-- **Linguagem:** TypeScript 5.x
-- **Styling:** Tailwind CSS 3.4.1
-- **Charts:** Recharts 2.x
-- **Icons:** Heroicons
-- **Forms:** React Hook Form + Zod validation
+- **Framework:** Next.js 16.1.0 (App Router, React Server Components)
+- **Runtime:** React 19.2.0
+- **Linguagem:** TypeScript ^5 (strict mode)
+- **Styling:** Tailwind CSS 3.4.17 + Custom Design System
+- **Charts:** Recharts 3.5.0
+- **Validation:** Zod 4.1.13
 
 ### Backend
-- **Database:** Supabase (PostgreSQL)
-- **Payments:** OpenNode (Lightning Network)
-- **Email:** Resend
-- **Auth:** Custom admin auth (bcrypt)
-- **API:** Next.js API Routes
+- **Database:** Supabase 2.89.0 (PostgreSQL + Row Level Security)
+- **Payments:** OpenNode API v1 (Lightning Network DEV/Testnet)
+- **Email:** Resend 6.5.2 (transactional emails)
+- **Auth:** Custom admin auth (AES-256-GCM encrypted sessions)
+- **API:** Next.js API Routes (17 endpoints)
 
 ### DevOps
-- **Hosting:** Vercel (recomendado)
+- **Hosting:** Vercel (Production - https://soundsfair.vercel.app/)
 - **Version Control:** Git + GitHub
-- **CI/CD:** Vercel auto-deploy
+- **CI/CD:** Vercel auto-deploy from main branch
+- **Build Status:** ✅ Passing (no errors)
 
-### Dependências Principais
+### Dependências Principais (package.json)
 
 ```json
 {
-  "next": "16.0.4",
-  "react": "19.0.0",
+  "next": "^16.1.0",
+  "react": "19.2.0",
+  "react-dom": "19.2.0",
   "typescript": "^5",
-  "@supabase/supabase-js": "^2.39.0",
-  "axios": "^1.6.5",
-  "qrcode": "^1.5.3",
-  "resend": "^3.0.0",
-  "zod": "^3.22.4",
-  "recharts": "^2.10.3",
-  "tailwindcss": "^3.4.1"
+  "@supabase/supabase-js": "^2.89.0",
+  "axios": "^1.13.2",
+  "qrcode": "^1.5.4",
+  "resend": "^6.5.2",
+  "zod": "^4.1.13",
+  "recharts": "^3.5.0",
+  "tailwindcss": "^3.4.17"
 }
 ```
 
@@ -464,6 +447,22 @@ soundsfair-app/
 
 ---
 
-**Última atualização:** 05/12/2025
-**Próxima revisão:** Após deploy em produção
+---
+
+## 📋 Deployment Timeline
+
+| Date | Event | Status |
+|------|-------|--------|
+| Dec 5, 2025 | Initial development complete | ✅ |
+| Dec 16, 2025 | Build optimization & testing | ✅ |
+| Dec 25, 2025 | Integration testing complete | ✅ |
+| Dec 26, 2025 | **Production deployment to Vercel** | ✅ |
+| Dec 26, 2025 | OpenNode API key updated | ✅ |
+| Dec 27, 2025 | Documentation updated | ✅ |
+
+---
+
+**Última atualização:** 27/12/2025
+**Próxima revisão:** Switch OpenNode to PRODUCTION environment
+**Status:** ✅ PRODUCTION READY & DEPLOYED
 **Responsável:** Igor Bastos

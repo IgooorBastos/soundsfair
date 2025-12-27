@@ -27,13 +27,17 @@ The project includes a complete 9-lesson course structure covering:
 8. Protection strategies against fiat collapse
 9. Conclusion on financial freedom
 
-## Planned Tech Stack (from requirements)
+## Tech Stack (Production)
 
-- **Frontend**: Next.js 14 (app router) + TypeScript + Tailwind CSS
-- **Payments**: BTCPay Server (self-hosted) or OpenNode/Strike for Lightning
-- **Price Data**: CoinGecko API with CoinCap as fallback
-- **Charts**: Recharts or Chart.js
-- **Hosting**: Vercel (frontend) + backend hosting TBD
+- **Frontend**: Next.js 16.1.0 (App Router) + TypeScript 5 + React 19.2
+- **Bundler**: Turbopack (dev - 10× faster) + Webpack (production - stable)
+- **Styling**: Tailwind CSS 3.4.17 with custom design system
+- **Payments**: OpenNode API v1 (Lightning Network + On-chain) - DEV/Testnet ready
+- **Database**: Supabase (PostgreSQL) with Row Level Security
+- **Email**: Resend API with transactional templates
+- **Price Data**: CoinGecko API with CoinCap/Mock fallbacks
+- **Charts**: Recharts 3.6.0 (React + D3)
+- **Hosting**: Vercel (Production) - https://soundsfair.vercel.app/
 
 ## Design Philosophy
 
@@ -42,13 +46,37 @@ The project includes a complete 9-lesson course structure covering:
 - **Style**: Cyberpunk minimalist, high contrast, cinematic hero images
 - **Tone**: Welcoming but firm, educational without being preachy, libertarian-friendly, fact-first
 
-## Key Features to Implement
+## Implemented Features
 
-1. **DCA Calculator**: Multi-asset comparison (BTC, S&P500, Gold, MSCI World) with CSV export and shareable URLs
-2. **Lightning Payments**: Integration for paid Q&A service
-3. **Video Reviews**: YouTube video curation with curator notes and filtering
-4. **Progressive Learning Path**: Gamified 8-level education system
-5. **Famous Quotes Section**: Bitcoin community wisdom and key writings
+### Educational Content
+1. **9 Progressive Lessons** ✅ - Complete Bitcoin education from beginner to advanced
+2. **Interactive Quizzes** ✅ - Knowledge validation for each lesson
+3. **User Progress Tracking** ✅ - Database-backed progress system
+
+### Interactive Tools
+4. **DCA Calculator** ✅ - Multi-asset comparison (BTC, S&P500, Gold, MSCI World) with CSV export
+5. **Satoshi Converter** ✅ - BTC ↔ Sats ↔ USD conversion
+6. **Fear & Greed Index** ✅ - Real-time Bitcoin market sentiment
+7. **Halving Countdown** ✅ - Next Bitcoin halving tracker
+8. **What-If Calculator** ✅ - Historical Bitcoin investment simulator
+
+### Payment & Q&A System
+9. **Lightning Network Payments** ✅ - OpenNode integration (DEV/Testnet)
+10. **Paid Q&A Service** ✅ - Submit questions via Lightning payments
+11. **Payment Webhooks** ✅ - Automated payment verification
+12. **Admin Dashboard** ✅ - Question queue management
+
+### Platform Features
+13. **Email System** ✅ - Transactional emails via Resend
+14. **Legal Pages** ✅ - Privacy Policy, Terms of Service
+15. **Responsive Design** ✅ - Mobile-first, WCAG AA compliant
+
+## Planned Features (Future)
+
+1. **Video Reviews**: YouTube video curation with curator notes and filtering
+2. **Famous Quotes Section**: Bitcoin community wisdom and key writings
+3. **Multi-language Support**: Portuguese translation
+4. **User Accounts**: OAuth login and profile management
 
 ## Important Notes
 
